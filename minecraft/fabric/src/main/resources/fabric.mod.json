@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "dobbie",
+  "version": "${version}",
+  "name": "Dobbie.live",
+  "description": "Dobbie.live",
+  "authors": [
+    "j0x0f"
+  ],
+  "contact": {
+    "homepage": "https://dobbie.live",
+    "sources": "https://github.com/dobbie-live/dobbie-fabric"
+  },
+  "license": "",
+  "icon": "assets/modid/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "live.dobbie.minecraft.fabric.DobbieFabric"
+    ]
+  },
+  "mixins": [
+    "dobbie.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.7.2",
+    "fabric-api-base": "*",
+    "fabric-events-lifecycle-v0": "*",
+    "fabric-events-interaction-v0": "*",
+    "fabric-networking-v0": "*",
+    "minecraft": "1.15.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}

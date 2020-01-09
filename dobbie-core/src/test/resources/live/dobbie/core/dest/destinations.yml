@@ -1,0 +1,17 @@
+- name: donation
+  sections:
+    - name: creeper
+      displayName: 'Крипер'
+      condition:
+        donation.amount: 'RUB43'
+      commands:
+        - 'summon creeper'
+    - name: zombie
+      condition: "donation.amount === 'RUB43'"
+      commands:
+        - 'summon zombie'
+    - name: skeleton
+      condition:
+        donation.amount: 'RUB50'
+      commands:
+        - 'summon skeleton'

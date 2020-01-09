@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "live.dobbie.minecraft.fabric.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "PlayerJoinQuitMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

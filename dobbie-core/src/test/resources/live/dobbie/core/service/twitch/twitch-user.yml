@@ -1,0 +1,98 @@
+services:
+  twitch:
+    enabled: true
+    channel: 'j0x0f'
+    logging:
+      toUser:
+        enabled: false
+      toConsole:
+        enabled: true
+    events:
+      subscription:
+        destination: 'twitch_subscription'
+        enabled: true
+        tiers:
+          twitch_prime:
+            destination: 'twitch_prime_subscription'
+            enabled: true
+          tier1:
+            enabled: true
+          tier2:
+            enabled: true
+          tier3:
+            destination: 'twitch_tier3_subscription'
+            enabled: true
+      gift_subscription:
+        destination: 'twitch_gift_subscription'
+        enabled: true
+        tiers:
+          twitch_prime:
+            enabled: true
+          tier1:
+            enabled: true
+          tier2:
+            enabled: true
+          tier3:
+            enabled: true
+      #      stream_started:
+      #        destination: 'twitch_stream_started'
+      #        enabled: true
+      #      stream_stopped:
+      #        destination: 'twitch_stream_stopped'
+      #        enabled: true
+      #      viewer_joined:
+      #        destination: 'twitch_viewer_joined'
+      #        enabled: false
+      #      viewer_left:
+      #        destination: 'twitch_viewer_left'
+      #        enabled: false
+      raid:
+        destination: 'twitch_raid'
+        enabled: true
+      host:
+        destination: 'twitch_host'
+        enabled: true
+      follow:
+        destination: 'twitch_follow'
+        enabled: true
+      cheer:
+        destination: 'twitch_cheer'
+        enabled: true
+      #      channel_points:
+      #        destination: 'twitch_channel_points'
+      #        enabled: true
+      chat:
+        destination: 'twitch_chat'
+        enabled: true
+#      command:
+#        list:
+#          - name: 'chat'
+#            aliases:
+#              - 'чат'
+#              - 'ч'
+#            description: 'отправляет сообщение в чат'
+#            price:
+#              streamlabs_loyaty_points: 100..9999
+#            arguments:
+#              amount: required
+#              message: required
+#            responses:
+#              help: '@playername, эта команда отправляет сообщение в чат'
+#          - name: 'kick'
+#            aliases:
+#              - 'пнуть'
+#              - 'п'
+#            description: 'пинает стримера'
+#            price:
+#              # Требует поддержку StreamLabs
+#              streamlabs_loyaty_points:
+#                # Дискретные отрезки
+#                - 1000
+#                - 2000
+#            arguments:
+#              # Нужно ли пользователю прямо указывать сколько streamlabs_loyalty_points он потратит
+#              amount: required
+#              message: enabled
+#            responses:
+#              # Переопределить сообщение по умолчанию
+#              help: '@playername, эта команда пинает стримлера. Использование: !пнуть. Стоимость: 1000 монет.'

@@ -1,0 +1,5 @@
+services:
+  twitch:
+    client:
+      login: test login
+      token: test token
