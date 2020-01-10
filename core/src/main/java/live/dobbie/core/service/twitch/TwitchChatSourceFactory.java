@@ -11,13 +11,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TwitchChatSourceFactory implements Source.Factory<TwitchChatSource> {
     private final @NonNull TwitchInstance twitchInstance;
-    private final @NonNull CancellationHandler.Factory cancellationHandlerFactory;
+    private final @NonNull CancellationHandler cancellationHandler;
     private final @NonNull UserSettingsProvider userSettingsProvider;
     private final NameCache nameCache;
 
     @NonNull
     @Override
     public TwitchChatSource createSource(@NonNull User user) {
-        return new TwitchChatSource(new TwitchChatClient(twitchInstance), cancellationHandlerFactory.create(user), user, userSettingsProvider.get(user), nameCache);
+        return new TwitchChatSource(new TwitchChatClient(twitchInstance), cancellationHandler, user, userSettingsProvider.get(user), nameCache);
     }
 }

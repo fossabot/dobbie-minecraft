@@ -45,7 +45,6 @@ import live.dobbie.core.script.js.converter.*;
 import live.dobbie.core.script.js.moduleprovider.DirectoryModuleProvider;
 import live.dobbie.core.script.js.moduleprovider.URIAwareModuleProvider;
 import live.dobbie.core.service.ServiceRegistry;
-import live.dobbie.core.service.chargeback.ChargebackHandler;
 import live.dobbie.core.service.chargeback.ChargebackService;
 import live.dobbie.core.service.chargeback.ChargebackStorage;
 import live.dobbie.core.service.twitch.*;
@@ -60,8 +59,10 @@ import live.dobbie.core.source.Source;
 import live.dobbie.core.substitutor.plain.PlainSubstitutorParser;
 import live.dobbie.core.trigger.TriggerErrorHandler;
 import live.dobbie.core.trigger.UserRelatedTrigger;
+import live.dobbie.core.trigger.cancellable.ListCancellationHandler;
 import live.dobbie.core.user.SimpleUserSettingsProvider;
 import live.dobbie.core.user.User;
+import live.dobbie.core.user.UserNotifyingCancellationHandler;
 import live.dobbie.core.util.io.FileSupplier;
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
@@ -220,7 +221,7 @@ public class DobbieFabric implements ModInitializer, ServerStartCallback, Server
                         new SessionObjectStorage.Factory()
                 )))
                 .build();
-        ChargebackHandler.Factory chargebackHandlerFactory = user -> new ChargebackHandler(serviceRegistry.createReference(ChargebackService.class, user));
+        //ChargebackHandler.Factory chargebackHandlerFactory = user -> new ChargebackHandler(serviceRegistry.createReference(ChargebackService.class, user));
         Loc loc = new Loc();
         DobbiePlugin plugin = new DobbiePlugin(
                 new Dobbie(
@@ -228,7 +229,9 @@ public class DobbieFabric implements ModInitializer, ServerStartCallback, Server
                         new Source.Factory.Provider.Immutable(Arrays.asList(
                                 new TwitchChatSourceFactory(
                                         twitchInstance,
-                                        chargebackHandlerFactory,
+                                        new ListCancellationHandler(Arrays.asList(
+                                                new UserNotifyingCancellationHandler(loc)
+                                        )),
                                         userSettingsProvider,
                                         new NameCache(twitchInstance)
                                 )

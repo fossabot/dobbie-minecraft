@@ -2,6 +2,7 @@ package live.dobbie.core.action.scheduler;
 
 import live.dobbie.core.action.Action;
 import live.dobbie.core.loc.Loc;
+import live.dobbie.core.loc.LocString;
 import live.dobbie.core.trigger.Trigger;
 import live.dobbie.core.trigger.UserRelatedTrigger;
 import live.dobbie.core.trigger.cancellable.Cancellable;
@@ -87,13 +88,14 @@ public class PerUserActionScheduler implements ActionScheduler {
     private void reportError(Action action, Exception e) {
         LOGGER.error("Error executing action: " + action, e);
         UserRelatedTrigger trigger = (UserRelatedTrigger) action.getTrigger();
+        LocString errorMessage = loc.withKey("An error occurred executing action: {message}")
+                .set("message", e.toString());
         if (trigger instanceof Cancellable) {
             LOGGER.tracing("Cancelling");
-            ((Cancellable) trigger).cancel(new Cancellation(CancellationType.FATAL, loc.withKey(
-                    "An error occurred executing action: {message}"
-            ).set("message", e.toString())));
+            ((Cancellable) trigger).cancel(new Cancellation(CancellationType.FATAL, errorMessage));
         } else {
             LOGGER.tracing("Not cancellable");
+            trigger.getUser().sendLocMessage(errorMessage);
         }
     }
 

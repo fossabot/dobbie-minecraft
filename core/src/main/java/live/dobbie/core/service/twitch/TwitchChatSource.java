@@ -88,7 +88,6 @@ public class TwitchChatSource extends Source.UsingQueue {
         logger.tracing("cleanup");
         unregisterListener();
         subscription.cancelSubscription();
-        cancellationHandler.cleanup();
     }
 
     private class Listener implements TwitchListener {
