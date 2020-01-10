@@ -39,7 +39,9 @@ public class FabricEntity implements FabricEntityBase, MinecraftEntity {
 
     @Override
     public void despawn() {
-        getNativeEntity().remove();
+        if (isAvailable()) {
+            getNativeEntity().remove();
+        }
     }
 
     @Override
