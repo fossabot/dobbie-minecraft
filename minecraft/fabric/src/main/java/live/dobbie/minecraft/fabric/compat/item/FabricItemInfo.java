@@ -1,6 +1,7 @@
 package live.dobbie.minecraft.fabric.compat.item;
 
 import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
+import live.dobbie.minecraft.compat.converter.MinecraftTextJsonConverter;
 import live.dobbie.minecraft.compat.item.MinecraftItemEnchantment;
 import live.dobbie.minecraft.compat.item.MinecraftItemInfo;
 import live.dobbie.minecraft.fabric.FabricUtil;
@@ -56,7 +57,7 @@ public class FabricItemInfo extends MinecraftItemInfo implements FabricNbtConver
     }
 
     private static String convertDisplayName(String name) {
-        return FabricUtil.toJsonText(name);
+        return MinecraftTextJsonConverter.legacyToJsonText(name);
     }
 
     public static ItemStack toItemStack(@NonNull MinecraftItemInfo item, @NonNull MinecraftIdConverter converter) {

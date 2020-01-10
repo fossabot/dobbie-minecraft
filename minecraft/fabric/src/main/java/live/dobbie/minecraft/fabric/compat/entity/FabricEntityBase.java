@@ -3,7 +3,7 @@ package live.dobbie.minecraft.fabric.compat.entity;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityBase;
 import live.dobbie.minecraft.fabric.compat.FabricLocation;
 import live.dobbie.minecraft.fabric.compat.FabricServer;
-import live.dobbie.minecraft.fabric.compat.FabricWorld;
+import live.dobbie.minecraft.fabric.compat.world.FabricWorld;
 import lombok.NonNull;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -14,6 +14,7 @@ import org.apache.commons.lang3.Validate;
 public interface FabricEntityBase extends MinecraftEntityBase {
     @NonNull Entity getNativeEntity();
 
+    @Override
     @NonNull FabricServer getServer();
 
     @Override

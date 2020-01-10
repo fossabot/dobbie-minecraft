@@ -6,8 +6,10 @@ import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
 import live.dobbie.minecraft.compat.converter.TheFlattening;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventorySlotTable;
 import live.dobbie.minecraft.compat.potion.MinecraftPotionEffectFactory;
+import live.dobbie.minecraft.fabric.compat.block.FabricBlockInfoTable;
 import live.dobbie.minecraft.fabric.compat.entity.FabricEntityTemplateFactory;
 import live.dobbie.minecraft.fabric.compat.item.FabricItemInfoFactory;
+import live.dobbie.minecraft.fabric.compat.world.FabricWorldTable;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
@@ -25,6 +27,7 @@ public class FabricCompat implements MinecraftCompat, Scheduler {
     public final MinecraftPotionEffectFactory potions = new MinecraftPotionEffectFactory();
     public final FabricBlockInfoTable blocks = new FabricBlockInfoTable();
     public final MinecraftInventorySlotTable invSlots = new MinecraftInventorySlotTable();
+    public final FabricWorldTable worlds = new FabricWorldTable();
 
     public final TheFlattening theFlattening = new TheFlattening();
     public final MinecraftIdConverter idConverter = theFlattening.getDefaultNameConverter();
@@ -66,5 +69,10 @@ public class FabricCompat implements MinecraftCompat, Scheduler {
     @Override
     public @NonNull MinecraftInventorySlotTable getInventorySlotTable() {
         return invSlots;
+    }
+
+    @Override
+    public @NonNull FabricWorldTable getWorldTable() {
+        return worlds;
     }
 }

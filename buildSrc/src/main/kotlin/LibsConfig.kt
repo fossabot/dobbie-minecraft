@@ -37,6 +37,23 @@ fun Project.applyLibrariesConfiguration() {
         }
 
         relocate("net.kyori.text", (rootProject.group as String) + ".util.formatting.text")
+        /*relocate("io", (rootProject.group as String) + ".relocate.io")
+        relocate("com", (rootProject.group as String) + ".relocate.com") {
+            exclude("com.google.code.**")
+            exclude("com.google.guava.**")
+        }
+        relocate("net", (rootProject.group as String) + ".relocate.net")
+        relocate("org", (rootProject.group as String) + ".relocate.org") {
+            exclude("org.apache.commons.io.**")
+            exclude("org.w3c.**")
+        }
+        relocate("okhttp3", (rootProject.group as String) + ".relocate.okttp3")
+        relocate("okio", (rootProject.group as String) + ".relocate.okio")
+        relocate("reactor", (rootProject.group as String) + ".relocate.reactor")
+        relocate("rx", (rootProject.group as String) + ".relocate.rx")
+        relocate("edu", (rootProject.group as String) + ".relocate.edu")
+        relocate("feign", (rootProject.group as String) + ".relocate.feign")*/
+
     }
     val altConfigFiles = { artifactType: String ->
         val deps = configurations["shade"].incoming.dependencies

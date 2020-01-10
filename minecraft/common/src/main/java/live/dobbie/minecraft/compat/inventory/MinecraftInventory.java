@@ -1,11 +1,12 @@
 package live.dobbie.minecraft.compat.inventory;
 
+import live.dobbie.minecraft.compat.entity.MinecraftEntityBase;
 import live.dobbie.minecraft.compat.item.MinecraftItemInfo;
 import lombok.NonNull;
 
 
 public interface MinecraftInventory {
-    @NonNull Object getOwner();
+    @NonNull MinecraftEntityBase getOwner();
 
     @NonNull Object getNativeInventory();
 

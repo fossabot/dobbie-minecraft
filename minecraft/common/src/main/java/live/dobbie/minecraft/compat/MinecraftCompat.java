@@ -6,6 +6,7 @@ import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplateFactory;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventorySlotTable;
 import live.dobbie.minecraft.compat.item.MinecraftItemInfoFactory;
 import live.dobbie.minecraft.compat.potion.MinecraftPotionEffectFactory;
+import live.dobbie.minecraft.compat.world.MinecraftWorldTable;
 import lombok.NonNull;
 
 public interface MinecraftCompat {
@@ -22,4 +23,6 @@ public interface MinecraftCompat {
     @NonNull MinecraftIdConverter getIdConverter();
 
     @NonNull MinecraftInventorySlotTable getInventorySlotTable();
+
+    @NonNull MinecraftWorldTable getWorldTable();
 }

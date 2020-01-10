@@ -10,7 +10,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 
 import java.util.UUID;
 
@@ -31,11 +33,6 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
 
     public FabricPlayer(@NonNull FabricCompat instance, @NonNull ServerPlayerEntity playerEntity) {
         this(instance, playerEntity.getUuid());
-    }
-
-    @NonNull
-    private net.minecraft.server.MinecraftServer getNativeServer() {
-        return instance.getServer().getNativeServer();
     }
 
     @Override
@@ -66,18 +63,21 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
 
     @Override
     public void sendMessage(@NonNull String message) {
-        getNativePlayer().sendMessage(toNativeText(message));
+        getServer().scheduleAndWait(() -> getNativePlayer().sendMessage(toNativeText(message)));
     }
 
     @Override
     public void disconnect(@NonNull String message) {
-        getNativePlayer().networkHandler.disconnect(toNativeText(message));
+        getServer().scheduleAndWait(() -> getNativePlayer().networkHandler.disconnect(toNativeText(message)));
     }
 
     @Override
     public void executeCommand(@NonNull String command) {
-        LOGGER.info("Executing command as " + this + ": \"" + command + "\"");
-        getNativeServer().getCommandManager().execute(getNativePlayer().getCommandSource(), command);
+        LOGGER.info("Dispatching command as " + this + ": \"" + command + "\"");
+        getServer().scheduleAndWait(() -> {
+            LOGGER.info("Executing command as " + this + ": \"" + command + "\"");
+            getServer().getNativeServer().getCommandManager().execute(getNativePlayer().getCommandSource(), command);
+        });
     }
 
     @Override

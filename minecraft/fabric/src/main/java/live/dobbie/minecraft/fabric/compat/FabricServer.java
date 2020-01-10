@@ -4,19 +4,19 @@ import live.dobbie.core.scheduler.Scheduler;
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
 import live.dobbie.minecraft.compat.MinecraftServer;
-import live.dobbie.minecraft.compat.MinecraftWorld;
+import live.dobbie.minecraft.compat.world.MinecraftWorld;
+import live.dobbie.minecraft.compat.world.MinecraftWorldId;
 import live.dobbie.minecraft.fabric.FabricScheduler;
+import live.dobbie.minecraft.fabric.compat.world.FabricWorld;
+import live.dobbie.minecraft.fabric.compat.world.FabricWorldId;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.Delegate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -72,16 +72,8 @@ public class FabricServer implements MinecraftServer<FabricPlayer>, Scheduler {
     }
 
     @Override
-    public MinecraftWorld getWorldByName(@NonNull String name) {
-        return scheduleAndWait(() -> {
-            Optional<DimensionType> dimensionTypeOptional = Registry.DIMENSION.getOrEmpty(Identifier.tryParse(name));
-            if (dimensionTypeOptional.isPresent()) {
-                return getWorldByType(dimensionTypeOptional.get());
-            } else {
-                LOGGER.warning("Could not find world by name \"" + name + "\"");
-                return null;
-            }
-        });
+    public MinecraftWorld getWorld(@NonNull MinecraftWorldId worldId) {
+        return getWorldByType(FabricWorldId.getDimensionType(worldId));
     }
 
     public FabricWorld getWorldByType(@NonNull DimensionType type) {

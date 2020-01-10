@@ -2,17 +2,22 @@ package live.dobbie.minecraft.fabric.compat.entity;
 
 import live.dobbie.minecraft.compat.entity.MinecraftPlayerInventory;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventorySlot;
+import live.dobbie.minecraft.compat.inventory.MinecraftInventorySlotTable;
 import live.dobbie.minecraft.compat.item.MinecraftItemInfo;
 import live.dobbie.minecraft.fabric.compat.FabricPlayer;
 import live.dobbie.minecraft.fabric.compat.item.FabricItemInfo;
 import live.dobbie.minecraft.fabric.compat.item.FabricNativeItemInfo;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 @RequiredArgsConstructor
+@EqualsAndHashCode(of = "player")
+@ToString(of = "player")
 public class FabricPlayerInventory implements MinecraftPlayerInventory {
     public static final int ANY_SLOT = -1;
 
@@ -35,37 +40,7 @@ public class FabricPlayerInventory implements MinecraftPlayerInventory {
 
     @Override
     public int getSlotIdByName(@NonNull String name) {
-        switch (name) {
-            case "hotbar1":
-                return 0;
-            case "hotbar2":
-                return 1;
-            case "hotbar3":
-                return 2;
-            case "hotbar4":
-                return 3;
-            case "hotbar5":
-                return 4;
-            case "hotbar6":
-                return 5;
-            case "hotbar7":
-                return 6;
-            case "hotbar8":
-                return 7;
-            case "hotbar9":
-                return 8;
-            case "boots":
-                return 36;
-            case "legs":
-                return 37;
-            case "body":
-                return 38;
-            case "head":
-                return 39;
-            case "offhand":
-                return 40;
-        }
-        return MinecraftInventorySlot.UNKNOWN_SLOT;
+        return MinecraftInventorySlotTable.getModernSlotIdByName(name);
     }
 
     @Override

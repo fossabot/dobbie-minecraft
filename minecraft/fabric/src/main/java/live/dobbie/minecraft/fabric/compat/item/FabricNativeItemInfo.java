@@ -13,9 +13,7 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class FabricNativeItemInfo extends FabricItemInfo implements FabricNbtConvertible {
-    private final @NonNull
-    @Getter
-    ItemStack nativeItemStack;
+    private final @NonNull @Getter ItemStack nativeItemStack;
 
     FabricNativeItemInfo(@NonNull ItemStack nativeItemStack) {
         super(fromItem(nativeItemStack));

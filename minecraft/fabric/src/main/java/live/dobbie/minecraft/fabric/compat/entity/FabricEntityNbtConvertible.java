@@ -1,6 +1,7 @@
 package live.dobbie.minecraft.fabric.compat.entity;
 
 import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
+import live.dobbie.minecraft.compat.converter.MinecraftTextJsonConverter;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplate;
 import live.dobbie.minecraft.compat.item.MinecraftItemInfo;
 import live.dobbie.minecraft.fabric.FabricUtil;
@@ -23,7 +24,7 @@ public interface FabricEntityNbtConvertible extends FabricNbtConvertible {
         c.putString("id", converter.convertEntityName(entityTemplate.getEntityName()));
 
         if (entityTemplate.getCustomName() != null) {
-            c.putString("CustomName", FabricUtil.toJsonText(entityTemplate.getCustomName()));
+            c.putString("CustomName", MinecraftTextJsonConverter.legacyToJsonText(entityTemplate.getCustomName()));
             if (entityTemplate.isCustomNameVisible()) {
                 c.putInt("CustomNameVisible", 1);
             }
@@ -97,12 +98,19 @@ public interface FabricEntityNbtConvertible extends FabricNbtConvertible {
         }
 
         // TODO potion effects
+        // TODO despawnAfter
 
         if (entityTemplate.getRiding() != null) {
             ListTag passengers = new ListTag();
             passengers.add(c);
 
-            CompoundTag vehicle = build(entityTemplate.getRiding(), converter);
+            CompoundTag vehicle;
+            if(entityTemplate.getRiding() instanceof FabricEntityTemplate.FabricEntityTemplateBuilder) {
+                FabricEntityTemplate riding = (FabricEntityTemplate) entityTemplate.getRiding().build();
+                vehicle = riding.toCompoundTag(converter);
+            } else {
+                throw new RuntimeException(MinecraftEntityTemplate.class + " must be created in " + FabricEntityTemplateFactory.class);
+            }
             vehicle.put("Passengers", passengers);
 
             return vehicle;

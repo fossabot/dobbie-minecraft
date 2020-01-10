@@ -18,10 +18,11 @@ configurations.all {
 }
 
 dependencies {
-    "implementation"(project(":dobbie-core"))
-    "implementation"(project(":minecraft:common"))
-    "implementation"(project(":libs:fabric"))
-    "implementation"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+    "compile"(project(":core"))
+    "compile"(project(":minecraft:common"))
+    "compile"(project(":libs:fabric"))
+
+    "compile"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
 
     "minecraft"("com.mojang:minecraft:$minecraftVersion")
     "mappings"("net.fabricmc:yarn:$yarnMappings")

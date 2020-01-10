@@ -1,15 +1,18 @@
 package live.dobbie.minecraft.compat.entity;
 
 import live.dobbie.minecraft.compat.MinecraftLocation;
-import live.dobbie.minecraft.compat.MinecraftWorld;
+import live.dobbie.minecraft.compat.MinecraftServer;
 import live.dobbie.minecraft.compat.UnreliableResource;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfo;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventory;
+import live.dobbie.minecraft.compat.world.MinecraftWorld;
 import lombok.NonNull;
 
 
 public interface MinecraftEntityBase extends UnreliableResource {
     @NonNull Object getNativeEntity();
+
+    @NonNull MinecraftServer getServer();
 
     @NonNull String getName();
 

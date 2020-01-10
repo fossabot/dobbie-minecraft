@@ -1,5 +1,7 @@
 package live.dobbie.minecraft.compat;
 
+import live.dobbie.minecraft.compat.world.MinecraftWorld;
+import live.dobbie.minecraft.compat.world.MinecraftWorldId;
 import lombok.NonNull;
 
 import java.util.List;
@@ -14,7 +16,7 @@ public interface MinecraftServer<P extends MinecraftOnlinePlayer> extends Unreli
 
     @NonNull List<P> getOnlinePlayers();
 
-    MinecraftWorld getWorldByName(@NonNull String name);
+    MinecraftWorld getWorld(@NonNull MinecraftWorldId worldId);
 
     void broadcastMessage(@NonNull String message);
 
@@ -37,7 +39,7 @@ public interface MinecraftServer<P extends MinecraftOnlinePlayer> extends Unreli
         return getOnlinePlayers();
     }
 
-    default MinecraftWorld world(@NonNull String name) {
-        return getWorldByName(name);
+    default MinecraftWorld world(@NonNull MinecraftWorldId worldId) {
+        return getWorld(worldId);
     }
 }

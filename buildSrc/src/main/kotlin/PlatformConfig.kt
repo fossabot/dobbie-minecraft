@@ -74,7 +74,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
     }
 
     val projectName = ext["projectName"]
-    if (name == "$projectName-core" || name == "$projectName-bukkit") {
+    if (name == "core" || name == "bukkit") {
         tasks.register<Jar>("sourcesJar") {
             dependsOn("classes")
             archiveClassifier.set("sources")
@@ -108,17 +108,23 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
 fun Project.applyShadowConfiguration() {
     tasks.named<ShadowJar>("shadowJar") {
-        val projectName = project.rootProject.property("project-name") as String
         archiveClassifier.set("dist")
         dependencies {
             include(project(":libs:core"))
-            include(project(":libs:${project.name.replace("$projectName-", "")}"))
-            include(project(":$projectName-core"))
+            include(project(":libs:${project.name}"))
+            include(project(":libs:minecraft-common"))
+            include(project(":minecraft:common"))
+            include(project(":core"))
         }
         exclude("GradleStart**")
         exclude(".cache")
-        exclude("LICENSE*")
+        exclude("*LICENSE*")
         exclude("META-INF/maven/**")
-        minimize()
+        exclude("META-INF/maven/**")
+        exclude("openvsv_*")
+        exclude("mustNatchRegex_*")
+        exclude("ConvertGermanToBoolean_*")
+        exclude("sampleapp.properties")
+        //minimize()
     }
 }

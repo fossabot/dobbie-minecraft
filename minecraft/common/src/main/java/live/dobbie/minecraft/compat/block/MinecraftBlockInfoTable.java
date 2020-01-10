@@ -9,4 +9,7 @@ public interface MinecraftBlockInfoTable {
     default MinecraftBlockInfo air() {
         return findByName("air");
     }
+    default MinecraftBlockInfo name(@NonNull String name) {
+        return findByName(name);
+    }
 }
