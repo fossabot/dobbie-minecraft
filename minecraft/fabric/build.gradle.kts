@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import net.fabricmc.loom.task.AbstractRunTask
 import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RunClientTask
+import net.fabricmc.loom.task.RunServerTask
 
 applyPlatformAndCoreConfiguration()
 applyShadowConfiguration()
@@ -104,7 +105,12 @@ tasks.named("assemble").configure {
     dependsOn("remapShadowJar")
 }
 
-tasks.named<AbstractRunTask>("runClient") {
+tasks.named<RunServerTask>("runServer") {
+    defaultCharacterEncoding = "UTF-8"
+}
+
+tasks.named<RunClientTask>("runClient") {
+    defaultCharacterEncoding = "UTF-8"
     args = listOf(
             "--username", project.rootProject.property("clientRun.username") as String,
             "--uuid", project.rootProject.property("clientRun.uuid") as String,
