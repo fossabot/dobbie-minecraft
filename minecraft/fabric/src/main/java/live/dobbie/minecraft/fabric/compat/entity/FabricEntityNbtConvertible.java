@@ -1,7 +1,6 @@
 package live.dobbie.minecraft.fabric.compat.entity;
 
 import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
-import live.dobbie.minecraft.compat.converter.MinecraftTextJsonConverter;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplate;
 import live.dobbie.minecraft.compat.item.MinecraftItemInfo;
 import live.dobbie.minecraft.fabric.FabricUtil;
@@ -24,7 +23,7 @@ public interface FabricEntityNbtConvertible extends FabricNbtConvertible {
         c.putString("id", converter.convertEntityName(entityTemplate.getEntityName()));
 
         if (entityTemplate.getCustomName() != null) {
-            c.putString("CustomName", MinecraftTextJsonConverter.legacyToJsonText(entityTemplate.getCustomName()));
+            c.putString("CustomName", FabricUtil.toJsonText(entityTemplate.getCustomName()));
             if (entityTemplate.isCustomNameVisible()) {
                 c.putInt("CustomNameVisible", 1);
             }
