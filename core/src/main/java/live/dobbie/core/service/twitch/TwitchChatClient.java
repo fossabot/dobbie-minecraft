@@ -17,13 +17,17 @@ import lombok.ToString;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 public class TwitchChatClient implements Cleanable {
     private static final ILogger LOGGER = Logging.getLogger(TwitchChatClient.class);
 
-    private final List<ListenerRef> listeners = new ArrayList<>();
+    private final List<ListenerRef> listeners = new CopyOnWriteArrayList<>();
 
     private final @Getter
     @NonNull TwitchInstance instance;
