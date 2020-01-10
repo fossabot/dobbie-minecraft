@@ -35,24 +35,6 @@ public class ChargebackHandler implements CancellationHandler<Cancellable> {
         }
     }
 
-    @Override
-    public boolean isCancelled(@NonNull Cancellable cancellable) {
-        Donated donated = checkIfDonated(cancellable);
-        if (donated == null) {
-            LOGGER.tracing("Not Donated: " + cancellable);
-            return false;
-        }
-        try {
-            return serviceRef.getService().isCommitted(donated);
-        } catch (ServiceUnavailableException serviceUnavailable) {
-            LOGGER.warning("Could not get Chargeback service to check if donation is cancelled: " + donated, serviceUnavailable);
-            return false;
-        } catch (StorageException e) {
-            throw new RuntimeException("could not check if donation is cancelled: " + donated, e);
-        }
-    }
-
-
     private static Donated checkIfDonated(Cancellable cancellable) {
         if (cancellable instanceof Donated) {
             return (Donated) cancellable;

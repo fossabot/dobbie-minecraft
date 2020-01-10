@@ -12,15 +12,17 @@ import java.util.function.Supplier;
 public class CancellableDelegate<C extends Cancellable> implements Cancellable {
     private final @NonNull C parent;
     private final @NonNull Supplier<CancellationHandler<C>> handler;
+    private boolean cancelled = false;
 
     @Override
     public void cancel(@NonNull Cancellation cancellation) {
+        cancelled = true;
         handler.get().cancel(parent, cancellation);
     }
 
     @Override
     public boolean isCancelled() {
-        return handler.get().isCancelled(parent);
+        return cancelled;
     }
 
     @Override
