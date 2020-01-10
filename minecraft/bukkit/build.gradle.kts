@@ -22,7 +22,7 @@ dependencies {
     "implementation"(project(":minecraft:common"))
     "api"(project(":libs:bukkit"))
 
-    "api"("org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT") {
+    "api"("org.spigotmc:spigot-api:1.15.1-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
 

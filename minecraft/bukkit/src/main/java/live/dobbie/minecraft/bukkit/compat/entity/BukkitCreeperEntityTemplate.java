@@ -23,7 +23,7 @@ public class BukkitCreeperEntityTemplate extends MinecraftCreeperEntityTemplate 
             creeper.setMaxFuseTicks(getFuseTicksTime());
         }
         if(isIgnited()) {
-            throw new RuntimeException("creeper.isIgnored not supported in Bukkit");
+            creeper.ignite();
         }
         return creeper;
     }

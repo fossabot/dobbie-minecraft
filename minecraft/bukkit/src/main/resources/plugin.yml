@@ -2,4 +2,4 @@ name: Dobbie
 main: live.dobbie.minecraft.bukkit.DobbieBukkit
 version: "${internalVersion}"
 load: STARTUP
-api-version: '1.13'
+api-version: '1.15'
