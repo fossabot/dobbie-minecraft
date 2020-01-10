@@ -14,13 +14,11 @@ public class Slf4JLogger implements ILogger {
     @Override
     public void tracing(String message, Throwable t) {
         logger.trace(message, t);
-        //info(message, t);
     }
 
     @Override
     public void debug(String message, Throwable t) {
-        //logger.debug(message, t);
-        info(message, t);
+        logger.debug(message, t);
     }
 
     @Override
