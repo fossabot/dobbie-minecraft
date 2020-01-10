@@ -17,6 +17,7 @@ import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
+import org.gradle.plugins.ide.idea.model.IdeaModel
 
 fun Project.applyPlatformAndCoreConfiguration() {
     applyCommonConfiguration()
@@ -91,6 +92,12 @@ fun Project.applyPlatformAndCoreConfiguration() {
     val lombok = extensions.getByType(LombokExtension::class.java)
     tasks.named("generateLombokConfig") {
         lombok.config.put("lombok.anyConstructor.addConstructorProperties", "true")
+    }
+
+    val idea = extensions.getByType(IdeaModel::class.java)
+    tasks.named("idea") {
+        idea.module.outputDir = buildDir.resolve("classes/java/main")
+        idea.module.testOutputDir = buildDir.resolve("classes/java/test")
     }
 
 //    tasks.named("check").configure {
