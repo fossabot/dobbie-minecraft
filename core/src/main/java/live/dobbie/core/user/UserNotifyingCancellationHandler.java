@@ -19,7 +19,7 @@ public class UserNotifyingCancellationHandler implements CancellationHandler {
             return;
         }
         User user = ((UserRelatedTrigger) cancellable).getUser();
-        user.sendLocMessage(loc.withKey("Trigger was cancelled \"{trigger}\" because \"{reason}\"")
+        user.sendErrorLocMessage(loc.withKey("Trigger was cancelled \"{trigger}\" because \"{reason}\"")
                 .set("trigger", cancellable)
                 .set("reason", cancellation.getReason())
         );

@@ -95,7 +95,7 @@ public class PerUserActionScheduler implements ActionScheduler {
             ((Cancellable) trigger).cancel(new Cancellation(CancellationType.FATAL, errorMessage));
         } else {
             LOGGER.tracing("Not cancellable");
-            trigger.getUser().sendLocMessage(errorMessage);
+            trigger.getUser().sendErrorLocMessage(errorMessage);
         }
     }
 

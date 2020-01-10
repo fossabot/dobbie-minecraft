@@ -68,7 +68,7 @@ public interface FallbackActionFactory {
             return new Action.WithDescription<UserRelatedTrigger>(trigger, loc.withKey("fallback action for user related triggers")) {
                 @Override
                 public void execute() {
-                    trigger.getUser().sendLocMessage(
+                    trigger.getUser().sendErrorLocMessage(
                             loc.withKey("Dobbie could not find action for the following trigger: {trigger}")
                                     .set("trigger", trigger)
                     );

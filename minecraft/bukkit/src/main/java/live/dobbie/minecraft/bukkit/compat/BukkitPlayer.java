@@ -4,6 +4,8 @@ import live.dobbie.core.user.User;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitEntityBase;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitPlayerInventory;
 import live.dobbie.minecraft.compat.MinecraftOnlinePlayer;
+import live.dobbie.util.formatting.text.adapter.bukkit.TextAdapter;
+import live.dobbie.util.formatting.text.serializer.legacy.LegacyComponentSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -60,7 +62,16 @@ public class BukkitPlayer implements User, BukkitEntityBase, MinecraftOnlinePlay
 
     @Override
     public void sendMessage(@NonNull String message) {
-        getNativePlayer().sendRawMessage(message);
+        TextAdapter.sendComponent(getNativePlayer(), LegacyComponentSerializer.INSTANCE.deserialize(message));
+    }
+
+    @Override
+    public void sendErrorMessage(@NonNull String message) {
+        sendMessage("§c---");
+        sendMessage("§c");
+        sendMessage("§c[Dobbie] " + message);
+        sendMessage("§c");
+        sendMessage("§c---");
     }
 
     @Override

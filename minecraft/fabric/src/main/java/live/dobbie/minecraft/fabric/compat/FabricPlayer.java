@@ -68,6 +68,17 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
     }
 
     @Override
+    public void sendErrorMessage(@NonNull String message) {
+        getServer().scheduleAndWait(() -> {
+            sendMessage("§c---");
+            sendMessage("§c");
+            sendMessage("§c[Dobbie] " + message);
+            sendMessage("§c");
+            sendMessage("§c---");
+        });
+    }
+
+    @Override
     public void disconnect(@NonNull String message) {
         getServer().scheduleAndWait(() -> getNativePlayer().networkHandler.disconnect(toNativeText(message)));
     }

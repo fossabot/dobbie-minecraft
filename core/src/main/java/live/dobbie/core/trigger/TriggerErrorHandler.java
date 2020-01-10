@@ -16,7 +16,7 @@ public interface TriggerErrorHandler {
         public void reportError(Trigger trigger, Throwable error) {
             if (trigger instanceof UserRelatedTrigger) {
                 User user = ((UserRelatedTrigger) trigger).getUser();
-                user.sendLocMessage(loc.withKey("An error occurred during processing " +
+                user.sendErrorLocMessage(loc.withKey("An error occurred during processing " +
                         "trigger \"{trigger}\": {error_message}")
                         .set("trigger", trigger)
                         .set("error_message", error.toString())

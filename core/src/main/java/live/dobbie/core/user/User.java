@@ -9,6 +9,8 @@ public interface User {
 
     void sendMessage(@NonNull String message);
 
+    void sendErrorMessage(@NonNull String message);
+
     void disconnect(@NonNull String message);
 
     default void disconnectLoc(@NonNull LocString ls) {
@@ -17,6 +19,10 @@ public interface User {
 
     default void sendLocMessage(@NonNull LocString ls) {
         sendMessage(ls.build());
+    }
+
+    default void sendErrorLocMessage(@NonNull LocString ls) {
+        sendErrorMessage(ls.build());
     }
 
     interface Factory<N> {
