@@ -306,6 +306,8 @@ public class DobbieFabric implements ModInitializer, ServerStartCallback, Server
         logger.debug("Server stopping: " + minecraftServer);
         this.dobbiePlugin.cleanup();
         this.minecraftServer = null;
+        this.dobbiePlugin = null;
+        this.ticker = null;
     }
 
     private void onPlayerJoined(@NonNull ServerPlayerEntity nativePlayer) {

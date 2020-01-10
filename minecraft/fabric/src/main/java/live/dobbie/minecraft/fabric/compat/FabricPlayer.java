@@ -10,9 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 
 import java.util.UUID;
 
@@ -28,11 +26,14 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
     FabricCompat instance;
     private final @NonNull UUID uuid;
     private final @NonNull
+    @Getter
+    String name;
+    private final @NonNull
     @Getter(lazy = true)
     FabricPlayerInventory inventory = new FabricPlayerInventory(this);
 
     public FabricPlayer(@NonNull FabricCompat instance, @NonNull ServerPlayerEntity playerEntity) {
-        this(instance, playerEntity.getUuid());
+        this(instance, playerEntity.getUuid(), playerEntity.getEntityName());
     }
 
     @Override
@@ -78,11 +79,6 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
             LOGGER.info("Executing command as " + this + ": \"" + command + "\"");
             getServer().getNativeServer().getCommandManager().execute(getNativePlayer().getCommandSource(), command);
         });
-    }
-
-    @Override
-    public String getName() {
-        return getNativePlayer().getEntityName();
     }
 
     @Override
