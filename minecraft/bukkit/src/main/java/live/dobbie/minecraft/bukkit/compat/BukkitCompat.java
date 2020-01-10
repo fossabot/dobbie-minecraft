@@ -2,13 +2,13 @@ package live.dobbie.minecraft.bukkit.compat;
 
 import live.dobbie.core.scheduler.Scheduler;
 import live.dobbie.minecraft.bukkit.compat.bukkit.BukkitBlockInfoTable;
+import live.dobbie.minecraft.bukkit.compat.converter.BukkitIdConverter;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitEntityTemplateFactory;
 import live.dobbie.minecraft.bukkit.compat.item.BukkitItemInfoFactory;
 import live.dobbie.minecraft.bukkit.compat.world.BukkitWorldTable;
 import live.dobbie.minecraft.compat.MinecraftCompat;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfoTable;
 import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
-import live.dobbie.minecraft.compat.converter.TheFlattening;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventorySlotTable;
 import live.dobbie.minecraft.compat.potion.MinecraftPotionEffectFactory;
 import lombok.NonNull;
@@ -26,9 +26,7 @@ public class BukkitCompat implements MinecraftCompat {
     public final BukkitBlockInfoTable blocks;
     public final MinecraftInventorySlotTable invSlots;
     public final BukkitWorldTable worlds;
-
-    public final TheFlattening theFlattening = new TheFlattening();
-    public final MinecraftIdConverter idConverter = theFlattening.getDefaultNameConverter();
+    public final BukkitIdConverter idConverter;
 
     public BukkitCompat(@NonNull Supplier<Server> serverSupplier, @NonNull Scheduler scheduler) {
         this.serverSupplier = serverSupplier;
@@ -39,6 +37,7 @@ public class BukkitCompat implements MinecraftCompat {
         this.blocks = new BukkitBlockInfoTable();
         this.invSlots = new MinecraftInventorySlotTable();
         this.worlds = new BukkitWorldTable(serverSupplier);
+        this.idConverter = new BukkitIdConverter();
     }
 
     @Override

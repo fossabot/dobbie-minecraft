@@ -1,28 +1,36 @@
 package live.dobbie.minecraft.bukkit.compat.world;
 
-import live.dobbie.minecraft.bukkit.compat.BukkitCompat;
+import live.dobbie.core.scheduler.Scheduler;
+import live.dobbie.minecraft.bukkit.compat.BukkitLocation;
+import live.dobbie.minecraft.bukkit.compat.BukkitServer;
+import live.dobbie.minecraft.bukkit.compat.entity.BukkitEntity;
+import live.dobbie.minecraft.bukkit.compat.entity.BukkitEntityTemplate;
 import live.dobbie.minecraft.compat.MinecraftLocation;
 import live.dobbie.minecraft.compat.block.MinecraftBlock;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfo;
-import live.dobbie.minecraft.compat.entity.MinecraftEntity;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplate;
 import live.dobbie.minecraft.compat.world.MinecraftWorld;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 
+import java.lang.ref.WeakReference;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = "uuid")
-public class BukkitWorld implements MinecraftWorld {
-    private final @NonNull BukkitCompat instance;
+public class BukkitWorld implements MinecraftWorld, Scheduler {
+    private final @NonNull
+    @Delegate(types = Scheduler.class)
+    BukkitServer server;
     private final @NonNull UUID uuid;
 
-    public BukkitWorld(@NonNull BukkitCompat instance, @NonNull World world) {
-        this(instance, world.getUID());
+    public BukkitWorld(@NonNull BukkitServer server, @NonNull World world) {
+        this(server, world.getUID());
     }
 
     @Override
@@ -55,12 +63,20 @@ public class BukkitWorld implements MinecraftWorld {
     }
 
     @Override
-    public MinecraftEntity spawnEntity(@NonNull MinecraftEntityTemplate entityInfo, @NonNull MinecraftLocation location) {
-        return null;
+    public BukkitEntity spawnEntity(@NonNull MinecraftEntityTemplate entityInfo, @NonNull MinecraftLocation location) {
+        return scheduleAndWait(() -> {
+            Entity entity = BukkitEntityTemplate.spawnAndProcess(
+                    entityInfo,
+                    getNativeWorld(),
+                    BukkitLocation.getLocation(location),
+                    server.getInstance().getIdConverter()
+            );
+            return new BukkitEntity(server.getInstance(), new WeakReference<>(entity), entity.getUniqueId());
+        });
     }
 
     private World getNativeWorldUnsafe() {
-        Server server = instance.getServer().getNativeServerUnsafe();
+        Server server = this.server.getNativeServerUnsafe();
         return server == null ? null : server.getWorld(uuid);
     }
 }

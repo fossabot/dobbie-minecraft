@@ -77,7 +77,7 @@ public class BukkitServer implements MinecraftServer<BukkitPlayer>, Scheduler {
     public BukkitWorld getWorldByUUID(@NonNull UUID uuid) {
         return scheduleAndWait(() -> {
             World world = getNativeServer().getWorld(uuid);
-            return world == null ? null : new BukkitWorld(instance, world);
+            return world == null ? null : new BukkitWorld(this, world);
         });
     }
 

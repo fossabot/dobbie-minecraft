@@ -2,6 +2,7 @@ package live.dobbie.minecraft.bukkit.compat.entity;
 
 import live.dobbie.minecraft.bukkit.compat.BukkitCompat;
 import live.dobbie.minecraft.bukkit.compat.BukkitServer;
+import live.dobbie.minecraft.compat.entity.MinecraftEntity;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventory;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = "uuid")
 @ToString(of = {"entityRef", "uuid"})
-public class BukkitEntity implements BukkitEntityBase {
+public class BukkitEntity implements BukkitEntityBase, MinecraftEntity {
     private final @NonNull BukkitCompat instance;
     private final @NonNull WeakReference<Entity> entityRef;
     private final @NonNull UUID uuid;
@@ -43,5 +44,12 @@ public class BukkitEntity implements BukkitEntityBase {
 
     private Entity getEntityUnsafe() {
         return entityRef.get();
+    }
+
+    @Override
+    public void despawn() {
+        if (isAvailable()) {
+            getNativeEntity().remove();
+        }
     }
 }
