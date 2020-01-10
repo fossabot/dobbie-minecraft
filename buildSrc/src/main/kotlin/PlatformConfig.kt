@@ -73,7 +73,6 @@ fun Project.applyPlatformAndCoreConfiguration() {
         add("archives", tasks.named("javadocJar"))
     }
 
-    val projectName = ext["projectName"]
     if (name == "core" || name == "bukkit") {
         tasks.register<Jar>("sourcesJar") {
             dependsOn("classes")
@@ -108,6 +107,7 @@ fun Project.applyPlatformAndCoreConfiguration() {
 
 fun Project.applyShadowConfiguration() {
     tasks.named<ShadowJar>("shadowJar") {
+        archiveBaseName.set("${ext["projectName"]}-${project.name}")
         archiveClassifier.set("dist")
         dependencies {
             include(project(":libs:core"))
@@ -118,12 +118,27 @@ fun Project.applyShadowConfiguration() {
         }
         exclude("GradleStart**")
         exclude(".cache")
-        exclude("*LICENSE*")
+        exclude("LICENSE.txt")
+        exclude("META-INF/DEPENDENCIES")
+        exclude("META-INF/LICENSE")
+        exclude("META-INF/LICENSE.txt")
+        exclude("META-INF/NOTICE")
+        exclude("META-INF/NOTICE.txt")
         exclude("META-INF/maven/**")
         exclude("META-INF/maven/**")
-        exclude("openvsv_*")
-        exclude("mustNatchRegex_*")
-        exclude("ConvertGermanToBoolean_*")
+        exclude("META-INF/proguard/**")
+        exclude("opencsv_de.properties")
+        exclude("opencsv_en.properties")
+        exclude("opencsv_fr.properties")
+        exclude("opencsv_pt_BR.properties")
+        exclude("mustMatchRegex_de.properties")
+        exclude("mustMatchRegex_en.properties")
+        exclude("mustMatchRegex_fr.properties")
+        exclude("mustMatchRegex_pt_BR.properties")
+        exclude("convertGermanToBoolean_de.properties")
+        exclude("convertGermanToBoolean_en.properties")
+        exclude("convertGermanToBoolean_fr.properties")
+        exclude("convertGermanToBoolean_pt_BR.properties")
         exclude("sampleapp.properties")
         //minimize()
     }
