@@ -98,13 +98,15 @@ public class Dobbie implements UserRegisterListener {
 
     private void refreshSettings() {
         if (tickTimer > -1) {
-            DobbieConfig.Timer.Ticks ticks = settings.getGlobalSettings().requireValue(DobbieConfig.Timer.Ticks.class);
-            int reloadEvery = ticks.getReloadEvery();
-            if (reloadEvery <= 0) {
-                return;
-            }
-            if (++tickTimer < reloadEvery) {
-                return;
+            DobbieConfig.Timer.Ticks ticks = settings.getGlobalSettings().getValue(DobbieConfig.Timer.Ticks.class);
+            if (ticks != null) {
+                int reloadEvery = ticks.getReloadEvery();
+                if (reloadEvery <= 0) {
+                    return;
+                }
+                if (++tickTimer < reloadEvery) {
+                    return;
+                }
             }
         }
         LOGGER.tracing("refreshing settings");
