@@ -37,9 +37,9 @@ public class TwitchRaid implements TwitchChatTrigger, Authored {
                 .copy(TwitchChatTrigger.super.toLocString(loc));
     }
 
-    private final @NonNull CancellationHandler<TwitchChatTrigger> cancellationHandler;
-    private final CancellableDelegate<TwitchChatTrigger> d =
-            new CancellableDelegate<>(this, this::getCancellationHandler);
+    private final @NonNull CancellationHandler cancellationHandler;
+    private final CancellableDelegate d =
+            new CancellableDelegate(this, this::getCancellationHandler);
 
     @Override
     public void cancel(@NonNull Cancellation cancellation) {

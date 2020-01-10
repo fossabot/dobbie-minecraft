@@ -9,9 +9,9 @@ import java.time.Instant;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class CancellableDelegate<C extends Cancellable> implements Cancellable {
-    private final @NonNull C parent;
-    private final @NonNull Supplier<CancellationHandler<C>> handler;
+public class CancellableDelegate implements Cancellable {
+    private final @NonNull Cancellable parent;
+    private final @NonNull Supplier<CancellationHandler> handler;
     private boolean cancelled = false;
 
     @Override

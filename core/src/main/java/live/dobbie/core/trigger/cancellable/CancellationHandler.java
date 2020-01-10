@@ -4,10 +4,10 @@ import live.dobbie.core.user.User;
 import live.dobbie.core.util.Cleanable;
 import lombok.NonNull;
 
-public interface CancellationHandler<C extends Cancellable> extends Cleanable {
-    void cancel(@NonNull C cancellable, @NonNull Cancellation cancellation);
+public interface CancellationHandler extends Cleanable {
+    void cancel(@NonNull Cancellable cancellable, @NonNull Cancellation cancellation);
 
-    interface Factory<C extends Cancellable> {
-        @NonNull CancellationHandler<C> create(@NonNull User user);
+    interface Factory {
+        @NonNull CancellationHandler create(@NonNull User user);
     }
 }

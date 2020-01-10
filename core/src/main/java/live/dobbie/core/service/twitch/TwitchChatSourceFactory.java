@@ -1,6 +1,5 @@
 package live.dobbie.core.service.twitch;
 
-import live.dobbie.core.service.twitch.data.trigger.TwitchChatTrigger;
 import live.dobbie.core.source.Source;
 import live.dobbie.core.trigger.cancellable.CancellationHandler;
 import live.dobbie.core.user.User;
@@ -12,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TwitchChatSourceFactory implements Source.Factory<TwitchChatSource> {
     private final @NonNull TwitchInstance twitchInstance;
-    private final @NonNull CancellationHandler.Factory<TwitchChatTrigger> cancellationHandlerFactory;
+    private final @NonNull CancellationHandler.Factory cancellationHandlerFactory;
     private final @NonNull UserSettingsProvider userSettingsProvider;
     private final NameCache nameCache;
 

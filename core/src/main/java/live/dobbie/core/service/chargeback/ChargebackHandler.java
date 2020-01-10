@@ -13,7 +13,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ChargebackHandler implements CancellationHandler<Cancellable> {
+public class ChargebackHandler implements CancellationHandler {
     private static final ILogger LOGGER = Logging.getLogger(ChargebackHandler.class);
 
     private final @NonNull ServiceRef<ChargebackService> serviceRef;

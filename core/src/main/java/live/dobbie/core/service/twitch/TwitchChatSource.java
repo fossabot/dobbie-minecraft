@@ -32,7 +32,7 @@ public class TwitchChatSource extends Source.UsingQueue {
     private static final Currency BITS_CURRENCY = new Currency("BITS");
 
     private final @NonNull TwitchChatClient chatClient;
-    private final @NonNull CancellationHandler<TwitchChatTrigger> cancellationHandler;
+    private final @NonNull CancellationHandler cancellationHandler;
     private final NameCache nameCache;
 
     private final SettingsSubscription<TwitchSettings.Player> subscription;
@@ -44,7 +44,7 @@ public class TwitchChatSource extends Source.UsingQueue {
 
     public TwitchChatSource(
             @NonNull TwitchChatClient chatClient,
-            @NonNull CancellationHandler<TwitchChatTrigger> cancellationHandler,
+            @NonNull CancellationHandler cancellationHandler,
             @NonNull User user,
             @NonNull ISettings settings,
             NameCache nameCache) {
