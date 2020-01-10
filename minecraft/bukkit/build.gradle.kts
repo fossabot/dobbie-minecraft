@@ -63,3 +63,32 @@ tasks.named<ShadowJar>("shadowJar") {
 tasks.named("assemble").configure {
     dependsOn("shadowJar")
 }
+
+tasks.register<Delete>("cleanupPluginsJar") {
+    delete(fileTree("${projectDir}/server/run/plugins") {
+        include { file -> file.name.startsWith("temp-") }
+    })
+}
+tasks.named("clean") {
+    dependsOn("cleanupPluginsJar")
+}
+
+tasks.register<Copy>("copyPluginJar") {
+    dependsOn("cleanupPluginsJar", "shadowJar")
+    from(tasks.named<ShadowJar>("shadowJar"))
+    into("${projectDir}/server/run/plugins")
+    rename { name -> "temp-$name" }
+}
+
+tasks.register<JavaExec>("startServer") {
+    dependsOn("copyPluginJar")
+    doFirst {
+        mkdir("${projectDir}/server/run")
+    }
+    defaultCharacterEncoding = "UTF-8"
+    maxHeapSize = "1024M"
+    classpath = files("${projectDir}/server/bukkit.jar")
+    jvmArgs = listOf("-Dcom.mojang.eula.agree=true")
+    args = listOf("--noconsole")
+    workingDir = file("${projectDir}/server/run")
+}
