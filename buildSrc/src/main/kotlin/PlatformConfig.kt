@@ -30,7 +30,13 @@ fun Project.applyPlatformAndCoreConfiguration() {
 //    apply(plugin = "net.minecrell.licenser")
     apply(plugin = "io.freefair.lombok")
 
-    ext["internalVersion"] = "$version;${rootProject.ext["gitCommitHash"]}"
+    var internalVersion = "$version"
+    if (internalVersion.contains('+')) {
+        internalVersion += '_'
+    } else {
+        internalVersion += '+'
+    }
+    ext["internalVersion"] = "$internalVersion${rootProject.ext["gitCommitHash"]}"
 
     configure<JavaPluginConvention> {
         sourceCompatibility = JavaVersion.VERSION_1_8
