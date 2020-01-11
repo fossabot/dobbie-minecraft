@@ -9,6 +9,7 @@ import live.dobbie.core.settings.ISettings;
 import live.dobbie.core.source.Source;
 import live.dobbie.core.trigger.Trigger;
 import live.dobbie.core.trigger.TriggerErrorHandler;
+import live.dobbie.core.trigger.custom.OnRefreshTrigger;
 import live.dobbie.core.user.User;
 import live.dobbie.core.user.UserSettingsProvider;
 import org.junit.jupiter.api.Test;
@@ -113,7 +114,40 @@ class DobbieTest {
         ));
 
         dobbie.tick();
-        verify(settings).refresh();
+        verify(settings).refreshValues();
+    }
+
+    @Test
+    void customTriggerTest() {
+        User user = Mockito.mock(User.class);
+        UserSettingsProvider userSettingsProvider = Mockito.mock(UserSettingsProvider.class);
+        DobbieSettings settings = Mockito.mock(DobbieSettings.class);
+        when(settings.getUserSettingsProvider()).thenReturn(userSettingsProvider);
+        ISettings globalSettings = Mockito.mock(ISettings.class);
+        when(settings.getGlobalSettings()).thenReturn(globalSettings);
+        when(globalSettings.requireValue(DobbieConfig.Timer.Ticks.class)).thenReturn(new DobbieConfig.Timer.Ticks(1, 1));
+
+        ActionFactory actionFactory = mock(ActionFactory.class);
+
+        Dobbie dobbie = Mockito.spy(new Dobbie(
+                settings,
+                Mockito.mock(Source.Factory.Provider.class),
+                actionFactory,
+                Mockito.mock(ActionScheduler.class),
+                Mockito.mock(TriggerErrorHandler.class),
+                Mockito.mock(ServiceRegistry.class)
+        ));
+
+        dobbie.tick();
+        dobbie.registerUser(user);
+
+        when(settings.refreshValues()).thenReturn(true);
+        dobbie.tick();
+        verify(actionFactory, times(1)).createAction(any(OnRefreshTrigger.class));
+
+        when(settings.refreshValues()).thenReturn(false);
+        dobbie.tick();
+        verify(actionFactory, times(1)).createAction(any(OnRefreshTrigger.class));
     }
 
 }

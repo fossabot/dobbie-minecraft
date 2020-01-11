@@ -13,6 +13,10 @@ public interface DestAwareTrigger extends Trigger {
     @ContextVar(nullable = true)
     String getPreferredDestination();
 
+    default boolean isDestinationRequired() {
+        return true;
+    }
+
     @Override
     default @NonNull LocString toLocString(@NonNull Loc loc) {
         return loc.args()

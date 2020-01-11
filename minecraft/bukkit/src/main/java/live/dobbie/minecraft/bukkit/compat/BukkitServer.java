@@ -1,6 +1,8 @@
 package live.dobbie.minecraft.bukkit.compat;
 
 import live.dobbie.core.scheduler.Scheduler;
+import live.dobbie.core.util.logging.ILogger;
+import live.dobbie.core.util.logging.Logging;
 import live.dobbie.minecraft.bukkit.compat.world.BukkitWorld;
 import live.dobbie.minecraft.bukkit.compat.world.BukkitWorldId;
 import live.dobbie.minecraft.compat.MinecraftServer;
@@ -20,9 +22,15 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class BukkitServer implements MinecraftServer<BukkitPlayer>, Scheduler {
-    private final @NonNull @Getter BukkitCompat instance;
+    private static final ILogger LOGGER = Logging.getLogger(BukkitServer.class);
+
+    private final @NonNull
+    @Getter
+    BukkitCompat instance;
     private final @NonNull Supplier<Server> serverSupplier;
-    private final @NonNull @Delegate Scheduler scheduler;
+    private final @NonNull
+    @Delegate
+    Scheduler scheduler;
 
     @Override
     public @NonNull Server getNativeServer() {
@@ -66,11 +74,13 @@ public class BukkitServer implements MinecraftServer<BukkitPlayer>, Scheduler {
 
     @Override
     public void broadcastMessage(@NonNull String message) {
+        LOGGER.debug("Broadcasting server-wide message: \"" + message + "\"");
         scheduleAndWait(() -> getNativeServer().broadcastMessage(message));
     }
 
     @Override
     public void executeCommand(@NonNull String command) {
+        LOGGER.debug("Dispatching command as console: \"" + command + "\"");
         scheduleAndWait(() -> getNativeServer().dispatchCommand(getNativeServer().getConsoleSender(), command));
     }
 

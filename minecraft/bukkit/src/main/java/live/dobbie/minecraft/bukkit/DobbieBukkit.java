@@ -154,7 +154,7 @@ public class DobbieBukkit extends JavaPlugin implements Listener {
                 ),
                 parserProvider
         );
-        config.refresh(); // it is recommended to run it before the first tick
+        config.refreshValues(); // it is recommended to run it before the first tick
         TwitchInstance twitchInstance = new TwitchInstance(config);
         SimpleUserSettingsProvider<JacksonNode> userSettingsProvider = new SimpleUserSettingsProvider<>(
                 new JacksonSourceProvider(
@@ -270,7 +270,7 @@ public class DobbieBukkit extends JavaPlugin implements Listener {
                                 ),
                                 new FallbackActionFactory.Instance(loc)
                         )),
-                        new PerUserActionScheduler(new SimpleActionScheduler(ticker), loc),
+                        new PerUserActionScheduler(new SimpleActionScheduler(ticker, loc), loc),
                         new TriggerErrorHandler.NotifyingUser(loc),
                         serviceRegistry
                 ),

@@ -18,8 +18,7 @@ import org.mockito.stubbing.Answer;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class SettingsTest {
@@ -49,7 +48,7 @@ class SettingsTest {
         when(provider.findParser(Foo.class)).thenReturn((ISettingsParser<ISettingsSection, Foo>) (source1, context) -> new Foo(source1.getSection("foo").getString()));
         Settings settings = new Settings(source, provider);
         ISettingsListener<Foo> listener = Mockito.mock(ISettingsListener.class);
-        settings.refresh();
+        assertFalse(settings.refreshValues());
         settings.registerListener(Foo.class, listener, false);
         verify(listener, times(0)).onSettingsChanged(any());
         when(supplier.input()).then((Answer<InputStream>) invocation -> newValue.input());
@@ -57,7 +56,7 @@ class SettingsTest {
             assertEquals(new Foo("new"), invocation.getArgument(0));
             return null;
         }).when(listener).onSettingsChanged(any());
-        settings.refresh();
+        assertTrue(settings.refreshValues());
         verify(listener, times(1)).onSettingsChanged(any());
     }
 

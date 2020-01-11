@@ -14,7 +14,6 @@ import live.dobbie.core.settings.ISettings;
 import live.dobbie.core.settings.listener.SettingsSubscription;
 import live.dobbie.core.substitutor.environment.Env;
 import live.dobbie.core.substitutor.environment.EnvFactory;
-import live.dobbie.core.trigger.Trigger;
 import live.dobbie.core.trigger.UserRelatedTrigger;
 import live.dobbie.core.user.User;
 import live.dobbie.core.user.UserSettingsProvider;
@@ -26,8 +25,8 @@ import org.mockito.Mockito;
 import java.time.Instant;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 class DestActionFactoryTest {
@@ -63,18 +62,22 @@ class DestActionFactoryTest {
                 fallbackSubscription,
                 loc
         );
-        DestTrigger trigger = new DestTrigger(user, "test");
-        Action<Trigger> action = actionFactory.createAction(trigger);
+        DestTrigger trigger = new DestTrigger(user, "test", true);
+        Action action = actionFactory.createAction(trigger);
         assertNotNull(action);
-        assertEquals("Action from section called \"testSection\" in response to trigger \"Test dest trigger\"", action.toLocString(loc).build());
         action.execute();
         verify(cmd).execute(notNull());
+
+        assertNull(actionFactory.createAction(
+                new DestTrigger(user, "doesn't exist", false)
+        ));
     }
 
     @Value
     public static class DestTrigger implements UserRelatedTrigger, DestAwareTrigger {
         @NonNull User user;
         @NonNull String preferredDestination;
+        boolean required;
 
         @Override
         public @NonNull LocString toLocString(@NonNull Loc loc) {
@@ -96,6 +99,11 @@ class DestActionFactoryTest {
         @Override
         public @NonNull String getName() {
             return "invalid_name";
+        }
+
+        @Override
+        public boolean isDestinationRequired() {
+            return required;
         }
     }
 

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.lang3.Validate;
 
 
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public abstract class Action implements ToLocString {
         @Override
         @NonNull
         public LocString toLocString(@NonNull Loc loc) {
-            return loc.withKey("Action with description: {action_description}")
+            return loc.withKey("Action description: {action_description}")
                     .set("action_description", description);
         }
     }
@@ -54,11 +55,15 @@ public abstract class Action implements ToLocString {
     }
 
     public static class List extends Action.WithDescription {
-        private final @NonNull java.util.List<Action> actions;
+        private final @NonNull java.util.List<? extends Action> actions;
 
-        public List(@NonNull Trigger trigger, @NonNull LocString description, @NonNull java.util.List<Action> actions) {
+        public List(@NonNull Trigger trigger, @NonNull LocString description, @NonNull java.util.List<? extends Action> actions) {
             super(trigger, description);
-            this.actions = actions;
+            this.actions = Validate.noNullElements(actions);
+        }
+
+        public int size() {
+            return actions.size();
         }
 
         @Override
@@ -83,6 +88,21 @@ public abstract class Action implements ToLocString {
             StringBuilder sb = new StringBuilder();
             actions.forEach(action -> sb.append(", ").append(action.toLocString(loc).build()));
             return sb.toString();
+        }
+    }
+
+    public static class Empty extends Action {
+        public Empty(@NonNull Trigger trigger) {
+            super(trigger);
+        }
+
+        @Override
+        public void execute() {
+        }
+
+        @Override
+        public @NonNull LocString toLocString(@NonNull Loc loc) {
+            return loc.withKey("empty action");
         }
     }
 }

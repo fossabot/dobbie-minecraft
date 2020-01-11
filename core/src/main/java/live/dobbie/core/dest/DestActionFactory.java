@@ -15,11 +15,9 @@ import live.dobbie.core.user.UserSettingsProvider;
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 
-@RequiredArgsConstructor
-public class DestActionFactory implements ActionFactory {
+public class DestActionFactory extends ActionFactory.Typed<DestAwareTrigger> {
     private static final ILogger LOGGER = Logging.getLogger(DestActionFactory.class);
 
     private final @NonNull CmdContextFactory cmdContextFactory;
@@ -27,21 +25,34 @@ public class DestActionFactory implements ActionFactory {
     private final @NonNull SettingsSubscription<DestMap> fallbackSettings;
     private final @NonNull Loc loc;
 
-    @Override
+    public DestActionFactory(@NonNull CmdContextFactory cmdContextFactory,
+                             @NonNull UserSettingsProvider settingsProvider,
+                             @NonNull SettingsSubscription<DestMap> fallbackSettings,
+                             @NonNull Loc loc) {
+        super(DestAwareTrigger.class);
+        this.cmdContextFactory = cmdContextFactory;
+        this.settingsProvider = settingsProvider;
+        this.fallbackSettings = fallbackSettings;
+        this.loc = loc;
+    }
 
-    public DestSectionAction createAction(@NonNull Trigger trigger) {
-        LOGGER.tracing("creating action: " + trigger);
-        if (!(trigger instanceof DestAwareTrigger)) {
-            LOGGER.tracing("not a " + DestAwareTrigger.class);
-            return null;
-        }
+    @Override
+    public DestSectionAction create(@NonNull DestAwareTrigger trigger) {
         DestMap destMap = getDestMap(trigger);
         if (destMap == null) {
             LOGGER.warning("no DestMap for " + trigger);
             return null;
         }
         String destName = getDestName(trigger);
-        Dest dest = destMap.require(destName);
+        Dest dest;
+        if (trigger.isDestinationRequired()) {
+            dest = destMap.require(destName);
+        } else {
+            dest = destMap.get(destName);
+            if (dest == null) {
+                return null;
+            }
+        }
         CmdContext cmdContext = cmdContextFactory.generateContext(trigger);
         DestSection section = getDestAction(dest, trigger, cmdContext.getObjectContext());
         if (section == null) {
@@ -62,7 +73,7 @@ public class DestActionFactory implements ActionFactory {
     }
 
 
-    private DestMap getDestMap(Trigger trigger) {
+    private DestMap getDestMap(DestAwareTrigger trigger) {
         if (trigger instanceof UserRelatedTrigger) {
             LOGGER.tracing("is UserRelatedTrigger, querying UserSettingsProvider");
             User user = ((UserRelatedTrigger) trigger).getUser();

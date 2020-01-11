@@ -8,6 +8,8 @@ import live.dobbie.core.service.ServiceRegistry;
 import live.dobbie.core.source.Source;
 import live.dobbie.core.trigger.Trigger;
 import live.dobbie.core.trigger.TriggerErrorHandler;
+import live.dobbie.core.trigger.custom.CustomTriggerSource;
+import live.dobbie.core.trigger.custom.OnRefreshTrigger;
 import live.dobbie.core.user.SettingsSourceNotFoundException;
 import live.dobbie.core.user.User;
 import live.dobbie.core.user.UserRegisterListener;
@@ -16,6 +18,7 @@ import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ public class Dobbie implements UserRegisterListener {
     private static final ILogger LOGGER = Logging.getLogger(Dobbie.class);
 
     private final Map<User, Instance> userTable = new HashMap<>();
+    private final CustomTriggerSource customTriggerSource = new CustomTriggerSource();
 
     private final @NonNull DobbieSettings settings;
     private final @NonNull Source.Factory.Provider sourceFactoryProvider;
@@ -77,9 +81,11 @@ public class Dobbie implements UserRegisterListener {
             LOGGER.debug("Cleaning up already created sources");
             sourceList.forEach(Cleanable::cleanup);
             sourceList.clear();
+        } else {
+            sourceList.add(customTriggerSource.ofUser(user));
         }
 
-        return new Instance(sourceList);
+        return new Instance(sourceList, user);
     }
 
     public void unregisterUser(@NonNull User user) {
@@ -118,11 +124,18 @@ public class Dobbie implements UserRegisterListener {
         }
         LOGGER.tracing("refreshing settings");
         tickTimer = 0;
-        settings.refresh();
+        boolean someSettingsChanged = settings.refreshValues();
+        if (someSettingsChanged) {
+            LOGGER.tracing("some settings changed");
+            userTable.keySet().forEach(user -> {
+                customTriggerSource.push(new OnRefreshTrigger(user));
+            });
+        }
     }
 
     private void scheduleActions() {
         collectTriggers().flatMap(this::createActions).forEach(actionScheduler::schedule);
+        customTriggerSource.flush();
     }
 
     private Stream<Trigger> collectTriggers() {
@@ -132,10 +145,11 @@ public class Dobbie implements UserRegisterListener {
     private Stream<Action> createActions(Trigger trigger) {
         Action action;
         try {
-            action = actionFactory.createAction(trigger);
+            action = Validate.notNull(actionFactory.createAction(trigger), "action");
         } catch (Exception e) {
+            LOGGER.error("Could not create action for " + trigger, e);
             errorHandler.reportError(trigger, e);
-            throw new RuntimeException("could not create action for " + trigger, e);
+            return Stream.empty();
         }
         return Stream.of(action);
     }
@@ -146,6 +160,7 @@ public class Dobbie implements UserRegisterListener {
         userTable.clear();
         actionScheduler.cleanup();
         serviceRegistry.cleanup();
+        customTriggerSource.cleanup();
     }
 
     Instance getInstance(User user) {
@@ -155,6 +170,7 @@ public class Dobbie implements UserRegisterListener {
     @RequiredArgsConstructor
     static class Instance implements Cleanable {
         private final @NonNull List<Source> sourceList;
+        private final @NonNull User user;
 
         Stream<Trigger> collectTriggers() {
             return sourceList.stream().flatMap(Source::triggerStream);

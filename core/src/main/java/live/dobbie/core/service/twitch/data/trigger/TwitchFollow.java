@@ -35,11 +35,6 @@ public class TwitchFollow implements TwitchChatTrigger, Authored {
                 .copy(TwitchChatTrigger.super.toLocString(loc));
     }
 
-    @Override
-    public @NonNull String getName() {
-        return "twitch_follow";
-    }
-
     private final @NonNull CancellationHandler cancellationHandler;
     private final CancellableDelegate d =
             new CancellableDelegate(this, this::getCancellationHandler);

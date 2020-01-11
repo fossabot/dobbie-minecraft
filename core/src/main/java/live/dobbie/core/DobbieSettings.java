@@ -1,14 +1,14 @@
 package live.dobbie.core;
 
 import live.dobbie.core.settings.ISettings;
+import live.dobbie.core.settings.ISettingsRefreshable;
 import live.dobbie.core.user.UserSettingsProvider;
-import live.dobbie.core.util.Refreshable;
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class DobbieSettings implements Refreshable {
+public class DobbieSettings implements ISettingsRefreshable {
     private static final ILogger LOGGER = Logging.getLogger(DobbieSettings.class);
 
     private final @NonNull
@@ -25,8 +25,13 @@ public class DobbieSettings implements Refreshable {
     }
 
     @Override
-    public void refresh() {
-        globalSettings.refresh();
-        userSettingsProvider.refresh();
+    public boolean refreshValues() {
+        return globalSettings.refreshValues() || userSettingsProvider.refreshValues();
+    }
+
+    @Override
+    public void cleanup() {
+        globalSettings.cleanup();
+        userSettingsProvider.cleanup();
     }
 }

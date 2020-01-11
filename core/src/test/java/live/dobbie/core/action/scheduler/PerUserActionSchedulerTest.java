@@ -51,7 +51,7 @@ class PerUserActionSchedulerTest {
         scheduler.registerUser(user);
         UserRelatedTrigger trigger = Mockito.mock(UserRelatedTrigger.class);
         when(trigger.getUser()).thenReturn(user);
-        Action<Trigger> action = Mockito.spy(new Action.OfRunnable<>(trigger, loc.withKey("test action"), () -> {
+        Action action = Mockito.spy(new Action.OfRunnable(trigger, loc.withKey("test action"), () -> {
         }));
         scheduler.schedule(action);
         verify(fallbackScheduler, times(0)).schedule(any());
@@ -64,7 +64,7 @@ class PerUserActionSchedulerTest {
         User user = Mockito.mock(User.class);
         UserRelatedTrigger trigger = Mockito.mock(UserRelatedTrigger.class);
         when(trigger.getUser()).thenReturn(user);
-        Action<Trigger> action = Mockito.spy(new Action.OfRunnable<>(trigger, loc.withKey("test action"), () -> {
+        Action action = Mockito.spy(new Action.OfRunnable(trigger, loc.withKey("test action"), () -> {
         }));
         assertThrows(RuntimeException.class, () -> scheduler.schedule(action));
     }
@@ -74,7 +74,7 @@ class PerUserActionSchedulerTest {
         User user = Mockito.mock(User.class);
         scheduler.registerUser(user);
         Trigger trigger = Mockito.mock(Trigger.class);
-        Action<Trigger> action = Mockito.spy(new Action.OfRunnable<>(trigger, loc.withKey("test action"), () -> {
+        Action action = Mockito.spy(new Action.OfRunnable(trigger, loc.withKey("test action"), () -> {
         }));
         scheduler.schedule(action);
         verify(fallbackScheduler).schedule(any());
@@ -98,7 +98,7 @@ class PerUserActionSchedulerTest {
         scheduler.registerUser(user);
         UserRelatedCancellableTrigger trigger = Mockito.mock(UserRelatedCancellableTrigger.class);
         when(trigger.getUser()).thenReturn(user);
-        Action<Trigger> action = Mockito.spy(new Action.OfRunnable<>(trigger, loc.withKey("test action"), () -> {
+        Action action = Mockito.spy(new Action.OfRunnable(trigger, loc.withKey("test action"), () -> {
             throw new RuntimeException();
         }));
         scheduler.schedule(action);

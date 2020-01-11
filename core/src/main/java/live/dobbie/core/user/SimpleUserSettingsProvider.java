@@ -22,8 +22,12 @@ public class SimpleUserSettingsProvider<O extends ISettingsSection> implements U
     }
 
     @Override
-    public void refresh() {
-        settingsMap.values().forEach(Settings::refresh);
+    public boolean refreshValues() {
+        boolean anyChanged = false;
+        for (Settings value : settingsMap.values()) {
+            anyChanged |= value.refreshValues();
+        }
+        return anyChanged;
     }
 
     @Override
@@ -48,5 +52,4 @@ public class SimpleUserSettingsProvider<O extends ISettingsSection> implements U
         settingsMap.values().forEach(Settings::cleanup);
         settingsMap.clear();
     }
-
 }

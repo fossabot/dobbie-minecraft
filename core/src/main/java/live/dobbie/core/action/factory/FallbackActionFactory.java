@@ -3,6 +3,7 @@ package live.dobbie.core.action.factory;
 import live.dobbie.core.action.Action;
 import live.dobbie.core.action.ActionFactory;
 import live.dobbie.core.loc.Loc;
+import live.dobbie.core.trigger.Ignorable;
 import live.dobbie.core.trigger.Trigger;
 import live.dobbie.core.trigger.UserRelatedTrigger;
 import live.dobbie.core.trigger.cancellable.Cancellable;
@@ -14,13 +15,16 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public interface FallbackActionFactory {
+public interface FallbackActionFactory extends ActionFactory {
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @Builder
-    class Instance implements ActionFactory {
+    class Instance implements FallbackActionFactory {
+        private static final ILogger LOGGER = Logging.getLogger(Instance.class);
+
         @NonNull ForTrigger forTrigger;
         @NonNull ForPlayerTrigger forPlayerTrigger;
         @NonNull ForCancellableTrigger forCancellableTrigger;
@@ -32,11 +36,22 @@ public interface FallbackActionFactory {
 
         @Override
         public @NonNull Action createAction(@NonNull Trigger trigger) {
+            if (trigger instanceof Ignorable) {
+                LOGGER.debug("Trigger is ignorable, will return empty action: " + trigger);
+                return new Action.Empty(trigger);
+            }
+            LOGGER.debug("Received trigger: " + trigger);
             ArrayList<Action> list = new ArrayList<>();
-            list.add(forCancellableTrigger.createAction(trigger));
-            list.add(forPlayerTrigger.createAction(trigger));
-            list.add(forTrigger.createAction(trigger));
+            addAction(list, forCancellableTrigger.createAction(trigger));
+            addAction(list, forPlayerTrigger.createAction(trigger));
+            addAction(list, forTrigger.createAction(trigger));
             return new Action.List(trigger, loc.withKey("fallback actions"), list);
+        }
+
+        private static void addAction(List<Action> list, Action action) {
+            if (action != null) {
+                list.add(action);
+            }
         }
     }
 

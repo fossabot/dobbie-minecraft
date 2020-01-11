@@ -3,13 +3,11 @@ package live.dobbie.core.settings;
 import live.dobbie.core.settings.listener.ISettingsListener;
 import live.dobbie.core.settings.listener.SettingsSubscription;
 import live.dobbie.core.settings.value.ISettingsValue;
-import live.dobbie.core.util.Cleanable;
-import live.dobbie.core.util.Refreshable;
 import lombok.NonNull;
 import org.apache.commons.lang3.Validate;
 
 
-public interface ISettings extends Refreshable, Cleanable {
+public interface ISettings extends ISettingsRefreshable {
 
     <V extends ISettingsValue> V getValue(@NonNull Class<V> key);
 

@@ -88,7 +88,7 @@ public class Loc {
 
         @Override
         public @NonNull String build() {
-            throw new IllegalStateException("should not be called on lightweight LocString");
+            throw new IllegalStateException("build() must not be called on lightweight LocString");
         }
     }
 

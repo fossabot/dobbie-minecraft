@@ -15,7 +15,7 @@ class ActionTest {
     void listThrowsTest() {
         Loc loc = new Loc();
         Trigger trigger = Mockito.mock(Trigger.class);
-        List<Action<?>> l1 = Collections.singletonList(new Action.WithDescription<Trigger>(trigger, loc.withKey("test action")) {
+        List<Action> l1 = Collections.singletonList(new Action.WithDescription(trigger, loc.withKey("test action")) {
             @Override
             public void execute() {
                 throw new IllegalArgumentException();

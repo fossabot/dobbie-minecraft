@@ -1,6 +1,8 @@
 package live.dobbie.minecraft.bukkit.compat;
 
 import live.dobbie.core.user.User;
+import live.dobbie.core.util.logging.ILogger;
+import live.dobbie.core.util.logging.Logging;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitEntityBase;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitPlayerInventory;
 import live.dobbie.minecraft.compat.MinecraftOnlinePlayer;
@@ -18,12 +20,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = "uuid")
 public class BukkitPlayer implements User, BukkitEntityBase, MinecraftOnlinePlayer {
+    private static final ILogger LOGGER = Logging.getLogger(BukkitPlayer.class);
+
     private final @NonNull BukkitServer server;
     private final @NonNull UUID uuid;
-    private final @NonNull @Getter(lazy = true) BukkitPlayerInventory inventory = new BukkitPlayerInventory(this);
+    private final @NonNull String name;
+    private final @NonNull
+    @Getter(lazy = true)
+    BukkitPlayerInventory inventory = new BukkitPlayerInventory(this);
 
     public BukkitPlayer(@NonNull BukkitServer server, @NonNull Player player) {
-        this(server, player.getUniqueId());
+        this(server, player.getUniqueId(), player.getName());
     }
 
     public BukkitPlayer(@NonNull BukkitCompat instance, @NonNull Player player) {
@@ -57,11 +64,12 @@ public class BukkitPlayer implements User, BukkitEntityBase, MinecraftOnlinePlay
 
     @Override
     public @NonNull String getName() {
-        return getNativePlayer().getName();
+        return name;
     }
 
     @Override
     public void sendMessage(@NonNull String message) {
+        LOGGER.debug("Sending message to " + getName() + ": \"" + message + "\"");
         TextAdapter.sendComponent(getNativePlayer(), LegacyComponentSerializer.INSTANCE.deserialize(message));
     }
 
@@ -76,11 +84,22 @@ public class BukkitPlayer implements User, BukkitEntityBase, MinecraftOnlinePlay
 
     @Override
     public void disconnect(@NonNull String message) {
+        LOGGER.info("Kicking player " + getName());
         getNativePlayer().kickPlayer(message);
     }
 
     @Override
     public void executeCommand(@NonNull String command) {
+        LOGGER.debug("Scheduling command as " + getName() + ": \"" + command + "\"");
         getServer().scheduleAndWait(() -> getServer().getNativeServer().dispatchCommand(getNativePlayer(), command));
+    }
+
+    @Override
+    public String toString() {
+        return "BukkitPlayer{" +
+                "uuid=" + uuid +
+                ", name=" + name +
+                ", native=" + getNativePlayerUnsafe() +
+                '}';
     }
 }

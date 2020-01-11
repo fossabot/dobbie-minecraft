@@ -48,13 +48,17 @@ public class Settings implements ISettings {
     }
 
     @Override
-    public void refresh() {
+    public boolean refreshValues() {
         try {
             source.load();
         } catch (IOException | ParserException e) {
             LOGGER.error("Could not reload " + source, e);
         }
-        valueMap.values().forEach(Value::refreshValue);
+        boolean anyChanged = false;
+        for (Value value : valueMap.values()) {
+            anyChanged |= value.refreshValue();
+        }
+        return anyChanged;
     }
 
     private <V extends ISettingsValue> Value<V, ?, ?> findValue(Class<V> key) {
