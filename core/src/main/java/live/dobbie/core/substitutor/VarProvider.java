@@ -5,6 +5,7 @@ import live.dobbie.core.context.primitive.storage.PrimitiveStorage;
 import live.dobbie.core.path.Path;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 
 public interface VarProvider {
     String getVar(@NonNull String key);
@@ -19,8 +20,33 @@ public interface VarProvider {
     }
 
     @RequiredArgsConstructor
-    class OfPrimitiveStorage implements VarProvider {
+    class Identity implements VarProvider {
+        public static final Identity INSTANCE = new Identity();
+
+        @Override
+        public String getVar(@NonNull String key) {
+            return key;
+        }
+    }
+
+    @RequiredArgsConstructor
+    class Delegated implements VarProvider {
+        private final @NonNull
+        @Delegate
+        VarProvider delegate;
+    }
+
+    class OfPrimitiveStorage extends Delegated {
         private final @NonNull PrimitiveStorage primitiveStorage;
+
+        public OfPrimitiveStorage(@NonNull VarProvider delegate, @NonNull PrimitiveStorage primitiveStorage) {
+            super(delegate);
+            this.primitiveStorage = primitiveStorage;
+        }
+
+        public OfPrimitiveStorage(@NonNull PrimitiveStorage primitiveStorage) {
+            this(Identity.INSTANCE, primitiveStorage);
+        }
 
         @Override
         public String getVar(@NonNull String key) {

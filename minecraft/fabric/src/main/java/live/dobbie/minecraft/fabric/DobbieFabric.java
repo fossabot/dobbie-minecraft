@@ -58,6 +58,7 @@ import live.dobbie.core.settings.upgrader.SchemaUpgrader;
 import live.dobbie.core.settings.upgrader.v.V0Upgrader;
 import live.dobbie.core.source.Source;
 import live.dobbie.core.substitutor.plain.PlainSubstitutorParser;
+import live.dobbie.core.substitutor.plain.VarConverter;
 import live.dobbie.core.trigger.TriggerErrorHandler;
 import live.dobbie.core.trigger.UserRelatedTrigger;
 import live.dobbie.core.trigger.cancellable.ListCancellationHandler;
@@ -188,7 +189,11 @@ public class DobbieFabric implements ModInitializer, ServerStartCallback, Server
                 ),
                 parserProvider
         );
-        PlainSubstitutorParser plainSubstitutorParser = new PlainSubstitutorParser();
+        PlainSubstitutorParser plainSubstitutorParser = PlainSubstitutorParser.builder()
+                .defaultVarMod(VarConverter.JsonEscaping.INSTANCE)
+                .varMod("de", VarConverter.DoubleJsonEscaping.INSTANCE)
+                .varMod("raw", VarConverter.Identity.INSTANCE)
+                .build();
         sequentalCmdParser.registerParser(
                 new ReplyChatCmd.Parser(Arrays.asList("twitch_reply", "reply"), plainSubstitutorParser),
                 new ConditionalScriptCmdParser<>(
