@@ -9,12 +9,12 @@ import lombok.Value;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ActionProvider implements Action.Factory.Provider {
+public class ActionProvider implements ActionFactory.Provider {
     private static final ILogger LOGGER = Logging.getLogger(ActionProvider.class);
 
     private final Map<Class, Item> maps = new HashMap<>();
 
-    public <T extends Trigger> void registerFactory(@NonNull Class<T> clazz, @NonNull Action.Factory<T> factory, boolean mayReplace) {
+    public <T extends Trigger> void registerFactory(@NonNull Class<T> clazz, @NonNull ActionFactory factory, boolean mayReplace) {
         LOGGER.tracing("Registering factory: " + clazz + ": " + factory);
         if (maps.containsKey(clazz)) {
             if (mayReplace) {
@@ -23,21 +23,21 @@ public class ActionProvider implements Action.Factory.Provider {
                 throw new IllegalArgumentException("already registered: " + clazz);
             }
         }
-        maps.put(clazz, new Item<>(clazz, factory));
+        maps.put(clazz, new Item(clazz, factory));
     }
 
-    public <T extends Trigger> void registerFactory(@NonNull Class<T> clazz, @NonNull Action.Factory<T> factory) {
+    public <T extends Trigger> void registerFactory(@NonNull Class<T> clazz, @NonNull ActionFactory factory) {
         registerFactory(clazz, factory, false);
     }
 
     @Override
     @NonNull
-    public <T extends Trigger> Action.Factory<T> findFactory(@NonNull T trigger) {
+    public <T extends Trigger> ActionFactory findFactory(@NonNull T trigger) {
         return find(trigger.getClass()).getFactory();
     }
 
 
-    private <T extends Trigger> Item<? super T> get(@NonNull Class<?> clazz) {
+    private Item get(@NonNull Class<?> clazz) {
         //LOGGER.tracing("Looking provider for " + clazz);
         if (!isTrigger(clazz)) {
             throw new IllegalArgumentException(clazz + " is not assignable from Trigger");
@@ -69,12 +69,12 @@ public class ActionProvider implements Action.Factory.Provider {
     }
 
     @Value
-    private static class Item<T extends Trigger> implements Action.Factory<T> {
-        private final @NonNull Class<T> clazz;
-        private final @NonNull Action.Factory<T> factory;
+    private static class Item implements ActionFactory {
+        private final @NonNull Class<?> clazz;
+        private final @NonNull ActionFactory factory;
 
         @Override
-        public @NonNull Action createAction(@NonNull T trigger) {
+        public @NonNull Action createAction(@NonNull Trigger trigger) {
             return factory.createAction(trigger);
         }
     }

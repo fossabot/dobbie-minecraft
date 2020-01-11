@@ -1,6 +1,7 @@
 package live.dobbie.core.action.factory;
 
 import live.dobbie.core.action.Action;
+import live.dobbie.core.action.ActionFactory;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.trigger.Trigger;
 import live.dobbie.core.trigger.UserRelatedTrigger;
@@ -19,7 +20,7 @@ public interface FallbackActionFactory {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @Builder
-    class Instance implements Action.Factory<Trigger> {
+    class Instance implements ActionFactory {
         @NonNull ForTrigger forTrigger;
         @NonNull ForPlayerTrigger forPlayerTrigger;
         @NonNull ForCancellableTrigger forCancellableTrigger;
@@ -30,27 +31,23 @@ public interface FallbackActionFactory {
         }
 
         @Override
-        public @NonNull Action<Trigger> createAction(@NonNull Trigger trigger) {
-            ArrayList<Action<?>> list = new ArrayList<>();
-            if (trigger instanceof Cancellable) {
-                list.add(forCancellableTrigger.createAction((Cancellable) trigger));
-            }
-            if (trigger instanceof UserRelatedTrigger) {
-                list.add(forPlayerTrigger.createAction((UserRelatedTrigger) trigger));
-            }
+        public @NonNull Action createAction(@NonNull Trigger trigger) {
+            ArrayList<Action> list = new ArrayList<>();
+            list.add(forCancellableTrigger.createAction(trigger));
+            list.add(forPlayerTrigger.createAction(trigger));
             list.add(forTrigger.createAction(trigger));
             return new Action.List(trigger, loc.withKey("fallback actions"), list);
         }
     }
 
     @RequiredArgsConstructor
-    class ForTrigger implements Action.Factory<Trigger> {
+    class ForTrigger implements ActionFactory {
         private static final ILogger LOGGER = Logging.getLogger(ForTrigger.class);
         private final Loc loc;
 
         @Override
-        public @NonNull Action<Trigger> createAction(@NonNull Trigger trigger) {
-            return new Action.WithDescription<Trigger>(trigger, loc.withKey("fallback action for any trigger")) {
+        public @NonNull Action createAction(@NonNull Trigger trigger) {
+            return new Action.WithDescription(trigger, loc.withKey("fallback action for any trigger")) {
                 @Override
                 public void execute() {
                     LOGGER.error("Could not find action for " + trigger);
@@ -59,16 +56,20 @@ public interface FallbackActionFactory {
         }
     }
 
-    @RequiredArgsConstructor
-    class ForPlayerTrigger implements Action.Factory<UserRelatedTrigger> {
-        private final Loc loc;
+    class ForPlayerTrigger extends ActionFactory.Typed<UserRelatedTrigger> {
+        private final @NonNull Loc loc;
+
+        public ForPlayerTrigger(@NonNull Loc loc) {
+            super(UserRelatedTrigger.class);
+            this.loc = loc;
+        }
 
         @Override
-        public @NonNull Action<UserRelatedTrigger> createAction(@NonNull UserRelatedTrigger trigger) {
-            return new Action.WithDescription<UserRelatedTrigger>(trigger, loc.withKey("fallback action for user related triggers")) {
+        public @NonNull Action create(@NonNull UserRelatedTrigger userTrigger) {
+            return new Action.WithDescription(userTrigger, loc.withKey("fallback action for user related triggers")) {
                 @Override
                 public void execute() {
-                    trigger.getUser().sendErrorLocMessage(
+                    userTrigger.getUser().sendErrorLocMessage(
                             loc.withKey("Dobbie could not find action for the following trigger: {trigger}")
                                     .set("trigger", trigger)
                     );
@@ -77,19 +78,26 @@ public interface FallbackActionFactory {
         }
     }
 
-    @RequiredArgsConstructor
-    class ForCancellableTrigger implements Action.Factory<Cancellable> {
+    class ForCancellableTrigger extends ActionFactory.Typed<Cancellable> {
         private static final ILogger LOGGER = Logging.getLogger(ForCancellableTrigger.class);
         private final Loc loc;
 
+        public ForCancellableTrigger(@NonNull Loc loc) {
+            super(Cancellable.class);
+            this.loc = loc;
+        }
+
         @Override
-        public @NonNull Action<Cancellable> createAction(@NonNull Cancellable trigger) {
-            return new Action.WithDescription<Cancellable>(trigger, loc.withKey("fallback action for cancellable triggers")) {
+        public @NonNull Action create(@NonNull Cancellable cancellable) {
+            return new Action.WithDescription(cancellable, loc.withKey("fallback action for cancellable triggers")) {
                 @Override
                 public void execute() {
                     LOGGER.error("Cancelling trigger " + trigger);
-                    if (!trigger.isCancelled()) {
-                        trigger.cancel(new Cancellation(CancellationType.FATAL, loc.withKey("Reached fallback action factory: cancelled by default")));
+                    if (!cancellable.isCancelled()) {
+                        cancellable.cancel(new Cancellation(
+                                CancellationType.FATAL,
+                                loc.withKey("Reached fallback action factory: cancelled by default")
+                        ));
                     }
                 }
             };

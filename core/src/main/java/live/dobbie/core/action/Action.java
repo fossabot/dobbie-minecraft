@@ -12,29 +12,17 @@ import lombok.ToString;
 
 @RequiredArgsConstructor
 @ToString(of = "trigger")
-public abstract class Action<T extends Trigger> implements ToLocString {
+public abstract class Action implements ToLocString {
     protected final @NonNull
     @Getter
-    T trigger;
+    Trigger trigger;
 
     public abstract void execute() throws ActionExecutionException;
 
-    public interface Factory<T extends Trigger> {
-        Action<T> createAction(@NonNull T trigger);
-
-        interface Provider {
-            @NonNull <T extends Trigger> Factory<T> findFactory(@NonNull T trigger);
-
-            default <T extends Trigger> Action<T> get(@NonNull T trigger) {
-                return findFactory(trigger).createAction(trigger);
-            }
-        }
-    }
-
-    public abstract static class WithDescription<T extends Trigger> extends Action<T> {
+    public abstract static class WithDescription extends Action {
         private final @NonNull LocString description;
 
-        public WithDescription(@NonNull T trigger, @NonNull LocString description) {
+        public WithDescription(@NonNull Trigger trigger, @NonNull LocString description) {
             super(trigger);
             this.description = description;
         }
@@ -47,10 +35,10 @@ public abstract class Action<T extends Trigger> implements ToLocString {
         }
     }
 
-    public static class OfRunnable<T extends Trigger> extends Action.WithDescription<T> {
+    public static class OfRunnable extends Action.WithDescription {
         private final @NonNull Runnable runnable;
 
-        public OfRunnable(@NonNull T trigger, @NonNull LocString description, @NonNull Runnable runnable) {
+        public OfRunnable(@NonNull Trigger trigger, @NonNull LocString description, @NonNull Runnable runnable) {
             super(trigger, description);
             this.runnable = runnable;
         }
@@ -65,17 +53,17 @@ public abstract class Action<T extends Trigger> implements ToLocString {
         }
     }
 
-    public static class List extends Action.WithDescription<Trigger> {
-        private final @NonNull java.util.List<Action<?>> actions;
+    public static class List extends Action.WithDescription {
+        private final @NonNull java.util.List<Action> actions;
 
-        public List(@NonNull Trigger trigger, @NonNull LocString description, @NonNull java.util.List<Action<?>> actions) {
+        public List(@NonNull Trigger trigger, @NonNull LocString description, @NonNull java.util.List<Action> actions) {
             super(trigger, description);
             this.actions = actions;
         }
 
         @Override
         public void execute() throws ActionExecutionException {
-            for (Action<?> action : actions) {
+            for (Action action : actions) {
                 try {
                     action.execute();
                 } catch (Exception e) {

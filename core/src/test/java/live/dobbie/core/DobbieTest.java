@@ -1,6 +1,7 @@
 package live.dobbie.core;
 
 import live.dobbie.core.action.Action;
+import live.dobbie.core.action.ActionFactory;
 import live.dobbie.core.action.scheduler.ActionScheduler;
 import live.dobbie.core.config.DobbieConfig;
 import live.dobbie.core.service.ServiceRegistry;
@@ -29,7 +30,7 @@ class DobbieTest {
         when(source.triggerStream()).thenCallRealMethod();
         Action action = Mockito.mock(Action.class);
         Source.Factory.Provider sourceProvider = () -> Collections.singletonList(pl -> source);
-        Action.Factory actionFactory = Mockito.mock(Action.Factory.class);
+        ActionFactory actionFactory = Mockito.mock(ActionFactory.class);
         when(actionFactory.createAction(trigger)).thenReturn(action);
         UserSettingsProvider userSettingsProvider = Mockito.mock(UserSettingsProvider.class);
         DobbieSettings settings = Mockito.mock(DobbieSettings.class);
@@ -58,7 +59,7 @@ class DobbieTest {
     void testAlreadyRegistered() {
         User user = Mockito.mock(User.class);
         Source.Factory.Provider sourceProvider = Mockito.mock(Source.Factory.Provider.class);
-        Action.Factory actionFactory = Mockito.mock(Action.Factory.class);
+        ActionFactory actionFactory = Mockito.mock(ActionFactory.class);
         UserSettingsProvider userSettingsProvider = Mockito.mock(UserSettingsProvider.class);
         DobbieSettings settings = Mockito.mock(DobbieSettings.class);
         when(settings.getUserSettingsProvider()).thenReturn(userSettingsProvider);
@@ -105,7 +106,7 @@ class DobbieTest {
         Dobbie dobbie = Mockito.spy(new Dobbie(
                 settings,
                 Mockito.mock(Source.Factory.Provider.class),
-                Mockito.mock(Action.Factory.class),
+                Mockito.mock(ActionFactory.class),
                 Mockito.mock(ActionScheduler.class),
                 Mockito.mock(TriggerErrorHandler.class),
                 Mockito.mock(ServiceRegistry.class)

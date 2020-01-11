@@ -10,7 +10,7 @@ import live.dobbie.core.loc.LocString;
 import live.dobbie.core.trigger.Trigger;
 import lombok.NonNull;
 
-public class DestSectionAction extends Action<Trigger> {
+public class DestSectionAction extends Action {
     private final @NonNull DestSection section;
     private final @NonNull CmdContext cmdContext;
     private final @NonNull Loc loc;

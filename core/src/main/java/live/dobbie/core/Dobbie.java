@@ -1,6 +1,7 @@
 package live.dobbie.core;
 
 import live.dobbie.core.action.Action;
+import live.dobbie.core.action.ActionFactory;
 import live.dobbie.core.action.scheduler.ActionScheduler;
 import live.dobbie.core.config.DobbieConfig;
 import live.dobbie.core.service.ServiceRegistry;
@@ -33,7 +34,7 @@ public class Dobbie implements UserRegisterListener {
 
     private final @NonNull DobbieSettings settings;
     private final @NonNull Source.Factory.Provider sourceFactoryProvider;
-    private final @NonNull Action.Factory<Trigger> actionFactory;
+    private final @NonNull ActionFactory actionFactory;
     private final @NonNull ActionScheduler actionScheduler;
     private final @NonNull TriggerErrorHandler errorHandler;
     private final @NonNull ServiceRegistry serviceRegistry;
@@ -129,7 +130,7 @@ public class Dobbie implements UserRegisterListener {
     }
 
     private Stream<Action> createActions(Trigger trigger) {
-        Action<Trigger> action;
+        Action action;
         try {
             action = actionFactory.createAction(trigger);
         } catch (Exception e) {

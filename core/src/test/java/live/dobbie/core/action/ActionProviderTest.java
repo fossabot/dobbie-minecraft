@@ -17,7 +17,7 @@ class ActionProviderTest {
     @Test
     void basicTest() {
         ActionProvider provider = new ActionProvider();
-        Action.Factory factory = Mockito.mock(Action.Factory.class);
+        ActionFactory factory = Mockito.mock(ActionFactory.class);
         Trigger trigger = Mockito.mock(Trigger.class);
         provider.registerFactory(Trigger.class, factory);
         assertEquals(factory, provider.findFactory(trigger));

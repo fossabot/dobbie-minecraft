@@ -1,6 +1,6 @@
 package live.dobbie.core.dest;
 
-import live.dobbie.core.action.Action;
+import live.dobbie.core.action.ActionFactory;
 import live.dobbie.core.context.ObjectContext;
 import live.dobbie.core.context.value.ContextualCondition;
 import live.dobbie.core.dest.cmd.CmdContext;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 
 @RequiredArgsConstructor
-public class DestActionFactory implements Action.Factory<Trigger> {
+public class DestActionFactory implements ActionFactory {
     private static final ILogger LOGGER = Logging.getLogger(DestActionFactory.class);
 
     private final @NonNull CmdContextFactory cmdContextFactory;
