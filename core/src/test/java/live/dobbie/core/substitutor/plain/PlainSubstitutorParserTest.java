@@ -1,9 +1,9 @@
 package live.dobbie.core.substitutor.plain;
 
 import live.dobbie.core.exception.ParserException;
+import live.dobbie.core.substitutor.VarProvider;
 import live.dobbie.core.substitutor.environment.Env;
 import live.dobbie.core.substitutor.environment.Environment;
-import live.dobbie.core.substitutor.old.var.AnyVarElem;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -16,7 +16,7 @@ class PlainSubstitutorParserTest {
     @Test
     void noVar() throws ParserException {
         PlainSubstitutorParser parser = new PlainSubstitutorParser();
-        PlainSubstitutable result = parser.parse("hello!");
+        ListSubstitutable result = parser.parse("hello!");
         assertNotNull(result);
         assertEquals(1, result.getList().size());
         assertEquals("hello!", result.substitute(mock(Env.class)));
@@ -25,18 +25,18 @@ class PlainSubstitutorParserTest {
     @Test
     void singleVar() throws ParserException {
         PlainSubstitutorParser parser = new PlainSubstitutorParser();
-        PlainSubstitutable result = parser.parse("hello, ${something}!");
+        ListSubstitutable result = parser.parse("hello, ${something}!");
         assertNotNull(result);
-        AnyVarElem.Provider varProvider = mock(AnyVarElem.Provider.class);
+        VarProvider varProvider = mock(VarProvider.class);
         when(varProvider.getVar(eq("something"))).thenReturn("world");
-        Env env = new Environment(Collections.singletonMap(AnyVarElem.Provider.class, varProvider));
+        Env env = new Environment(Collections.singletonMap(VarProvider.class, varProvider));
         assertEquals("hello, world!", result.substitute(env));
     }
 
     @Test
     void escapeVar() throws ParserException {
         PlainSubstitutorParser parser = new PlainSubstitutorParser();
-        PlainSubstitutable result = parser.parse("hello, \\${something}!");
+        ListSubstitutable result = parser.parse("hello, \\${something}!");
         assertNotNull(result);
         assertEquals("hello, \\${something}!", result.substitute(mock(Env.class)));
     }
@@ -44,20 +44,43 @@ class PlainSubstitutorParserTest {
     @Test
     void doubleEscapeVar() throws ParserException {
         PlainSubstitutorParser parser = new PlainSubstitutorParser();
-        PlainSubstitutable result = parser.parse("hello, \\\\${something}!");
+        ListSubstitutable result = parser.parse("hello, \\\\${something}!");
         assertNotNull(result);
-        AnyVarElem.Provider varProvider = mock(AnyVarElem.Provider.class);
+        VarProvider varProvider = mock(VarProvider.class);
         when(varProvider.getVar(eq("something"))).thenReturn("world");
-        Env env = new Environment(Collections.singletonMap(AnyVarElem.Provider.class, varProvider));
+        Env env = new Environment(Collections.singletonMap(VarProvider.class, varProvider));
         assertEquals("hello, \\world!", result.substitute(env));
     }
 
     @Test
     void badVarName() {
         PlainSubstitutorParser parser = new PlainSubstitutorParser();
-        assertThrows(ParserException.class, () -> parser.parse("hello, ${**}!"));
         assertThrows(ParserException.class, () -> parser.parse("hello, ${@}!"));
         assertThrows(ParserException.class, () -> parser.parse("hello, ${{}!"));
+    }
+
+    @Test
+    void varModTest() throws ParserException {
+        PlainSubstitutorParser parser = new PlainSubstitutorParser(
+                Collections.singletonMap("test", value -> value == null ? null : value.toUpperCase()),
+                VarConverter.Identity.INSTANCE
+        );
+        VarProvider varProvider = mock(VarProvider.class);
+        when(varProvider.requireVar(anyString())).thenCallRealMethod();
+        when(varProvider.getVar(eq("foo"))).thenReturn("bar");
+        Env env = new Environment(Collections.singletonMap(VarProvider.class, varProvider));
+        assertEquals("hello, bar", parser.parse("hello, ${foo}").substitute(env));
+        assertEquals("hello, BAR", parser.parse("hello, ${*test*foo}").substitute(env));
+    }
+
+    @Test
+    void badVarModTest() throws ParserException {
+        PlainSubstitutorParser parser = new PlainSubstitutorParser();
+        assertThrows(ParserException.class, () -> parser.parse("hello, ${*}"));
+        assertThrows(ParserException.class, () -> parser.parse("hello, ${**}!"));
+        assertThrows(ParserException.class, () -> parser.parse("hello, ${*no_text*}!"));
+        assertThrows(ParserException.class, () -> parser.parse("hello, ${**bar}!"));
+        assertThrows(ParserException.class, () -> parser.parse("hello, ${*does_not_exist*bar}!"));
     }
 
 }

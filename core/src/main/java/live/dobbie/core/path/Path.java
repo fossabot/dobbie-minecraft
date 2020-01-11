@@ -171,7 +171,7 @@ public final class Path implements Iterable<String> {
     }
 
     public static Path parse(@NonNull String value) {
-        return parse(value, ".");
+        return parse(value, SEPARATOR);
     }
 
     private static String[] copy(String[] original, int start, int size) {

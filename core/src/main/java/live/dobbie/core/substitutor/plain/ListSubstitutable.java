@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Value
-public class PlainSubstitutable implements Substitutable {
+public class ListSubstitutable implements Substitutable {
     @Getter(AccessLevel.PACKAGE)
     private final List<Substitutable> list;
 
