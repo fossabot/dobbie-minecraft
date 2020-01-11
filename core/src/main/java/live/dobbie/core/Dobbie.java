@@ -7,6 +7,7 @@ import live.dobbie.core.service.ServiceRegistry;
 import live.dobbie.core.source.Source;
 import live.dobbie.core.trigger.Trigger;
 import live.dobbie.core.trigger.TriggerErrorHandler;
+import live.dobbie.core.user.SettingsSourceNotFoundException;
 import live.dobbie.core.user.User;
 import live.dobbie.core.user.UserRegisterListener;
 import live.dobbie.core.util.Cleanable;
@@ -43,7 +44,12 @@ public class Dobbie implements UserRegisterListener {
             LOGGER.warning("User " + user + " already registered! Unregistering first...");
             unregisterUser(user);
         }
-        settings.getUserSettingsProvider().registerUser(user);
+        try {
+            settings.getUserSettingsProvider().registerUser(user);
+        } catch (SettingsSourceNotFoundException settingsNotFound) {
+            LOGGER.warning("Dobbie will not serve user without settings (" + user.getName() + "): " + settingsNotFound.toString());
+            return;
+        }
         serviceRegistry.registerUser(user);
         userTable.put(user, createInstance(user));
         actionScheduler.registerUser(user);

@@ -52,6 +52,7 @@ import live.dobbie.core.settings.source.jackson.JacksonNode;
 import live.dobbie.core.settings.source.jackson.JacksonParser;
 import live.dobbie.core.settings.source.jackson.JacksonSource;
 import live.dobbie.core.settings.source.jackson.JacksonSourceProvider;
+import live.dobbie.core.settings.source.supplier.DirectoryBasedFileSourceFactory;
 import live.dobbie.core.settings.upgrader.SchemaUpgrader;
 import live.dobbie.core.settings.upgrader.v.V0Upgrader;
 import live.dobbie.core.source.Source;
@@ -159,7 +160,7 @@ public class DobbieBukkit extends JavaPlugin implements Listener {
                 new JacksonSourceProvider(
                         o,
                         null,
-                        new JacksonSourceProvider.DirectoryUserFileSupplier(new File(getDataFolder(), "players"))
+                        new DirectoryBasedFileSourceFactory(new File(getDataFolder(), "players"), ".yaml")
                 ),
                 parserProvider
         );

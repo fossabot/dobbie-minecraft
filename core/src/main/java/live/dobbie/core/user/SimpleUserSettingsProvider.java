@@ -3,7 +3,6 @@ package live.dobbie.core.user;
 import live.dobbie.core.settings.Settings;
 import live.dobbie.core.settings.object.section.ISettingsSection;
 import live.dobbie.core.settings.parser.ISettingsParser;
-import live.dobbie.core.settings.source.ISettingsSectionSource;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +17,7 @@ public class SimpleUserSettingsProvider<O extends ISettingsSection> implements U
     private final Map<User, Settings> settingsMap = new HashMap<>();
 
     @Override
-    public @NonNull Settings get(@NonNull User user) {
+    public Settings get(@NonNull User user) {
         return settingsMap.get(user);
     }
 
@@ -28,7 +27,7 @@ public class SimpleUserSettingsProvider<O extends ISettingsSection> implements U
     }
 
     @Override
-    public void registerUser(@NonNull User user) {
+    public void registerUser(@NonNull User user) throws SettingsSourceNotFoundException {
         if (settingsMap.containsKey(user)) {
             throw new IllegalArgumentException("user already registered in settingsMap: " + user);
         }
@@ -50,7 +49,4 @@ public class SimpleUserSettingsProvider<O extends ISettingsSection> implements U
         settingsMap.clear();
     }
 
-    public interface SettingsSourceProvider<O extends ISettingsSection> {
-        ISettingsSectionSource<O> getSettings(@NonNull User user);
-    }
 }
