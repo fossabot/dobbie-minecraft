@@ -1,9 +1,9 @@
 package live.dobbie.core.substitutor.plain;
 
 import live.dobbie.core.exception.ParserException;
+import live.dobbie.core.substitutor.VarProvider;
 import live.dobbie.core.substitutor.environment.Env;
 import live.dobbie.core.substitutor.environment.Environment;
-import live.dobbie.core.substitutor.old.var.AnyVarElem;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -27,9 +27,9 @@ class PlainSubstitutorParserTest {
         PlainSubstitutorParser parser = new PlainSubstitutorParser();
         PlainSubstitutable result = parser.parse("hello, ${something}!");
         assertNotNull(result);
-        AnyVarElem.Provider varProvider = mock(AnyVarElem.Provider.class);
+        VarProvider varProvider = mock(VarProvider.class);
         when(varProvider.getVar(eq("something"))).thenReturn("world");
-        Env env = new Environment(Collections.singletonMap(AnyVarElem.Provider.class, varProvider));
+        Env env = new Environment(Collections.singletonMap(VarProvider.class, varProvider));
         assertEquals("hello, world!", result.substitute(env));
     }
 
@@ -46,9 +46,9 @@ class PlainSubstitutorParserTest {
         PlainSubstitutorParser parser = new PlainSubstitutorParser();
         PlainSubstitutable result = parser.parse("hello, \\\\${something}!");
         assertNotNull(result);
-        AnyVarElem.Provider varProvider = mock(AnyVarElem.Provider.class);
+        VarProvider varProvider = mock(VarProvider.class);
         when(varProvider.getVar(eq("something"))).thenReturn("world");
-        Env env = new Environment(Collections.singletonMap(AnyVarElem.Provider.class, varProvider));
+        Env env = new Environment(Collections.singletonMap(VarProvider.class, varProvider));
         assertEquals("hello, \\world!", result.substitute(env));
     }
 

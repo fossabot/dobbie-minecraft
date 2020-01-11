@@ -14,17 +14,15 @@ import live.dobbie.core.script.js.JSScriptExecutor;
 import live.dobbie.core.script.js.converter.DefaultValueConverter;
 import live.dobbie.core.script.js.converter.PrimitiveJSConverter;
 import live.dobbie.core.script.js.converter.TypedValueConverter;
+import live.dobbie.core.substitutor.VarProvider;
 import live.dobbie.core.substitutor.environment.Env;
 import live.dobbie.core.substitutor.environment.Environment;
-import live.dobbie.core.substitutor.old.func.NameFuncElem;
-import live.dobbie.core.substitutor.old.parser.ElemParser;
-import live.dobbie.core.substitutor.old.var.AnyVarElem;
+import live.dobbie.core.substitutor.plain.PlainSubstitutorParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mozilla.javascript.ContextFactory;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -91,14 +89,6 @@ class SequentalCmdParserTest {
         verify(executor, times(0)).execute(notNull(), eq("it is true!"));
     }
 
-    @Test
-    void conditionalUpperCaseTest() throws ParserException, CmdExecutionException {
-        Cmd cmd = parser.parse("#!jsif (verification.shouldBeTrue) $uppercase{hello, $foo}");
-        assertNotNull(cmd);
-        cmd.execute(context);
-        verify(executor).execute(notNull(), eq("HELLO, WORLD"));
-    }
-
     @BeforeEach
     void setup() {
         PlainCmd.Executor cmdExecutor = Mockito.mock(PlainCmd.Executor.class);
@@ -115,22 +105,17 @@ class SequentalCmdParserTest {
                 new AssertionScriptCmdParser<>(Collections.singletonList("assert"), executor, contextFactory, compiler),
                 new ConditionalScriptCmdParser<>(Collections.singletonList("jsif"), executor, contextFactory, compiler, cmdParser),
                 new ScriptCmdParser<>(Collections.singletonList("js"), executor, contextFactory, compiler),
-                new SubstitutorCmd.Parser(
-                        new ElemParser(Arrays.asList(
-                                new NameFuncElem.Factory("uppercase", (NameFuncElem.ArgFunc) (env, argument) -> argument.toUpperCase()),
-                                new AnyVarElem.Factory()
-                        ))
-                )
+                new SubstitutorCmd.Parser(new PlainSubstitutorParser())
         );
         ObjectContext oCtx = SimpleContext.builder()
                 .set(Path.of("foo"), Primitive.of("bar"))
                 .set(Path.of("verification", "shouldBeTrue"), Primitive.of(true))
                 .set(Path.of("verification", "shouldBeFalse"), Primitive.of(false))
                 .build();
-        AnyVarElem.Provider varProvider = Mockito.mock(AnyVarElem.Provider.class);
+        VarProvider varProvider = Mockito.mock(VarProvider.class);
         when(varProvider.getVar(eq("foo"))).thenReturn("world");
         when(varProvider.requireVar(notNull())).thenCallRealMethod();
-        Env env = new Environment(Collections.singletonMap(AnyVarElem.Provider.class, varProvider));
+        Env env = new Environment(Collections.singletonMap(VarProvider.class, varProvider));
         CmdContext context = new CmdContext(oCtx, cmdExecutor, env);
         this.executor = cmdExecutor;
         this.parser = cmdParser;
