@@ -11,7 +11,7 @@ import lombok.NonNull;
 public class SendCmd extends AbstractSubstitutorCmd {
     private static final ILogger LOGGER = Logging.getLogger(SendCmd.class);
 
-    private final boolean isError;
+    protected final boolean isError;
 
     public SendCmd(@NonNull Substitutable substitutable, boolean isError) {
         super(substitutable);
@@ -19,20 +19,24 @@ public class SendCmd extends AbstractSubstitutorCmd {
     }
 
     @Override
-    protected CmdResult execute(@NonNull CmdContext context, @NonNull String command) throws CmdExecutionException {
+    protected CmdResult execute(@NonNull CmdContext context, @NonNull String message) throws CmdExecutionException {
         User user = context.getUser();
         if (user == null) {
             LoggingLevel level = isError ? LoggingLevel.ERROR : LoggingLevel.INFO;
             LOGGER.log(level, "Command context does not contain the user reference");
-            LOGGER.log(level, "Message: \"" + command + "\"");
+            LOGGER.log(level, "Message: \"" + message + "\"");
         } else {
-            if (isError) {
-                user.sendErrorMessage(command);
-            } else {
-                user.sendMessage(command);
-            }
+            sendMessageToUser(context, user, message);
         }
         return CmdResult.SHOULD_CONTINUE;
+    }
+
+    protected void sendMessageToUser(@NonNull CmdContext context, @NonNull User user, @NonNull String message) {
+        if (isError) {
+            user.sendErrorMessage(message);
+        } else {
+            user.sendMessage(message);
+        }
     }
 
     public static class Parser extends AbstractSubstitutorCmd.Parser {
