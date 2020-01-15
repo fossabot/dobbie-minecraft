@@ -25,7 +25,7 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void tracing(String message, Throwable t) {
-        //outLog("[TRACING] " + message, t);
+        outLog("[TRACING] " + message, t);
     }
 
     @Override
