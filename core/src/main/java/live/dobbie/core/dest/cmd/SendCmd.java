@@ -28,7 +28,7 @@ public class SendCmd extends AbstractSubstitutorCmd {
         } else {
             sendMessageToUser(context, user, message);
         }
-        return CmdResult.SHOULD_CONTINUE;
+        return isError ? CmdResult.SHOULD_STOP : CmdResult.SHOULD_CONTINUE;
     }
 
     protected void sendMessageToUser(@NonNull CmdContext context, @NonNull User user, @NonNull String message) {
