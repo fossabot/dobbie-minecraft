@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
 import java.util.UUID;
 
@@ -65,6 +66,11 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
     @Override
     public void sendMessage(@NonNull String message) {
         getServer().scheduleAndWait(() -> getNativePlayer().sendMessage(toNativeText(message)));
+    }
+
+    @Override
+    public void sendRawMessage(@NonNull String rawMessage) {
+        getServer().scheduleAndWait(() -> getNativePlayer().sendMessage(Text.Serializer.fromJson(rawMessage)));
     }
 
     @Override

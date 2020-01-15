@@ -74,6 +74,12 @@ public class BukkitPlayer implements User, BukkitEntityBase, MinecraftOnlinePlay
     }
 
     @Override
+    public void sendRawMessage(@NonNull String rawMessage) {
+        LOGGER.debug("Sending raw message to " + getName() + ": \"" + rawMessage + "\"");
+        getNativePlayer().sendRawMessage(rawMessage);
+    }
+
+    @Override
     public void sendErrorMessage(@NonNull String message) {
         sendMessage("§c---");
         sendMessage("§c");

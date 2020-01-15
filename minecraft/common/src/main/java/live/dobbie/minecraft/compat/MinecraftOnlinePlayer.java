@@ -6,5 +6,7 @@ import lombok.NonNull;
 public interface MinecraftOnlinePlayer extends MinecraftPlayer {
     void sendMessage(@NonNull String message);
 
+    void sendRawMessage(@NonNull String rawMessage);
+
     void executeCommand(@NonNull String command);
 }
