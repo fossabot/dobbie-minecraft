@@ -26,7 +26,7 @@ public class ExecuteAtPlayer extends AbstractSubstitutorCmd {
     protected CmdResult execute(@NonNull CmdContext context, @NonNull String command) throws CmdExecutionException {
         User user = context.getUser();
         if (user == null) {
-            throw new CmdExecutionException("context does not provider user, cannot execute as null");
+            throw new CmdExecutionException("context does not provide a user");
         }
         if (!(user instanceof MinecraftOnlinePlayer)) {
             throw new CmdExecutionException("user provided in this context is not " + MinecraftOnlinePlayer.class.getSimpleName());
