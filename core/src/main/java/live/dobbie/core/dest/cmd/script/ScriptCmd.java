@@ -11,9 +11,11 @@ import live.dobbie.core.script.ScriptExecutor;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = "script")
+@ToString(of = "script")
 public class ScriptCmd<S extends Script<C>, C extends ScriptContext> implements Cmd {
     protected final @NonNull ScriptExecutor<S, C> executor;
     private final @NonNull ScriptContext.Factory<C> contextFactory;
