@@ -80,5 +80,15 @@ public abstract class AbstractPatternCmdParser implements CmdParser {
             }
             return args;
         }
+
+        public static AbstractPatternCmdParser.NameAware wrap(@NonNull List<String> acceptableNameList,
+                                                              @NonNull CmdParser cmdParser) {
+            return new NameAware(acceptableNameList) {
+                @Override
+                protected Cmd createCmd(String args, @NonNull TextLocation location) throws ParserException {
+                    return cmdParser.parse(new Text(args, location));
+                }
+            };
+        }
     }
 }
