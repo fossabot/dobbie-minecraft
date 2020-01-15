@@ -1,31 +1,29 @@
 package live.dobbie.core.dest.cmd;
 
-import live.dobbie.core.exception.ParserException;
-import live.dobbie.core.misc.Text;
 import live.dobbie.core.substitutor.Substitutable;
 import live.dobbie.core.substitutor.SubstitutableParser;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
 
 
-@Value
-public class SubstitutorCmd implements Cmd {
-    @NonNull Substitutable substitutable;
+public class SubstitutorCmd extends AbstractSubstitutorCmd {
 
-    @Override
-    @NonNull
-    public CmdResult execute(@NonNull CmdContext context) throws CmdExecutionException {
-        return context.getExecutor().execute(context, substitutable.substitute(context.getEnvironment()));
+    public SubstitutorCmd(@NonNull Substitutable substitutable) {
+        super(substitutable);
     }
 
-    @RequiredArgsConstructor
-    public static class Parser implements CmdParser {
-        private final @NonNull SubstitutableParser parser;
+    @Override
+    protected CmdResult execute(@NonNull CmdContext context, @NonNull String command) throws CmdExecutionException {
+        return context.getExecutor().execute(context, command);
+    }
+
+    public static class Parser extends AbstractSubstitutorCmd.Parser {
+        public Parser(@NonNull SubstitutableParser parser) {
+            super(parser);
+        }
 
         @Override
-        public SubstitutorCmd parse(@NonNull Text text) throws ParserException {
-            return new SubstitutorCmd(parser.parse(text.getString()));
+        protected AbstractSubstitutorCmd create(@NonNull Substitutable substitutable) {
+            return new SubstitutorCmd(substitutable);
         }
     }
 }
