@@ -69,6 +69,9 @@ import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
 import live.dobbie.minecraft.bukkit.compat.BukkitCompat;
 import live.dobbie.minecraft.bukkit.compat.BukkitPlayer;
+import live.dobbie.minecraft.dest.cmd.ExecuteAtPlayer;
+import live.dobbie.minecraft.dest.cmd.ExecutePlayer;
+import live.dobbie.minecraft.dest.cmd.SendRawCmd;
 import lombok.NonNull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -171,6 +174,12 @@ public class DobbieBukkit extends JavaPlugin implements Listener {
                 .varMod("raw", VarConverter.Identity.INSTANCE)
                 .build();
         sequentalCmdParser.registerParser(
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("send"), new SendCmd.Parser(plainSubstitutorParser, false)),
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("sendraw"), new SendRawCmd.Parser(plainSubstitutorParser)),
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("error"), new SendCmd.Parser(plainSubstitutorParser, true)),
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("wait"), new WaitCmd.Parser(plainSubstitutorParser, WaitCmd.WaitStrategy.DEFAULT)),
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("player"), new ExecutePlayer.Parser(plainSubstitutorParser)),
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("atplayer"), new ExecuteAtPlayer.Parser(plainSubstitutorParser, new ExecuteAtPlayer.ConsoleExecuteAt(() -> bukkitCompat.getServer()))),
                 new ReplyChatCmd.Parser(Arrays.asList("twitch_reply", "reply"), plainSubstitutorParser),
                 new ConditionalScriptCmdParser<>(
                         Arrays.asList("javascriptif", "jsif"),
