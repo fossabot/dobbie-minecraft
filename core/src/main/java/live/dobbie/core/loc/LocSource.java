@@ -5,6 +5,4 @@ import lombok.NonNull;
 
 public interface LocSource {
     String getTranslation(@NonNull String key);
-
-    @NonNull LocNumericVarSelector getNumericVarSelect();
 }

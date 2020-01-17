@@ -7,6 +7,7 @@ applyPlatformAndCoreConfiguration()
 
 dependencies {
     "compile"(project(":libs:core"))
+    "compile"(project(":l10n"))
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     "compile"("org.apache.commons:commons-lang3:3.9")

@@ -1,9 +1,7 @@
 package live.dobbie.core.loc;
 
-import live.dobbie.core.exception.ParserRuntimeException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,14 +24,10 @@ public class Loc {
     @NonNull
     public LocString withKey(@NonNull String key) {
         String translatedKey = source.getTranslation(key);
-        LocNumericVarSelector numericVarSelector;
         if (translatedKey == null) {
             translatedKey = INTERNAL.getTranslation(key);
-            numericVarSelector = INTERNAL.getNumericVarSelect();
-        } else {
-            numericVarSelector = source.getNumericVarSelect();
         }
-        return new Complete(translatedKey, numericVarSelector);
+        return new Complete(translatedKey);
     }
 
     private class Lightweight extends LocString {
@@ -82,10 +76,6 @@ public class Loc {
             values.put(arg, value);
         }
 
-        protected Object get(String arg) {
-            return values.get(arg);
-        }
-
         @Override
         public @NonNull String build() {
             throw new IllegalStateException("build() must not be called on lightweight LocString");
@@ -94,8 +84,7 @@ public class Loc {
 
     @RequiredArgsConstructor
     private class Complete extends Lightweight {
-        private final @NonNull String key;
-        private final @NonNull LocNumericVarSelector numericVarSelector;
+        private final @NonNull String format;
 
         @Override
         public LocString key(@NonNull String key) {
@@ -103,6 +92,11 @@ public class Loc {
         }
 
         @Override
+        public @NonNull String build() {
+            return format + values();
+        }
+
+        /*@Override
         public @NonNull String build() {
             String lastNumericArgName = null;
             StringBuilder b = new StringBuilder();
@@ -164,7 +158,7 @@ public class Loc {
             } while (++index < buf.length);
 
             return b.toString();
-        }
+        }*/
     }
 
     private static int readUntil(char[] buf, char stopChar, int startIndex, StringBuilder b) {
@@ -179,27 +173,10 @@ public class Loc {
     }
 
     private static class InternalLocSource implements LocSource {
-        private final LocNumericVarSelector numericVarSelector = new LocNumericVarSelector() {
-            @Override
-            public int variantCount() {
-                return 2;
-            }
-
-            @Override
-            public int selectVariant(Number number) {
-                return number.intValue() == 1 ? 0 : 1;
-            }
-        };
-
         @Override
         @NonNull
         public String getTranslation(@NonNull String key) {
             return key;
-        }
-
-        @Override
-        public @NonNull LocNumericVarSelector getNumericVarSelect() {
-            return numericVarSelector;
         }
     }
 }

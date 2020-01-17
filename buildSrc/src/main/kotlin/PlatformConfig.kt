@@ -123,6 +123,7 @@ fun Project.applyShadowConfiguration() {
         archiveBaseName.set("${ext["projectName"]}-${project.name}")
         archiveClassifier.set("dist")
         dependencies {
+            include(project(":l10n"))
             include(project(":libs:core"))
             include(project(":libs:${project.name}"))
             include(project(":libs:minecraft-common"))
