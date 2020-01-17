@@ -15,7 +15,7 @@ public interface Priced extends Trigger {
 
     @ContextVar(path = {"price", "amount"})
     default double getPriceAmount() {
-        return getPrice().getAmount();
+        return getPrice().getAmount().doubleValue();
     }
 
     @NonNull

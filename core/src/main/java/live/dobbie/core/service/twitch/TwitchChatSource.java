@@ -24,6 +24,7 @@ import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
 import lombok.NonNull;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -159,7 +160,7 @@ public class TwitchChatSource extends Source.UsingQueue {
                         timestamp(event),
                         user(event.getUser()),
                         new PlainMessage(event.getMessage()),
-                        new Price(event.getBits(), BITS_CURRENCY),
+                        new Price(new BigDecimal(event.getBits()), BITS_CURRENCY),
                         prefDest(playerSettings.getEvents().getCheer()),
                         cancellationHandler
                 ));
