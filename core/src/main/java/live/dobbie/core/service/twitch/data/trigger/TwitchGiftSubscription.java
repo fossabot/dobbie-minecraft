@@ -34,7 +34,13 @@ public class TwitchGiftSubscription implements TwitchChatTrigger, Authored {
     @NonNull
     @Override
     public LocString toLocString(@NonNull Loc loc) {
-        return loc.withKey("{author} gifted {twitch_gift_sub_count} {%|gift sub,gift subs} of {twitch_gift_sub_plan}")
+        return loc.withKey("{author} gifted" +
+                "{twitch_gift_sub_count," +
+                "   =0 {zero}" +
+                "   one {one sub}" +
+                "   other {# subs}" +
+                "}" +
+                " of {twitch_gift_sub_plan}")
                 .set("twitch_gift_sub_count", count)
                 .set("twitch_total_gift_sub_count", count)
                 .set("twitch_gift_sub_plan", loc.withKey(plan.getTier().getLocName()))

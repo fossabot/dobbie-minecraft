@@ -1,19 +1,24 @@
 package live.dobbie.core.loc;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import com.ibm.icu.text.MessageFormat;
+import com.ibm.icu.util.ULocale;
+import lombok.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class Loc {
     private static final InternalLocSource INTERNAL = new InternalLocSource();
+    private static final String GENDER_SUFFIX = "_suffix";
 
     private final @NonNull LocSource source;
+    private @Getter
+    @Setter
+    ULocale locale;
 
     public Loc() {
-        this(INTERNAL);
+        this(INTERNAL, ULocale.getDefault());
     }
 
     @NonNull
@@ -62,6 +67,13 @@ public class Loc {
         }
 
         @Override
+        public @NonNull LocString set(@NonNull String arg, @NonNull Subject subject) {
+            put(arg, subject.getName());
+            put(arg + "_gender", subject.getGender());
+            return null;
+        }
+
+        @Override
         public @NonNull LocString copy(LocString storage) {
             values.putAll(storage.values());
             return this;
@@ -93,7 +105,12 @@ public class Loc {
 
         @Override
         public @NonNull String build() {
-            return format + values();
+            MessageFormat mf = new MessageFormat(format, locale);
+            Map<String, Object> icuFormatValues = new HashMap<>();
+            values().forEach((key, value) -> icuFormatValues.put(key, toICUValue(value)));
+            StringBuffer b = new StringBuffer();
+            mf.format(icuFormatValues, b, null);
+            return b.toString();
         }
 
         /*@Override
@@ -161,7 +178,7 @@ public class Loc {
         }*/
     }
 
-    private static int readUntil(char[] buf, char stopChar, int startIndex, StringBuilder b) {
+    /*private static int readUntil(char[] buf, char stopChar, int startIndex, StringBuilder b) {
         for (int i = startIndex; i < buf.length; i++) {
             char ch = buf[i];
             if (ch == stopChar) {
@@ -170,6 +187,17 @@ public class Loc {
             b.append(ch);
         }
         return -1;
+    }*/
+
+    private static Object toICUValue(Object rawValue) {
+        if (rawValue instanceof Gender) {
+            return ((Gender) rawValue).formatValue();
+        }
+        if (rawValue instanceof LocString) {
+            LocString c = (LocString) rawValue;
+            return c.build();
+        }
+        return rawValue;
     }
 
     private static class InternalLocSource implements LocSource {

@@ -31,7 +31,7 @@ public class TwitchFollow implements TwitchChatTrigger, Authored {
     @NonNull
     @Override
     public LocString toLocString(@NonNull Loc loc) {
-        return loc.withKey("{user} followed {twitch_channel}")
+        return loc.withKey("{author} followed {twitch_channel}")
                 .copy(TwitchChatTrigger.super.toLocString(loc));
     }
 

@@ -18,6 +18,9 @@ public abstract class LocString {
     public abstract LocString set(@NonNull String arg, ToLocString nestedToLocString);
 
     @NonNull
+    public abstract LocString set(@NonNull String arg, @NonNull Subject subject);
+
+    @NonNull
     public abstract LocString copy(LocString storage);
 
     public abstract LocString key(@NonNull String key);
