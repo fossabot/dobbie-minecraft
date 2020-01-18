@@ -1,19 +1,21 @@
 package live.dobbie.core.misc;
 
-import live.dobbie.core.context.primitive.converter.ConvertableToString;
+import live.dobbie.core.config.DobbieLocale;
+import live.dobbie.core.misc.currency.Currency;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.math.BigDecimal;
-
 @Value
-@ConvertableToString
 public class Price {
-    BigDecimal amount;
+    @NonNull Number amount;
     @NonNull Currency currency;
 
-    @Override
-    public String toString() {
-        return currency.getValue() + amount;
+    @NonNull
+    public String format(@NonNull DobbieLocale locale) {
+        return currency.format(amount, locale);
+    }
+
+    public static Price of(@NonNull Number amount, @NonNull String currency) {
+        return new Price(amount, Currency.of(currency));
     }
 }

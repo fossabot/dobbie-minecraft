@@ -1,14 +1,17 @@
 package live.dobbie.core.loc;
 
-// As described in http://site.icu-project.org/design/formatting/select
+/**
+ * A subject's gender as described in <a href="http://site.icu-project.org/design/formatting/select">ICU docs</a>
+ */
 public enum Gender {
     MALE,
     FEMALE,
     MIXED,
     UNKNOWN;
 
-    // key to use in MessageFormat, e.g.
-    // "{*key*, select, female {allée} other {allé}}"
+    /**
+     * A key in ICU pattern, e.g. {@code "{*key*, select, female {allée} other {allé}}"}
+     */
     public String formatValue() {
         return name().toLowerCase();
     }

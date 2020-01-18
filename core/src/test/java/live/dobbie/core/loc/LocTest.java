@@ -1,5 +1,6 @@
 package live.dobbie.core.loc;
 
+import live.dobbie.core.trigger.authored.PlainAuthor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,8 +28,7 @@ class LocTest {
         Loc loc = new Loc();
         assertEquals("Kirti est allée à Paris.", loc.withKey("{a} est " +
                 "{a_gender, select, female {allée} other {allé}} à Paris.")
-                .set("a", "Kirti")
-                .set("a_gender", Gender.FEMALE)
+                .set("a", new PlainAuthor("Kirti", Gender.FEMALE))
                 .build());
     }
 
