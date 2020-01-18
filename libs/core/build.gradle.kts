@@ -1,8 +1,8 @@
 applyLibrariesConfiguration()
 
 dependencies {
-    // https://twitch4j.gitlab.io/twitch4j/getting-started/installation/
-    "shade"("com.github.twitch4j:twitch4j:1.0.0-alpha.17")
+    // https://github.com/turikhay/twitch4j
+    "shade"("com.github.twitch4j:twitch4j:0.99.0")
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
     "shade"("com.fasterxml.jackson.core:jackson-core:2.9.10")
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
