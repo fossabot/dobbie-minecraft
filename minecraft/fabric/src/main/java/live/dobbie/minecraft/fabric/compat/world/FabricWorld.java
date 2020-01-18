@@ -4,13 +4,14 @@ import live.dobbie.core.scheduler.Scheduler;
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
 import live.dobbie.minecraft.compat.MinecraftLocation;
-import live.dobbie.minecraft.compat.world.MinecraftWorld;
 import live.dobbie.minecraft.compat.block.MinecraftBlock;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfo;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplate;
-import live.dobbie.minecraft.fabric.compat.block.FabricBlockInfo;
+import live.dobbie.minecraft.compat.world.MinecraftSoundCategory;
+import live.dobbie.minecraft.compat.world.MinecraftWorld;
 import live.dobbie.minecraft.fabric.compat.FabricCompat;
 import live.dobbie.minecraft.fabric.compat.FabricLocation;
+import live.dobbie.minecraft.fabric.compat.block.FabricBlockInfo;
 import live.dobbie.minecraft.fabric.compat.entity.FabricEntity;
 import live.dobbie.minecraft.fabric.compat.entity.FabricEntityNbtConvertible;
 import lombok.EqualsAndHashCode;
@@ -25,6 +26,7 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
@@ -113,6 +115,19 @@ public class FabricWorld implements MinecraftWorld, Scheduler {
             // TODO despawnAfter
             return new FabricEntity(instance, entity);
         });
+    }
+
+    @Override
+    public void playSound(@NonNull String sound, @NonNull MinecraftSoundCategory soundCategory,
+                          @NonNull MinecraftLocation location, float volume, float pitch) {
+        getNativeWorld().playSound(
+                null,
+                FabricLocation.getBlockPos(location),
+                new SoundEvent(new Identifier(sound)),
+                FabricSoundCategory.toNative(soundCategory),
+                volume,
+                pitch
+        );
     }
 
     @Override

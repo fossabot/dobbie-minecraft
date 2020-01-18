@@ -4,14 +4,18 @@ import live.dobbie.core.user.User;
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
 import live.dobbie.minecraft.compat.MinecraftOnlinePlayer;
+import live.dobbie.minecraft.compat.world.MinecraftSoundCategory;
 import live.dobbie.minecraft.fabric.compat.entity.FabricEntityBase;
 import live.dobbie.minecraft.fabric.compat.entity.FabricPlayerInventory;
+import live.dobbie.minecraft.fabric.compat.world.FabricSoundCategory;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 
@@ -95,6 +99,18 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
         getServer().scheduleAndWait(() -> {
             LOGGER.info("Executing command as " + this + ": \"" + command + "\"");
             getServer().getNativeServer().getCommandManager().execute(getNativePlayer().getCommandSource(), command);
+        });
+    }
+
+    @Override
+    public void playSound(@NonNull String sound, @NonNull MinecraftSoundCategory category, float volume, float pitch) {
+        getServer().scheduleAndWait(() -> {
+            getNativePlayer().playSound(
+                    new SoundEvent(new Identifier(sound)),
+                    FabricSoundCategory.toNative(category),
+                    volume,
+                    pitch
+            );
         });
     }
 

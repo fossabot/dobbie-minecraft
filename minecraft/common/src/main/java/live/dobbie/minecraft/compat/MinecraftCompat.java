@@ -7,6 +7,7 @@ import live.dobbie.minecraft.compat.inventory.MinecraftInventorySlotTable;
 import live.dobbie.minecraft.compat.item.MinecraftItemInfoFactory;
 import live.dobbie.minecraft.compat.potion.MinecraftPotionEffectFactory;
 import live.dobbie.minecraft.compat.util.Vector;
+import live.dobbie.minecraft.compat.world.MinecraftSoundCategoryTable;
 import live.dobbie.minecraft.compat.world.MinecraftWorldTable;
 import lombok.NonNull;
 
@@ -26,6 +27,8 @@ public interface MinecraftCompat {
     @NonNull MinecraftInventorySlotTable getInventorySlotTable();
 
     @NonNull MinecraftWorldTable getWorldTable();
+
+    @NonNull MinecraftSoundCategoryTable getSoundCategoryTable();
 
     default @NonNull Vector unitVector() {
         return Vector.unit();

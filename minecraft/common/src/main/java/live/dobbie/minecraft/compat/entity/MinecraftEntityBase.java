@@ -6,6 +6,7 @@ import live.dobbie.minecraft.compat.UnreliableResource;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfo;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventory;
 import live.dobbie.minecraft.compat.util.Vector;
+import live.dobbie.minecraft.compat.world.MinecraftSoundCategory;
 import live.dobbie.minecraft.compat.world.MinecraftWorld;
 import lombok.NonNull;
 
@@ -87,5 +88,9 @@ public interface MinecraftEntityBase extends UnreliableResource {
 
     default MinecraftEntity spawnAt(@NonNull MinecraftZombieEntityTemplate.MinecraftZombieEntityTemplateBuilder entityInfoBuilder) {
         return spawnAt(entityInfoBuilder.build());
+    }
+
+    default void playSoundAt(@NonNull String sound, @NonNull MinecraftSoundCategory category, float volume, float pitch) {
+        getWorld().playSound(sound, category, getLocation(), volume, pitch);
     }
 }

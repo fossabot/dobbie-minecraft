@@ -6,6 +6,7 @@ import live.dobbie.core.util.logging.Logging;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitEntityBase;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitPlayerInventory;
 import live.dobbie.minecraft.compat.MinecraftOnlinePlayer;
+import live.dobbie.minecraft.compat.world.MinecraftSoundCategory;
 import live.dobbie.util.formatting.text.adapter.bukkit.TextAdapter;
 import live.dobbie.util.formatting.text.serializer.legacy.LegacyComponentSerializer;
 import lombok.EqualsAndHashCode;
@@ -98,6 +99,12 @@ public class BukkitPlayer implements User, BukkitEntityBase, MinecraftOnlinePlay
     public void executeCommand(@NonNull String command) {
         LOGGER.debug("Scheduling command as " + getName() + ": \"" + command + "\"");
         getServer().scheduleAndWait(() -> getServer().getNativeServer().dispatchCommand(getNativePlayer(), command));
+    }
+
+    @Override
+    public void playSound(@NonNull String sound, @NonNull MinecraftSoundCategory category, float volume, float pitch) {
+        Player nativePlayer = getNativePlayer();
+        nativePlayer.playSound(nativePlayer.getLocation(), sound, volume, pitch);
     }
 
     @Override

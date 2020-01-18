@@ -5,12 +5,14 @@ import live.dobbie.minecraft.bukkit.compat.bukkit.BukkitBlockInfoTable;
 import live.dobbie.minecraft.bukkit.compat.converter.BukkitIdConverter;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitEntityTemplateFactory;
 import live.dobbie.minecraft.bukkit.compat.item.BukkitItemInfoFactory;
+import live.dobbie.minecraft.bukkit.compat.world.BukkitSoundCategoryTable;
 import live.dobbie.minecraft.bukkit.compat.world.BukkitWorldTable;
 import live.dobbie.minecraft.compat.MinecraftCompat;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfoTable;
 import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventorySlotTable;
 import live.dobbie.minecraft.compat.potion.MinecraftPotionEffectFactory;
+import live.dobbie.minecraft.compat.world.MinecraftSoundCategoryTable;
 import lombok.NonNull;
 import org.bukkit.Server;
 
@@ -27,6 +29,7 @@ public class BukkitCompat implements MinecraftCompat {
     public final MinecraftInventorySlotTable invSlots;
     public final BukkitWorldTable worlds;
     public final BukkitIdConverter idConverter;
+    public final BukkitSoundCategoryTable soundCats;
 
     public BukkitCompat(@NonNull Supplier<Server> serverSupplier, @NonNull Scheduler scheduler) {
         this.serverSupplier = serverSupplier;
@@ -38,6 +41,7 @@ public class BukkitCompat implements MinecraftCompat {
         this.invSlots = new MinecraftInventorySlotTable();
         this.worlds = new BukkitWorldTable(serverSupplier);
         this.idConverter = new BukkitIdConverter();
+        this.soundCats = new BukkitSoundCategoryTable();
     }
 
     @Override
@@ -78,5 +82,10 @@ public class BukkitCompat implements MinecraftCompat {
     @Override
     public @NonNull BukkitWorldTable getWorldTable() {
         return worlds;
+    }
+
+    @Override
+    public @NonNull MinecraftSoundCategoryTable getSoundCategoryTable() {
+        return soundCats;
     }
 }

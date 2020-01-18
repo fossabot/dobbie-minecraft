@@ -9,12 +9,14 @@ import live.dobbie.minecraft.compat.MinecraftLocation;
 import live.dobbie.minecraft.compat.block.MinecraftBlock;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfo;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplate;
+import live.dobbie.minecraft.compat.world.MinecraftSoundCategory;
 import live.dobbie.minecraft.compat.world.MinecraftWorld;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 import org.bukkit.Server;
+import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
@@ -73,6 +75,13 @@ public class BukkitWorld implements MinecraftWorld, Scheduler {
             );
             return new BukkitEntity(server.getInstance(), new WeakReference<>(entity), entity.getUniqueId());
         });
+    }
+
+    @Override
+    public void playSound(@NonNull String sound, @NonNull MinecraftSoundCategory soundCategory, @NonNull MinecraftLocation location,
+                          float volume, float pitch) {
+        SoundCategory bukkitSoundCategory = BukkitSoundCategory.toNative(soundCategory);
+        getNativeWorld().playSound(BukkitLocation.getLocation(location), sound, bukkitSoundCategory, volume, pitch);
     }
 
     private World getNativeWorldUnsafe() {

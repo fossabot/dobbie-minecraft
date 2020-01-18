@@ -24,6 +24,8 @@ public interface MinecraftWorld extends UnreliableResource {
 
     MinecraftEntity spawnEntity(@NonNull MinecraftEntityTemplate entityInfo, @NonNull MinecraftLocation location);
 
+    void playSound(@NonNull String sound, @NonNull MinecraftSoundCategory soundCategory, @NonNull MinecraftLocation location, float volume, float pitch);
+
     default MinecraftBlock getBlockAt(double x, double y, double z) {
         return getBlockAt(new MinecraftLocation(x, y, z));
     }
