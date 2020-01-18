@@ -5,6 +5,7 @@ import live.dobbie.minecraft.compat.MinecraftServer;
 import live.dobbie.minecraft.compat.UnreliableResource;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfo;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventory;
+import live.dobbie.minecraft.compat.util.Vector;
 import live.dobbie.minecraft.compat.world.MinecraftWorld;
 import lombok.NonNull;
 
@@ -35,6 +36,14 @@ public interface MinecraftEntityBase extends UnreliableResource {
     void setHealth(float health);
 
     void setMaxHealth(float maxHealth);
+
+    @NonNull Vector getVelocity();
+
+    void setVelocity(@NonNull Vector vector);
+
+    default void setVelocity(double x, double y, double z) {
+        setVelocity(new Vector(x, y, z));
+    }
 
     default boolean isKilled() {
         return !isAlive();

@@ -4,11 +4,13 @@ import live.dobbie.minecraft.bukkit.compat.BukkitLocation;
 import live.dobbie.minecraft.bukkit.compat.BukkitServer;
 import live.dobbie.minecraft.bukkit.compat.world.BukkitWorld;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityBase;
+import live.dobbie.minecraft.compat.util.Vector;
 import lombok.NonNull;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 public interface BukkitEntityBase extends MinecraftEntityBase {
     @Override
@@ -76,14 +78,27 @@ public interface BukkitEntityBase extends MinecraftEntityBase {
     @Override
     default void setMaxHealth(float maxHealth) {
         Entity entity = getNativeEntity();
-        if(entity instanceof LivingEntity) {
+        if (entity instanceof LivingEntity) {
             setMaxHealth((LivingEntity) entity, maxHealth);
         }
     }
 
+    @NotNull
+    @Override
+    default Vector getVelocity() {
+        org.bukkit.util.Vector velocity = getNativeEntity().getVelocity();
+        return new Vector(velocity.getX(), velocity.getY(), velocity.getZ());
+    }
+
+    @Override
+    default void setVelocity(@NonNull Vector vector) {
+        org.bukkit.util.Vector velocity = new org.bukkit.util.Vector(vector.getX(), vector.getY(), vector.getZ());
+        getNativeEntity().setVelocity(velocity);
+    }
+
     static float getMaxHealth(@NonNull LivingEntity entity) {
         AttributeInstance attr = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        if(attr != null) {
+        if (attr != null) {
             return (float) attr.getBaseValue();
         }
         return 0.f;

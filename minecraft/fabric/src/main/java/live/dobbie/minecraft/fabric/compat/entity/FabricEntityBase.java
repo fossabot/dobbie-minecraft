@@ -1,6 +1,7 @@
 package live.dobbie.minecraft.fabric.compat.entity;
 
 import live.dobbie.minecraft.compat.entity.MinecraftEntityBase;
+import live.dobbie.minecraft.compat.util.Vector;
 import live.dobbie.minecraft.fabric.compat.FabricLocation;
 import live.dobbie.minecraft.fabric.compat.FabricServer;
 import live.dobbie.minecraft.fabric.compat.world.FabricWorld;
@@ -9,7 +10,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 
 public interface FabricEntityBase extends MinecraftEntityBase {
     @NonNull Entity getNativeEntity();
@@ -76,5 +79,18 @@ public interface FabricEntityBase extends MinecraftEntityBase {
             EntityAttributeInstance attribute = livingEntity.getAttributes().get(EntityAttributes.MAX_HEALTH);
             Validate.notNull(attribute, "attribute \"" + EntityAttributes.MAX_HEALTH.getId() + "\"").setBaseValue(maxHealth);
         }
+    }
+
+    @NotNull
+    @Override
+    default Vector getVelocity() {
+        Vec3d velocity = getNativeEntity().getVelocity();
+        return new Vector(velocity.getX(), velocity.getY(), velocity.getZ());
+    }
+
+    @Override
+    default void setVelocity(@NonNull Vector vector) {
+        getNativeEntity().setVelocity(new Vec3d(vector.getX(), vector.getY(), vector.getZ()));
+        getNativeEntity().velocityModified = true;
     }
 }
