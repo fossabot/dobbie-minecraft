@@ -93,4 +93,14 @@ public interface FabricEntityBase extends MinecraftEntityBase {
         getNativeEntity().setVelocity(new Vec3d(vector.getX(), vector.getY(), vector.getZ()));
         getNativeEntity().velocityModified = true;
     }
+
+    @Override
+    default float getYaw() {
+        return getNativeEntity().getYaw(1.f);
+    }
+
+    @Override
+    default float getPitch() {
+        return getNativeEntity().getPitch(1.f);
+    }
 }

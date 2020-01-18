@@ -37,12 +37,28 @@ public interface MinecraftEntityBase extends UnreliableResource {
 
     void setMaxHealth(float maxHealth);
 
+    float getYaw();
+
+    float getPitch();
+
     @NonNull Vector getVelocity();
 
     void setVelocity(@NonNull Vector vector);
 
     default void setVelocity(double x, double y, double z) {
         setVelocity(new Vector(x, y, z));
+    }
+
+    default @NonNull Vector getDirection() {
+        double rotX = getYaw();
+        double rotY = getPitch();
+        double xz = Math.cos(Math.toRadians(rotY));
+
+        return new Vector(
+                -xz * Math.sin(Math.toRadians(rotX)),
+                -Math.sin(Math.toRadians(rotY)),
+                xz * Math.cos(Math.toRadians(rotX))
+        );
     }
 
     default boolean isKilled() {

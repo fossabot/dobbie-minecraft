@@ -96,6 +96,16 @@ public interface BukkitEntityBase extends MinecraftEntityBase {
         getNativeEntity().setVelocity(velocity);
     }
 
+    @Override
+    default float getYaw() {
+        return getNativeEntity().getLocation().getYaw();
+    }
+
+    @Override
+    default float getPitch() {
+        return getNativeEntity().getLocation().getPitch();
+    }
+
     static float getMaxHealth(@NonNull LivingEntity entity) {
         AttributeInstance attr = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (attr != null) {
