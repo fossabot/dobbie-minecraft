@@ -1,5 +1,6 @@
 rootProject.name = "dobbie-minecraft"
 
+include("l10n")
 include("libs")
 include("minecraft")
 

@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import live.dobbie.core.config.LoggingConfig;
-import live.dobbie.core.misc.Currency;
 import live.dobbie.core.misc.Range;
+import live.dobbie.core.misc.currency.Currency;
 import live.dobbie.core.settings.source.jackson.JacksonParseable;
 import live.dobbie.core.settings.value.ISettingsValue;
 import lombok.*;
@@ -194,7 +194,7 @@ public class TwitchSettings {
                             if (p.nextToken() != JsonToken.FIELD_NAME) {
                                 throw new IllegalArgumentException("expected currency name");
                             }
-                            Currency currency = new Currency(p.currentName());
+                            Currency currency = Currency.of(p.currentName());
                             PriceRangeList price;
                             switch (p.nextValue()) {
                                 case START_ARRAY:

@@ -9,12 +9,16 @@ import live.dobbie.core.action.factory.FallbackActionFactory;
 import live.dobbie.core.action.factory.SequentalActionFactory;
 import live.dobbie.core.action.scheduler.PerUserActionScheduler;
 import live.dobbie.core.action.scheduler.SimpleActionScheduler;
+import live.dobbie.core.config.DobbieLocale;
+import live.dobbie.core.config.PriceFormatting;
 import live.dobbie.core.context.factory.AnnotationBasedObjectContextFactory;
 import live.dobbie.core.context.factory.ObjectContextFactory;
 import live.dobbie.core.context.factory.list.ListObjectContextFactory;
 import live.dobbie.core.context.factory.nametranslator.SnakeCaseTranslator;
 import live.dobbie.core.context.factory.nametranslator.TrailingRemovingTranslator;
 import live.dobbie.core.context.factory.nametranslator.VarNameTranslator;
+import live.dobbie.core.context.primitive.Primitive;
+import live.dobbie.core.context.primitive.StringPrimitive;
 import live.dobbie.core.context.primitive.converter.AnnotationBasedConverterProvider;
 import live.dobbie.core.context.primitive.converter.PrimitiveConverterCache;
 import live.dobbie.core.context.primitive.converter.PrimitiveConverterProvider;
@@ -31,6 +35,7 @@ import live.dobbie.core.dest.cmd.script.AssertionScriptCmdParser;
 import live.dobbie.core.dest.cmd.script.ConditionalScriptCmdParser;
 import live.dobbie.core.dest.cmd.script.ScriptCmdParser;
 import live.dobbie.core.loc.Loc;
+import live.dobbie.core.misc.Price;
 import live.dobbie.core.path.Path;
 import live.dobbie.core.persistence.PersistenceService;
 import live.dobbie.core.persistence.SessionObjectStorage;
@@ -61,6 +66,8 @@ import live.dobbie.core.substitutor.plain.VarConverter;
 import live.dobbie.core.trigger.TriggerErrorHandler;
 import live.dobbie.core.trigger.UserRelatedTrigger;
 import live.dobbie.core.trigger.cancellable.ListCancellationHandler;
+import live.dobbie.core.trigger.priced.Donated;
+import live.dobbie.core.trigger.priced.Priced;
 import live.dobbie.core.user.SimpleUserSettingsProvider;
 import live.dobbie.core.user.User;
 import live.dobbie.core.user.UserNotifyingCancellationHandler;
@@ -159,6 +166,7 @@ public class DobbieBukkit extends JavaPlugin implements Listener {
                 parserProvider
         );
         config.refreshValues(); // it is recommended to run it before the first tick
+        Loc loc = new Loc();
         TwitchInstance twitchInstance = new TwitchInstance(config);
         SimpleUserSettingsProvider<JacksonNode> userSettingsProvider = new SimpleUserSettingsProvider<>(
                 new JacksonSourceProvider(
@@ -213,7 +221,6 @@ public class DobbieBukkit extends JavaPlugin implements Listener {
                 )))
                 .build();
         //ChargebackHandler.Factory chargebackHandlerFactory = user -> new ChargebackHandler(serviceRegistry.createReference(ChargebackService.class, user));
-        Loc loc = new Loc();
         DobbiePlugin plugin = new DobbiePlugin(
                 new Dobbie(
                         new DobbieSettings(config, userSettingsProvider),
@@ -248,6 +255,14 @@ public class DobbieBukkit extends JavaPlugin implements Listener {
                                                                                 User user = ((UserRelatedTrigger) trigger).getUser();
                                                                                 if (user instanceof BukkitPlayer) {
                                                                                     cb.set("player", user);
+                                                                                }
+                                                                                if (trigger instanceof Priced) {
+                                                                                    Price price = ((Priced) trigger).getPrice();
+                                                                                    StringPrimitive formattedPrice = Primitive.of(PriceFormatting.format(price, config.requireValue(DobbieLocale.class), config.getValue(PriceFormatting.class)));
+                                                                                    cb.set(Path.of("price", "formatted"), formattedPrice);
+                                                                                    if (trigger instanceof Donated) {
+                                                                                        cb.set(Path.of("donation", "formatted"), formattedPrice);
+                                                                                    }
                                                                                 }
                                                                             }
                                                                         }

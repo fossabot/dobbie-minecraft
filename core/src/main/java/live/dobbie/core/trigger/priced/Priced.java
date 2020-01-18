@@ -10,18 +10,17 @@ import lombok.NonNull;
 
 @ContextClass
 public interface Priced extends Trigger {
-    @ContextVar
     @NonNull Price getPrice();
 
     @ContextVar(path = {"price", "amount"})
     default double getPriceAmount() {
-        return getPrice().getAmount();
+        return getPrice().getAmount().doubleValue();
     }
 
     @NonNull
     @ContextVar(path = {"price", "currency"})
     default String getPriceCurrency() {
-        return getPrice().getCurrency().getValue();
+        return getPrice().getCurrency().getName();
     }
 
     @NonNull

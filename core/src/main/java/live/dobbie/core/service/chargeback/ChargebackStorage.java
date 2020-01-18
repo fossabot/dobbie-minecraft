@@ -1,8 +1,8 @@
 package live.dobbie.core.service.chargeback;
 
 import com.opencsv.*;
-import live.dobbie.core.misc.Currency;
 import live.dobbie.core.misc.Price;
+import live.dobbie.core.misc.currency.Currency;
 import live.dobbie.core.persistence.Persistence;
 import live.dobbie.core.persistence.StorageException;
 import live.dobbie.core.user.User;
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -82,7 +83,7 @@ public interface ChargebackStorage extends Persistence {
                             Instant.from(dateTimeFormatter.parse(s[0])),
                             s[1],
                             s[2],
-                            new Price(Double.parseDouble(s[4]), new Currency(s[3])),
+                            new Price(new BigDecimal(s[4]), Currency.of(s[3])),
                             s[5].isEmpty() ? null : s[5]
                     ));
                 }
@@ -103,7 +104,7 @@ public interface ChargebackStorage extends Persistence {
                             dateTimeFormatter.format(entry.getTime()),
                             entry.getSource(),
                             entry.getAuthor(),
-                            entry.getPrice().getCurrency().getValue(),
+                            entry.getPrice().getCurrency().getName(),
                             String.valueOf(entry.getPrice().getAmount()),
                             entry.getMessage() == null ? "" : entry.getMessage()
                     });

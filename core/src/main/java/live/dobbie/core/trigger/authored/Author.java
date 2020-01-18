@@ -2,10 +2,11 @@ package live.dobbie.core.trigger.authored;
 
 import live.dobbie.core.context.primitive.StringPrimitive;
 import live.dobbie.core.context.primitive.converter.PrimitiveConverter;
+import live.dobbie.core.loc.Subject;
 import lombok.NonNull;
 
 
-public interface Author {
+public interface Author extends Subject {
     @NonNull String getName();
 
     @NonNull

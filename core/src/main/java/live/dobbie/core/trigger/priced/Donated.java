@@ -11,8 +11,18 @@ import lombok.NonNull;
 
 @ContextClass
 public interface Donated extends Authored, Priced, Cancellable {
-    @ContextVar
     @NonNull Price getDonation();
+
+    @ContextVar(path = {"donation", "amount"})
+    default double getDonationAmount() {
+        return getPrice().getAmount().doubleValue();
+    }
+
+    @NonNull
+    @ContextVar(path = {"donation", "currency"})
+    default String getDonationCurrency() {
+        return getPrice().getCurrency().getName();
+    }
 
     @Override
     default @NonNull Price getPrice() {

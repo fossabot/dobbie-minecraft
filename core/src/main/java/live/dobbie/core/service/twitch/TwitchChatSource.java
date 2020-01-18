@@ -6,8 +6,9 @@ import com.github.twitch4j.chat.events.AbstractChannelEvent;
 import com.github.twitch4j.chat.events.channel.*;
 import com.github.twitch4j.common.events.domain.EventChannel;
 import com.github.twitch4j.common.events.domain.EventUser;
-import live.dobbie.core.misc.Currency;
 import live.dobbie.core.misc.Price;
+import live.dobbie.core.misc.currency.Currency;
+import live.dobbie.core.misc.currency.ICUFormatCurrencyFormatter;
 import live.dobbie.core.service.twitch.data.TwitchChannel;
 import live.dobbie.core.service.twitch.data.TwitchSubscriptionPlan;
 import live.dobbie.core.service.twitch.data.TwitchUser;
@@ -24,12 +25,16 @@ import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
 import lombok.NonNull;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 
 public class TwitchChatSource extends Source.UsingQueue {
     private final ILogger LOGGER = Logging.getLogger(TwitchChatSource.class);
-    private static final Currency BITS_CURRENCY = new Currency("BITS");
+
+    public static final Currency BITS_CURRENCY = Currency.register("bits",
+            new ICUFormatCurrencyFormatter("{amount} {amount, plural, =1 {bit} other {bits}}", "bits")
+    );
 
     private final @NonNull TwitchChatClient chatClient;
     private final @NonNull CancellationHandler cancellationHandler;
@@ -159,7 +164,7 @@ public class TwitchChatSource extends Source.UsingQueue {
                         timestamp(event),
                         user(event.getUser()),
                         new PlainMessage(event.getMessage()),
-                        new Price(event.getBits(), BITS_CURRENCY),
+                        new Price(new BigDecimal(event.getBits()), BITS_CURRENCY),
                         prefDest(playerSettings.getEvents().getCheer()),
                         cancellationHandler
                 ));

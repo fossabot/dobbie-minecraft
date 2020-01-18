@@ -1,5 +1,6 @@
 package live.dobbie.core.loc;
 
+import live.dobbie.core.trigger.authored.PlainAuthor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,28 +14,22 @@ class LocTest {
     }
 
     @Test
-    void numericTest() {
-        final String key = "hello, {number|world,worlds}";
+    void icuPluralTest() {
         Loc loc = new Loc();
-        assertEquals("hello, world", loc.withKey(key).set("number", 1).build());
-        assertEquals("hello, worlds", loc.withKey(key).set("number", 2).build());
-        assertEquals("hello, worlds", loc.withKey(key).set("number", 0).build());
+        assertEquals("You have one item.", loc.withKey("You have {itemCount, plural,\n" +
+                "    =0 {no items}\n" +
+                "    one {one item}\n" +
+                "    other {{itemCount} items}\n" +
+                "}.").set("itemCount", 1).build());
     }
 
     @Test
-    void lastNumericTest() {
-        final String key = "hello, {number} {%|world,worlds}";
+    void icuGenderTest() {
         Loc loc = new Loc();
-        assertEquals("hello, 1 world", loc.withKey(key).set("number", 1).build());
-        assertEquals("hello, 2 worlds", loc.withKey(key).set("number", 2).build());
-        assertEquals("hello, 0 worlds", loc.withKey(key).set("number", 0).build());
-    }
-
-    @Test
-    void remainingCharCopyTest() {
-        final String key = "hello, {number}!";
-        Loc loc = new Loc();
-        assertEquals("hello, 1!", loc.withKey(key).set("number", 1).build());
+        assertEquals("Kirti est allée à Paris.", loc.withKey("{a} est " +
+                "{a_gender, select, female {allée} other {allé}} à Paris.")
+                .set("a", new PlainAuthor("Kirti", Gender.FEMALE))
+                .build());
     }
 
 }

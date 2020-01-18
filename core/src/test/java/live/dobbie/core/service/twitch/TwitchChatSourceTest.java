@@ -1,7 +1,10 @@
 package live.dobbie.core.service.twitch;
 
+import com.ibm.icu.util.ULocale;
+import live.dobbie.core.config.DobbieLocale;
 import live.dobbie.core.config.LoggingConfig;
 import live.dobbie.core.loc.Loc;
+import live.dobbie.core.misc.currency.Currency;
 import live.dobbie.core.service.twitch.data.trigger.TwitchMessage;
 import live.dobbie.core.settings.ISettings;
 import live.dobbie.core.settings.listener.SettingsSubscription;
@@ -14,8 +17,10 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class TwitchChatSourceTest {
@@ -86,6 +91,33 @@ class TwitchChatSourceTest {
         t.start();
         Thread.sleep(Long.parseLong(System.getenv("twitch-test-duration")));
         t.interrupt();
+    }
+
+    @Test
+    void bitsCurrencyFormatUSTest() {
+        DobbieLocale locale = mock(DobbieLocale.class);
+        when(locale.getLocale()).thenReturn(ULocale.US);
+        Currency currency = TwitchChatSource.BITS_CURRENCY;
+        assertEquals("1 bit", currency.format(1, locale));
+        assertEquals("2 bits", currency.format(2, locale));
+    }
+
+    @Test
+    void bitsCurrencyFormatRUTest() {
+        DobbieLocale locale = mock(DobbieLocale.class);
+        when(locale.getLocale()).thenReturn(ULocale.forLanguageTag("ru-RU"));
+        Currency currency = TwitchChatSource.BITS_CURRENCY;
+        assertEquals("1 bit", currency.format(1, locale));
+        assertEquals("2 bits", currency.format(2, locale));
+    }
+
+    @Test
+    void bitsCurrencyFormatUnknownTest() {
+        DobbieLocale locale = mock(DobbieLocale.class);
+        when(locale.getLocale()).thenReturn(ULocale.forLanguageTag(""));
+        Currency currency = TwitchChatSource.BITS_CURRENCY;
+        assertEquals("1 bit", currency.format(1, locale));
+        assertEquals("5 bits", currency.format(5, locale));
     }
 
 }

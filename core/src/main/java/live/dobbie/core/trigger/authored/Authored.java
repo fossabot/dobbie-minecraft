@@ -20,7 +20,7 @@ public interface Authored extends Trigger {
     @Override
     default LocString toLocString(@NonNull Loc loc) {
         return loc.args()
-                .set("author", getAuthor().getName())
+                .set("author", getAuthor())
                 .copy(Trigger.super.toLocString(loc));
     }
 }

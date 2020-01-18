@@ -36,7 +36,7 @@ public class TwitchCheer implements TwitchChatTrigger, Messaged, Donated {
     @NonNull
     @Override
     public LocString toLocString(@NonNull Loc loc) {
-        return loc.withKey("{user} cheered {donation} to {twitch_channel}")
+        return loc.withKey("{author} cheered {donation} to {twitch_channel}")
                 .copy(TwitchChatTrigger.super.toLocString(loc))
                 .copy(Messaged.super.toLocString(loc))
                 .copy(Donated.super.toLocString(loc));
