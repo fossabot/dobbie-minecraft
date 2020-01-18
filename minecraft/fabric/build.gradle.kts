@@ -111,6 +111,9 @@ tasks.named<RunServerTask>("runServer") {
 
 tasks.named<RunClientTask>("runClient") {
     defaultCharacterEncoding = "UTF-8"
+    jvmArgs = listOf(
+            "-Dlog4j.configurationFile=" + project.file("log4j-debug.xml").absolutePath
+    )
     args = listOf(
             "--username", project.rootProject.property("clientRun.username") as String,
             "--uuid", project.rootProject.property("clientRun.uuid") as String,
