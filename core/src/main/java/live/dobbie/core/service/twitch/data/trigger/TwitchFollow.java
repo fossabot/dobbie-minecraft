@@ -3,7 +3,7 @@ package live.dobbie.core.service.twitch.data.trigger;
 import live.dobbie.core.context.factory.ContextClass;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.loc.LocString;
-import live.dobbie.core.service.twitch.TwitchChatClient;
+import live.dobbie.core.service.twitch.TwitchClient;
 import live.dobbie.core.service.twitch.data.TwitchChannel;
 import live.dobbie.core.service.twitch.data.TwitchUser;
 import live.dobbie.core.trigger.NamedTrigger;
@@ -20,9 +20,9 @@ import java.time.Instant;
 @Value
 @ContextClass
 @NamedTrigger("twitch_follow")
-public class TwitchFollow implements TwitchChatTrigger, Authored {
+public class TwitchFollow implements TwitchTrigger, Authored {
     @NonNull User user;
-    @NonNull TwitchChatClient client;
+    @NonNull TwitchClient client;
     @NonNull TwitchChannel channel;
     @NonNull Instant timestamp;
     @NonNull TwitchUser twitchAuthor;
@@ -32,7 +32,7 @@ public class TwitchFollow implements TwitchChatTrigger, Authored {
     @Override
     public LocString toLocString(@NonNull Loc loc) {
         return loc.withKey("{author} followed {twitch_channel}")
-                .copy(TwitchChatTrigger.super.toLocString(loc));
+                .copy(TwitchTrigger.super.toLocString(loc));
     }
 
     private final @NonNull CancellationHandler cancellationHandler;

@@ -52,6 +52,7 @@ public class TwitchSettings {
         final boolean enabled;
         @NonNull
         final String channel;
+        final String accessToken;
         @NonNull
         final LoggingConfig logging;
         @NonNull
@@ -60,10 +61,12 @@ public class TwitchSettings {
         @JsonCreator
         public Player(@JsonProperty(value = "enabled", required = true) boolean enabled,
                       @JsonProperty(value = "channel", required = true) @NonNull String channel,
+                      @JsonProperty(value = "accessToken") String accessToken,
                       @NonNull @JsonProperty(value = "logging", required = true) LoggingConfig logging,
                       @NonNull @JsonProperty(value = "events", required = true) Events events) {
             this.enabled = enabled;
             this.channel = channel;
+            this.accessToken = accessToken;
             this.logging = logging;
             this.events = events;
         }
@@ -91,6 +94,8 @@ public class TwitchSettings {
         final EventConfig cheer;
         @NonNull
         final EventConfig chat;
+        @NonNull
+        final EventConfig channelPoints;
         //@NonNull final EventConfig channelPoints;
         //@NonNull final CommandEventConfig command;
 

@@ -6,7 +6,7 @@ import live.dobbie.core.context.factory.ContextVar;
 import live.dobbie.core.dest.DestAwareTrigger;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.loc.LocString;
-import live.dobbie.core.service.twitch.TwitchChatClient;
+import live.dobbie.core.service.twitch.TwitchClient;
 import live.dobbie.core.service.twitch.TwitchInstance;
 import live.dobbie.core.service.twitch.data.TwitchChannel;
 import live.dobbie.core.service.twitch.data.TwitchUser;
@@ -17,8 +17,8 @@ import live.dobbie.core.trigger.cancellable.Cancellable;
 import lombok.NonNull;
 
 @ContextClass
-public interface TwitchChatTrigger extends UserRelatedTrigger, DestAwareTrigger, Authored, Cancellable {
-    @NonNull TwitchChatClient getClient();
+public interface TwitchTrigger extends UserRelatedTrigger, DestAwareTrigger, Authored, Cancellable {
+    @NonNull TwitchClient getClient();
 
     @ContextVar
     @NonNull TwitchChannel getChannel();

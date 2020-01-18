@@ -11,4 +11,8 @@ public class PlainMessage implements Message {
     public @NonNull String toPlainString() {
         return plainString;
     }
+
+    public static PlainMessage of(String message) {
+        return message == null ? null : new PlainMessage(message);
+    }
 }

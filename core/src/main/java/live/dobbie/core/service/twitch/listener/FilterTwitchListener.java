@@ -1,19 +1,19 @@
 package live.dobbie.core.service.twitch.listener;
 
+import com.github.philippheuer.events4j.domain.Event;
 import com.github.twitch4j.chat.events.AbstractChannelEvent;
-import com.github.twitch4j.chat.events.TwitchEvent;
 import com.github.twitch4j.chat.events.channel.*;
+import com.github.twitch4j.pubsub.events.ChannelPointsRedemptionEvent;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 @ToString
 public class FilterTwitchListener implements TwitchListener {
-    private final @NonNull Predicate<TwitchEvent> filter;
+    private final @NonNull Predicate<Event> filter;
     private final @NonNull TwitchListener delegate;
 
     @Override
@@ -66,23 +66,32 @@ public class FilterTwitchListener implements TwitchListener {
     }
 
     @Override
+    public void onChannelPointsRedemption(@NonNull ChannelPointsRedemptionEvent event) {
+        if (filter.test(event)) {
+            delegate.onChannelPointsRedemption(event);
+        }
+    }
+
+    @Override
     public void cleanup() {
         delegate.cleanup();
     }
 
     @RequiredArgsConstructor
     @ToString
-    public static class ChatRoomFilter implements Predicate<TwitchEvent> {
-        private final @NonNull String channelName;
+    public static class ChatRoomFilter implements Predicate<Event> {
+        private final @NonNull String channelId;
 
         @Override
-        public boolean test(TwitchEvent twitchEvent) {
-            if (twitchEvent instanceof IRCMessageEvent) {
-                Optional<String> eventChannelName = ((IRCMessageEvent) twitchEvent).getChannelName();
-                return eventChannelName.isPresent() && channelName.equals(eventChannelName.get());
+        public boolean test(Event event) {
+            if (event instanceof ChannelPointsRedemptionEvent) {
+                return channelId.equals(((ChannelPointsRedemptionEvent) event).getChannel().getId());
             }
-            return twitchEvent instanceof AbstractChannelEvent &&
-                    ((AbstractChannelEvent) twitchEvent).getChannel().getName().equals(channelName);
+            if (event instanceof IRCMessageEvent) {
+                return channelId.equals(((IRCMessageEvent) event).getChannelId());
+            }
+            return event instanceof AbstractChannelEvent &&
+                    ((AbstractChannelEvent) event).getChannel().getId().equals(channelId);
         }
     }
 }

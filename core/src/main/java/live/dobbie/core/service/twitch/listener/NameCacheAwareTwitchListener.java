@@ -3,9 +3,11 @@ package live.dobbie.core.service.twitch.listener;
 import com.github.twitch4j.chat.events.channel.*;
 import com.github.twitch4j.common.events.domain.EventChannel;
 import com.github.twitch4j.common.events.domain.EventUser;
+import com.github.twitch4j.pubsub.events.ChannelPointsRedemptionEvent;
 import live.dobbie.core.service.twitch.NameCache;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 
 
 @RequiredArgsConstructor
@@ -49,19 +51,26 @@ public class NameCacheAwareTwitchListener implements TwitchListener {
     }
 
     @Override
+    public void onChannelPointsRedemption(@NonNull ChannelPointsRedemptionEvent event) {
+        delegate.onChannelPointsRedemption(new ChannelPointsRedemptionEvent(convertUser(event.getUser()), convertChannel(event.getChannel()), event.getRedemption()));
+    }
+
+    @Override
     public void cleanup() {
         delegate.cleanup();
     }
 
-    private EventChannel convertChannel(EventChannel channel) {
-        /*if(channel == null) {
+    private EventChannel convertChannel(@Nullable EventChannel channel) {
+        if (channel == null) {
             return null;
         }
-        return new EventChannel(channel.getId(), requestDisplayName(channel.getId(), channel.getName()));*/
+        if (channel.getName() == null) {
+            channel = new EventChannel(channel.getId(), requestLogin(channel.getId()));
+        }
         return channel;
     }
 
-    private EventUser convertUser(EventUser user) {
+    private EventUser convertUser(@Nullable EventUser user) {
         if (user == null) {
             return null;
         }
@@ -69,6 +78,10 @@ public class NameCacheAwareTwitchListener implements TwitchListener {
     }
 
     private String requestDisplayName(String userId, String username) {
-        return nameCache.getDisplayNameOr(userId, username);
+        return nameCache.getDisplayNameOrLogin(userId, username);
+    }
+
+    private String requestLogin(String userId) {
+        return nameCache.getLogin(userId);
     }
 }

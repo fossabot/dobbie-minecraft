@@ -20,7 +20,7 @@ import java.util.Collections;
 
 import static org.mockito.Mockito.*;
 
-class TwitchChatClientTest {
+class TwitchClientTest {
 
     @Test
     @EnabledIfEnvironmentVariable(named = "twitch-test", matches = "true")
@@ -28,9 +28,9 @@ class TwitchChatClientTest {
         ISettings settings = Mockito.mock(ISettings.class);
         when(settings.registerListener(eq(TwitchSettings.Global.class), notNull())).thenReturn(Mockito.mock(SettingsSubscription.class));
         TwitchInstance instance = new TwitchInstance(settings);
-        TwitchChatClient client = new TwitchChatClient(instance);
+        TwitchClient client = new TwitchClient(instance, new NameCache(instance));
         instance.onSettingsUpdated(new TwitchSettings.Global(new TwitchSettings.Global.Client(System.getenv("twitch-test-login"), System.getenv("twitch-test-token"))));
-        client.registerListener(System.getenv("twitch-test-channel"), new TwitchListenerAdapter() {
+        client.registerListener(System.getenv("twitch-test-channel"), System.getenv("twitch-test-token"), new TwitchListenerAdapter() {
             @Override
             public void onSubscription(@NonNull SubscriptionEvent event) {
                 System.out.println("subscription event: " + event);
@@ -59,7 +59,7 @@ class TwitchChatClientTest {
             when(client1.getChat()).thenReturn(chat);
             return client1;
         });
-        TwitchChatClient client = new TwitchChatClient(instance) {
+        TwitchClient client = new TwitchClient(instance, new NameCache(instance)) {
             @Override
             void subscribeToClientEvents() {
                 // no-op
@@ -67,7 +67,7 @@ class TwitchChatClientTest {
         };
         instance.onSettingsUpdated(new TwitchSettings.Global(new TwitchSettings.Global.Client("login", "token")));
         TwitchListener listener = Mockito.mock(TwitchListener.class);
-        client.registerListener("test", listener);
+        client.registerListener("test", "token", listener);
         ChannelMessageEvent messageEvent = new ChannelMessageEvent(
                 new EventChannel("0", "test"),
                 new EventUser("1", "testUser"),
@@ -88,7 +88,7 @@ class TwitchChatClientTest {
             when(client1.getChat()).thenReturn(chat);
             return client1;
         });
-        TwitchChatClient client = Mockito.spy(new TwitchChatClient(instance) {
+        TwitchClient client = Mockito.spy(new TwitchClient(instance, new NameCache(instance)) {
             @Override
             void subscribeToClientEvents() {
                 // no-op
@@ -96,9 +96,9 @@ class TwitchChatClientTest {
         });
         instance.onSettingsUpdated(new TwitchSettings.Global(new TwitchSettings.Global.Client("login", "token")));
         TwitchListener listener = Mockito.mock(TwitchListener.class);
-        TwitchChatClient.ListenerRef listenerRef = client.registerListener("test", listener);
+        TwitchClient.ListenerRef listenerRef = client.registerListener("test", "token", listener);
         listenerRef.cleanup();
-        verify(client).leaveChannel(eq("test"));
+        verify(client).leaveChannel(eq("test"), notNull());
     }
 
 }

@@ -92,6 +92,7 @@ public class TwitchInstance implements Cleanable {
                 TwitchClientBuilder.builder()
                         .withEnableHelix(true)
                         .withEnableChat(true)
+                        .withEnablePubSub(true)
                         .withEventManager(DobbieTwitch4jEventManager.create())
                         .withChatAccount(new OAuth2Credential("oauth", global.getClient().getToken()))
                         .build();

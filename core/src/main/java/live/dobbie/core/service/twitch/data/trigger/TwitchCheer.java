@@ -4,7 +4,7 @@ import live.dobbie.core.context.factory.ContextClass;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.loc.LocString;
 import live.dobbie.core.misc.Price;
-import live.dobbie.core.service.twitch.TwitchChatClient;
+import live.dobbie.core.service.twitch.TwitchClient;
 import live.dobbie.core.service.twitch.data.TwitchChannel;
 import live.dobbie.core.service.twitch.data.TwitchUser;
 import live.dobbie.core.trigger.NamedTrigger;
@@ -23,9 +23,9 @@ import java.time.Instant;
 @Value
 @ContextClass
 @NamedTrigger("twitch_cheer")
-public class TwitchCheer implements TwitchChatTrigger, Messaged, Donated {
+public class TwitchCheer implements TwitchTrigger, Messaged, Donated {
     @NonNull User user;
-    @NonNull TwitchChatClient client;
+    @NonNull TwitchClient client;
     @NonNull TwitchChannel channel;
     @NonNull Instant timestamp;
     @NonNull TwitchUser twitchAuthor;
@@ -37,7 +37,7 @@ public class TwitchCheer implements TwitchChatTrigger, Messaged, Donated {
     @Override
     public LocString toLocString(@NonNull Loc loc) {
         return loc.withKey("{author} cheered {donation} to {twitch_channel}")
-                .copy(TwitchChatTrigger.super.toLocString(loc))
+                .copy(TwitchTrigger.super.toLocString(loc))
                 .copy(Messaged.super.toLocString(loc))
                 .copy(Donated.super.toLocString(loc));
     }

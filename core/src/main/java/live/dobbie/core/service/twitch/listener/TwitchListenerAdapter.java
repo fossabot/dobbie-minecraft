@@ -1,6 +1,7 @@
 package live.dobbie.core.service.twitch.listener;
 
 import com.github.twitch4j.chat.events.channel.*;
+import com.github.twitch4j.pubsub.events.ChannelPointsRedemptionEvent;
 import lombok.NonNull;
 
 public class TwitchListenerAdapter implements TwitchListener {
@@ -30,6 +31,10 @@ public class TwitchListenerAdapter implements TwitchListener {
 
     @Override
     public void onSubscription(@NonNull SubscriptionEvent event) {
+    }
+
+    @Override
+    public void onChannelPointsRedemption(@NonNull ChannelPointsRedemptionEvent event) {
     }
 
     @Override

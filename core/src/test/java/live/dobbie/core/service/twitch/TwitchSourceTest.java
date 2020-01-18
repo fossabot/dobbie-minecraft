@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class TwitchChatSourceTest {
+class TwitchSourceTest {
 
     @Test
     @EnabledIfEnvironmentVariable(named = "twitch-test", matches = "true")
@@ -31,34 +31,35 @@ class TwitchChatSourceTest {
         ISettings settings = Mockito.mock(ISettings.class);
         when(settings.registerListener(eq(TwitchSettings.Global.class), notNull())).thenReturn(Mockito.mock(SettingsSubscription.class));
         TwitchInstance instance = new TwitchInstance(settings);
-        TwitchChatClient client = new TwitchChatClient(instance);
+        TwitchClient client = new TwitchClient(instance, new NameCache(instance));
         instance.onSettingsUpdated(new TwitchSettings.Global(new TwitchSettings.Global.Client(System.getenv("twitch-test-login"), System.getenv("twitch-test-token"))));
-        TwitchChatSource source = new TwitchChatSource(client, Mockito.mock(CancellationHandler.class), Mockito.mock(User.class), settings, new NameCache(instance));
+        TwitchSource source = new TwitchSource(client, Mockito.mock(CancellationHandler.class), Mockito.mock(User.class), settings, new NameCache(instance));
         source.updateSettings(new TwitchSettings.Player(
-                        true, System.getenv("twitch-test-channel"),
-                        new LoggingConfig(new LoggingConfig.User(false), new LoggingConfig.Console(false)),
-                        new TwitchSettings.Events(
-                                new TwitchSettings.Events.SubscriptionEventConfig(
-                                        null, true, new TwitchSettings.Events.SubscriptionEventConfig.Tiers(
-                                        new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
-                                        new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
-                                        new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
-                                        new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true)
-                                )
-                                ),
-                                new TwitchSettings.Events.SubscriptionEventConfig(
-                                        null, true, new TwitchSettings.Events.SubscriptionEventConfig.Tiers(
-                                        new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
-                                        new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
-                                        new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
-                                        new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true)
-                                )
-                                ),
-                                new TwitchSettings.Events.EventConfig(null, true),
-                                new TwitchSettings.Events.EventConfig(null, true),
-                                new TwitchSettings.Events.EventConfig(null, true),
-                                new TwitchSettings.Events.EventConfig(null, true),
-                                new TwitchSettings.Events.EventConfig(null, true)
+                true, System.getenv("twitch-test-channel"), System.getenv("twitch-test-token"),
+                new LoggingConfig(new LoggingConfig.User(false), new LoggingConfig.Console(false)),
+                new TwitchSettings.Events(
+                        new TwitchSettings.Events.SubscriptionEventConfig(
+                                null, true, new TwitchSettings.Events.SubscriptionEventConfig.Tiers(
+                                new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
+                                new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
+                                new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
+                                new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true)
+                        )
+                        ),
+                        new TwitchSettings.Events.SubscriptionEventConfig(
+                                null, true, new TwitchSettings.Events.SubscriptionEventConfig.Tiers(
+                                new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
+                                new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
+                                new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true),
+                                new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true)
+                        )
+                        ),
+                        new TwitchSettings.Events.EventConfig(null, true),
+                        new TwitchSettings.Events.EventConfig(null, true),
+                        new TwitchSettings.Events.EventConfig(null, true),
+                        new TwitchSettings.Events.EventConfig(null, true),
+                        new TwitchSettings.Events.EventConfig(null, true),
+                        new TwitchSettings.Events.EventConfig(null, true)
                         /*new TwitchSettings.Events.EventConfig(null, true),
                         new TwitchSettings.Events.EventConfig(null, true),
                         new TwitchSettings.Events.EventConfig(null, true),
@@ -97,7 +98,7 @@ class TwitchChatSourceTest {
     void bitsCurrencyFormatUSTest() {
         DobbieLocale locale = mock(DobbieLocale.class);
         when(locale.getLocale()).thenReturn(ULocale.US);
-        Currency currency = TwitchChatSource.BITS_CURRENCY;
+        Currency currency = TwitchSource.BITS_CURRENCY;
         assertEquals("1 bit", currency.format(1, locale));
         assertEquals("2 bits", currency.format(2, locale));
     }
@@ -106,7 +107,7 @@ class TwitchChatSourceTest {
     void bitsCurrencyFormatRUTest() {
         DobbieLocale locale = mock(DobbieLocale.class);
         when(locale.getLocale()).thenReturn(ULocale.forLanguageTag("ru-RU"));
-        Currency currency = TwitchChatSource.BITS_CURRENCY;
+        Currency currency = TwitchSource.BITS_CURRENCY;
         assertEquals("1 bit", currency.format(1, locale));
         assertEquals("2 bits", currency.format(2, locale));
     }
@@ -115,7 +116,7 @@ class TwitchChatSourceTest {
     void bitsCurrencyFormatUnknownTest() {
         DobbieLocale locale = mock(DobbieLocale.class);
         when(locale.getLocale()).thenReturn(ULocale.forLanguageTag(""));
-        Currency currency = TwitchChatSource.BITS_CURRENCY;
+        Currency currency = TwitchSource.BITS_CURRENCY;
         assertEquals("1 bit", currency.format(1, locale));
         assertEquals("5 bits", currency.format(5, locale));
     }

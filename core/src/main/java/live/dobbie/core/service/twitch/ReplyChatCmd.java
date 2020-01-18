@@ -4,7 +4,7 @@ import live.dobbie.core.dest.cmd.*;
 import live.dobbie.core.exception.ParserException;
 import live.dobbie.core.misc.TextLocation;
 import live.dobbie.core.service.twitch.data.TwitchUser;
-import live.dobbie.core.service.twitch.data.trigger.TwitchChatTrigger;
+import live.dobbie.core.service.twitch.data.trigger.TwitchTrigger;
 import live.dobbie.core.substitutor.Substitutable;
 import live.dobbie.core.substitutor.SubstitutableParser;
 import live.dobbie.core.trigger.Trigger;
@@ -21,14 +21,14 @@ public class ReplyChatCmd implements Cmd {
     @Override
     public @NonNull CmdResult execute(@NonNull CmdContext context) throws CmdExecutionException {
         Trigger trigger = Cmd.notNull(context.getTrigger(), "trigger");
-        if (!(trigger instanceof TwitchChatTrigger)) {
-            throw new CmdExecutionException("command can only be executed on " + TwitchChatTrigger.class);
+        if (!(trigger instanceof TwitchTrigger)) {
+            throw new CmdExecutionException("command can only be executed on " + TwitchTrigger.class);
         }
-        TwitchChatTrigger twitchChatTrigger = (TwitchChatTrigger) trigger;
-        TwitchInstance twitchInstance = twitchChatTrigger.getTwitchInstance();
+        TwitchTrigger twitchTrigger = (TwitchTrigger) trigger;
+        TwitchInstance twitchInstance = twitchTrigger.getTwitchInstance();
 
-        String replyText = replyName(twitchChatTrigger.getTwitchAuthor()) + command.substitute(context.getEnvironment());
-        twitchInstance.sendMessage(twitchChatTrigger.getChannel(), replyText);
+        String replyText = replyName(twitchTrigger.getTwitchAuthor()) + command.substitute(context.getEnvironment());
+        twitchInstance.sendMessage(twitchTrigger.getChannel(), replyText);
 
         return CmdResult.SHOULD_CONTINUE;
     }

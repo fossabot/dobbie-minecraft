@@ -3,7 +3,7 @@ package live.dobbie.core.service.twitch.data.trigger;
 import live.dobbie.core.context.factory.ContextClass;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.loc.LocString;
-import live.dobbie.core.service.twitch.TwitchChatClient;
+import live.dobbie.core.service.twitch.TwitchClient;
 import live.dobbie.core.service.twitch.data.TwitchChannel;
 import live.dobbie.core.service.twitch.data.TwitchUser;
 import live.dobbie.core.trigger.NamedTrigger;
@@ -22,9 +22,9 @@ import java.time.Instant;
 @Value
 @ContextClass
 @NamedTrigger("twitch_message")
-public class TwitchMessage implements TwitchChatTrigger, Authored, Messaged {
+public class TwitchMessage implements TwitchTrigger, Authored, Messaged {
     @NonNull User user;
-    @NonNull TwitchChatClient client;
+    @NonNull TwitchClient client;
     @NonNull TwitchChannel channel;
     @NonNull Instant timestamp;
     @NonNull TwitchUser twitchAuthor;
@@ -35,7 +35,7 @@ public class TwitchMessage implements TwitchChatTrigger, Authored, Messaged {
     @Override
     public LocString toLocString(@NonNull Loc loc) {
         return loc.withKey("{author} wrote in the channel {twitch_channel}: {message}")
-                .copy(TwitchChatTrigger.super.toLocString(loc))
+                .copy(TwitchTrigger.super.toLocString(loc))
                 .copy(Messaged.super.toLocString(loc));
     }
 

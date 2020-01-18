@@ -3,7 +3,7 @@ package live.dobbie.core.service.twitch;
 import live.dobbie.core.context.ObjectContextBuilder;
 import live.dobbie.core.context.factory.list.ObjectContextInitializer;
 import live.dobbie.core.service.twitch.data.TwitchChannel;
-import live.dobbie.core.service.twitch.data.trigger.TwitchChatTrigger;
+import live.dobbie.core.service.twitch.data.trigger.TwitchTrigger;
 import live.dobbie.core.trigger.Trigger;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +21,11 @@ public class TwitchInterface {
     public static class AsObjectContextInitializer implements ObjectContextInitializer {
         @Override
         public void initialize(@NonNull ObjectContextBuilder cb, @NonNull Trigger trigger) {
-            if (!(trigger instanceof TwitchChatTrigger)) {
+            if (!(trigger instanceof TwitchTrigger)) {
                 return;
             }
-            TwitchChatTrigger twitchChatTrigger = (TwitchChatTrigger) trigger;
-            cb.set("twitch", new TwitchInterface(twitchChatTrigger.getTwitchInstance(), twitchChatTrigger.getChannel()));
+            TwitchTrigger twitchTrigger = (TwitchTrigger) trigger;
+            cb.set("twitch", new TwitchInterface(twitchTrigger.getTwitchInstance(), twitchTrigger.getChannel()));
         }
     }
 }

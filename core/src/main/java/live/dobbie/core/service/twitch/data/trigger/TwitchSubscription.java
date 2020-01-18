@@ -3,7 +3,7 @@ package live.dobbie.core.service.twitch.data.trigger;
 import live.dobbie.core.context.factory.ContextClass;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.loc.LocString;
-import live.dobbie.core.service.twitch.TwitchChatClient;
+import live.dobbie.core.service.twitch.TwitchClient;
 import live.dobbie.core.service.twitch.data.TwitchChannel;
 import live.dobbie.core.service.twitch.data.TwitchSubscriptionPlan;
 import live.dobbie.core.service.twitch.data.TwitchUser;
@@ -23,9 +23,9 @@ import java.time.Instant;
 @Value
 @ContextClass
 @NamedTrigger("twitch_subscription")
-public class TwitchSubscription implements TwitchChatTrigger, Authored, Messaged {
+public class TwitchSubscription implements TwitchTrigger, Authored, Messaged {
     @NonNull User user;
-    @NonNull TwitchChatClient client;
+    @NonNull TwitchClient client;
     @NonNull TwitchChannel channel;
     @NonNull Instant timestamp;
     @NonNull TwitchUser twitchAuthor;
@@ -41,7 +41,7 @@ public class TwitchSubscription implements TwitchChatTrigger, Authored, Messaged
     public LocString toLocString(@NonNull Loc loc) {
         return loc.withKey("{author} subscribed to {twitch_channel} with {twitch_sub_tier}")
                 .set("twitch_sub_tier", loc.withKey(plan.getTier().getLocName()))
-                .copy(TwitchChatTrigger.super.toLocString(loc));
+                .copy(TwitchTrigger.super.toLocString(loc));
     }
 
     private final @NonNull CancellationHandler cancellationHandler;

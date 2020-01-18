@@ -3,15 +3,18 @@ package live.dobbie.core.service.twitch.data.trigger;
 import live.dobbie.core.context.factory.ContextClass;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.loc.LocString;
+import live.dobbie.core.misc.Price;
 import live.dobbie.core.service.twitch.TwitchClient;
 import live.dobbie.core.service.twitch.data.TwitchChannel;
-import live.dobbie.core.service.twitch.data.TwitchSubscriptionPlan;
+import live.dobbie.core.service.twitch.data.TwitchChannelPointsReward;
 import live.dobbie.core.service.twitch.data.TwitchUser;
 import live.dobbie.core.trigger.NamedTrigger;
-import live.dobbie.core.trigger.authored.Authored;
 import live.dobbie.core.trigger.cancellable.CancellableDelegate;
 import live.dobbie.core.trigger.cancellable.Cancellation;
 import live.dobbie.core.trigger.cancellable.CancellationHandler;
+import live.dobbie.core.trigger.messaged.Message;
+import live.dobbie.core.trigger.messaged.Messaged;
+import live.dobbie.core.trigger.priced.Priced;
 import live.dobbie.core.user.User;
 import lombok.NonNull;
 import lombok.Value;
@@ -20,31 +23,30 @@ import java.time.Instant;
 
 @Value
 @ContextClass
-@NamedTrigger("twitch_gift_sub")
-public class TwitchGiftSubscription implements TwitchTrigger, Authored {
+@NamedTrigger("twitch_channel_points_redemption")
+public class TwitchChannelPointsRedemption implements TwitchTrigger, Messaged, Priced {
     @NonNull User user;
     @NonNull TwitchClient client;
     @NonNull TwitchChannel channel;
     @NonNull Instant timestamp;
     @NonNull TwitchUser twitchAuthor;
-    int count, totalCount;
-    @NonNull TwitchSubscriptionPlan plan;
+    @NonNull TwitchChannelPointsReward reward;
+    Message message;
     String preferredDestination;
+
+    @Override
+    public @NonNull Price getPrice() {
+        return reward.getCost();
+    }
 
     @NonNull
     @Override
     public LocString toLocString(@NonNull Loc loc) {
-        return loc.withKey("{author} gifted" +
-                "{twitch_gift_sub_count," +
-                "   =0 {zero}" +
-                "   one {one sub}" +
-                "   other {# subs}" +
-                "}" +
-                " of {twitch_gift_sub_plan}")
-                .set("twitch_gift_sub_count", count)
-                .set("twitch_total_gift_sub_count", count)
-                .set("twitch_gift_sub_plan", loc.withKey(plan.getTier().getLocName()))
-                .copy(TwitchTrigger.super.toLocString(loc));
+        return loc.withKey("{author} redeemed {reward} for {price} from {twitch_channel} with message \"{message}\"")
+                .set("reward", reward.getTitle())
+                .copy(TwitchTrigger.super.toLocString(loc))
+                .copy(Messaged.super.toLocString(loc))
+                .copy(Priced.super.toLocString(loc));
     }
 
     private final @NonNull CancellationHandler cancellationHandler;

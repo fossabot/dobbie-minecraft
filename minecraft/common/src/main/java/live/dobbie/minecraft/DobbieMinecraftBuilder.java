@@ -212,7 +212,7 @@ public class DobbieMinecraftBuilder {
                 new Dobbie(
                         new DobbieSettings(config, userSettingsProvider),
                         new Source.Factory.Provider.Immutable(Arrays.asList(
-                                new TwitchChatSourceFactory(
+                                new TwitchSourceFactory(
                                         twitchInstance,
                                         new ListCancellationHandler(Arrays.asList(
                                                 new UserNotifyingCancellationHandler(loc)

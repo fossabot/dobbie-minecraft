@@ -1,9 +1,10 @@
 package live.dobbie.core.service.twitch;
 
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
-import com.github.twitch4j.TwitchClient;
+import com.github.philippheuer.events4j.EventManager;
+import com.github.philippheuer.events4j.domain.Event;
 import com.github.twitch4j.TwitchClientBuilder;
-import com.github.twitch4j.chat.events.TwitchEvent;
+import com.github.twitch4j.pubsub.PubSubSubscription;
 import live.dobbie.core.service.twitch.listener.DelegateTwitchListener;
 import live.dobbie.core.service.twitch.listener.FilterTwitchListener;
 import live.dobbie.core.service.twitch.listener.TwitchListener;
@@ -13,77 +14,95 @@ import live.dobbie.core.util.logging.Logging;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
-public class TwitchChatClient implements Cleanable {
-    private static final ILogger LOGGER = Logging.getLogger(TwitchChatClient.class);
+public class TwitchClient implements Cleanable {
+    private static final ILogger LOGGER = Logging.getLogger(TwitchClient.class);
 
     private final List<ListenerRef> listeners = new CopyOnWriteArrayList<>();
 
     private final @Getter
     @NonNull TwitchInstance instance;
+    private final @NonNull NameCache nameCache;
     private final TwitchInstanceListener instanceListener;
 
-    private TwitchClient client;
+    private com.github.twitch4j.TwitchClient client;
 
-    public TwitchChatClient(@NonNull TwitchInstance instance) {
+    public TwitchClient(@NonNull TwitchInstance instance, @NonNull NameCache nameCache) {
         this.instance = instance;
+        this.nameCache = nameCache;
         instance.registerListener(instanceListener = this::updateClient, true);
     }
 
-    public ListenerRef registerListener(@NonNull String channel, @NonNull TwitchListener listener) {
+    public ListenerRef registerListener(@NonNull String channel, @NonNull String accessToken, @NonNull TwitchListener listener) {
         LOGGER.tracing("Registering listener on channel " + channel + ": " + listener);
-        joinChannel(channel);
-        ListenerRef listenerRef = new ListenerRef(channel, listener);
+        PubSubSubscription subscription = joinChannel(channel, accessToken);
+        ListenerRef listenerRef = new ListenerRef(channel, accessToken, subscription, listener);
         this.listeners.add(listenerRef);
         return listenerRef;
     }
 
     private void unregisterListener(ListenerRef ref) {
         LOGGER.tracing("Unregistering listener: " + ref);
-        leaveChannel(ref.channelName);
+        leaveChannel(ref.channelName, ref.subscription);
         listeners.remove(ref);
     }
 
-    void updateClient(TwitchClient client) {
+    void updateClient(com.github.twitch4j.TwitchClient client) {
         this.client = client;
         if (client != null) {
             LOGGER.tracing("Subscribing to events");
             subscribeToClientEvents();
             LOGGER.tracing("Joining channels");
             for (ListenerRef listener : listeners) {
-                joinChannel(listener.channelName);
+                joinChannel(listener.channelName, listener.accessToken);
             }
         }
         LOGGER.tracing("Updated according to the new settings");
     }
 
     void subscribeToClientEvents() {
-        this.client.getChat().getEventManager().onEvent(TwitchEvent.class).subscribe(this::dispatchEvent);
+        EventManager eventManager = this.client.getChat().getEventManager();
+        eventManager.onEvent(com.github.twitch4j.chat.events.TwitchEvent.class).subscribe(this::dispatchEvent);
+        eventManager.onEvent(com.github.twitch4j.common.events.TwitchEvent.class).subscribe(this::dispatchEvent);
     }
 
-    private void joinChannel(@NonNull String channelName) {
+    private PubSubSubscription joinChannel(@NonNull String channelName, @NonNull String accessToken) {
         LOGGER.tracing("Joining channel " + channelName);
         if (this.client != null && !isConnectedTo(channelName)) {
             this.client.getChat().joinChannel(channelName);
             LOGGER.tracing("Joined channel " + channelName);
+            return subscribeToPubSub(channelName, accessToken);
         }
+        return null;
     }
 
-    void leaveChannel(@NonNull String channelName) {
+    private PubSubSubscription subscribeToPubSub(@NonNull String channelName, @NonNull String accessToken) {
+        return this.client.getPubSub().listenForChannelPointsRedemptionEvents(
+                new OAuth2Credential("oauth", accessToken),
+                Long.parseLong(Objects.requireNonNull(nameCache.getId(channelName), "could not get id of " + channelName))
+        );
+    }
+
+    void leaveChannel(@NonNull String channelName, PubSubSubscription subscription) {
         LOGGER.tracing("Leaving channel " + channelName);
         if (this.client != null && isConnectedTo(channelName)) {
             this.client.getChat().leaveChannel(channelName);
             LOGGER.tracing("Left channel " + channelName);
+            unsubscribeFromPubSub(subscription);
+        }
+    }
+
+    private void unsubscribeFromPubSub(@Nullable PubSubSubscription subscription) {
+        if (subscription != null) {
+            this.client.getPubSub().unsubscribeFromTopic(subscription);
         }
     }
 
@@ -91,7 +110,7 @@ public class TwitchChatClient implements Cleanable {
         return listeners.stream().anyMatch(listenerRef -> listenerRef.channelName.equals(channelName));
     }
 
-    void dispatchEvent(TwitchEvent event) {
+    void dispatchEvent(Event event) {
         LOGGER.tracing("Dispatching event " + event);
         Method method = METHOD_MAP.get(event.getClass());
         if (method == null) {
@@ -117,11 +136,17 @@ public class TwitchChatClient implements Cleanable {
 
     @ToString(callSuper = true)
     public class ListenerRef extends DelegateTwitchListener {
-        private final @NonNull String channelName;
+        private final @NonNull String channelName, accessToken;
+        private PubSubSubscription subscription;
 
-        private ListenerRef(@NonNull String channelName, @NonNull TwitchListener delegate) {
+        private ListenerRef(@NonNull String channelName,
+                            @NonNull String accessToken,
+                            PubSubSubscription subscription,
+                            @NonNull TwitchListener delegate) {
             super(prepareListener(delegate, channelName));
             this.channelName = channelName;
+            this.accessToken = accessToken;
+            this.subscription = subscription;
         }
 
         public void cleanup() {
@@ -132,7 +157,7 @@ public class TwitchChatClient implements Cleanable {
     }
 
     private TwitchListener prepareListener(@NonNull TwitchListener delegate, @NonNull String channelName) {
-        return new FilterTwitchListener(new FilterTwitchListener.ChatRoomFilter(channelName), delegate);
+        return new FilterTwitchListener(new FilterTwitchListener.ChatRoomFilter(nameCache.requireId(channelName)), delegate);
     }
 
     private static final Map<Class, Method> METHOD_MAP;
@@ -145,11 +170,11 @@ public class TwitchChatClient implements Cleanable {
                 if (Modifier.isPublic(method.getModifiers())) {
                     if (method.getParameterCount() == 1) {
                         Class param = method.getParameterTypes()[0];
-                        if (TwitchEvent.class.isAssignableFrom(param)) {
+                        if (Event.class.isAssignableFrom(param)) {
                             LOGGER.tracing("Added into METHOD_MAP: " + param + " -> " + method);
                             map.put(param, method);
                         } else {
-                            LOGGER.warning("Argument#0 (" + param + ") of " + method + " cannot be assigned to " + TwitchEvent.class + ", ignoring");
+                            LOGGER.warning("Argument#0 (" + param + ") of " + method + " cannot be assigned to " + Event.class + ", ignoring");
                         }
                     } else {
                         LOGGER.warning("Method " + method + " does not have exactly 1 argument, ignoring");

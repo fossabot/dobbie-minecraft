@@ -27,7 +27,7 @@ public interface Priced extends Trigger {
     @Override
     default LocString toLocString(@NonNull Loc loc) {
         return loc.args()
-                .set("price", getPrice().toString())
+                .set("price", getPrice())
                 .copy(Trigger.super.toLocString(loc));
     }
 }
