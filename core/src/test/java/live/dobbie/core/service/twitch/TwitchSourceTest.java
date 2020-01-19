@@ -1,6 +1,5 @@
 package live.dobbie.core.service.twitch;
 
-import com.ibm.icu.util.ULocale;
 import live.dobbie.core.config.DobbieLocale;
 import live.dobbie.core.config.LoggingConfig;
 import live.dobbie.core.loc.Loc;
@@ -11,6 +10,7 @@ import live.dobbie.core.settings.listener.SettingsSubscription;
 import live.dobbie.core.trigger.Trigger;
 import live.dobbie.core.trigger.cancellable.CancellationHandler;
 import live.dobbie.core.user.User;
+import live.dobbie.icu.util.ULocale;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.mockito.Mockito;

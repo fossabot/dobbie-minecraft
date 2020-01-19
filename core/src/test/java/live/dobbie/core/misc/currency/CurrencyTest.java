@@ -1,7 +1,7 @@
 package live.dobbie.core.misc.currency;
 
-import com.ibm.icu.util.ULocale;
 import live.dobbie.core.config.DobbieLocale;
+import live.dobbie.icu.util.ULocale;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

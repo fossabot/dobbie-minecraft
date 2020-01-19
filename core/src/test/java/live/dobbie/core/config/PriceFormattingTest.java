@@ -1,7 +1,7 @@
 package live.dobbie.core.config;
 
-import com.ibm.icu.util.ULocale;
 import live.dobbie.core.misc.Price;
+import live.dobbie.icu.util.ULocale;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

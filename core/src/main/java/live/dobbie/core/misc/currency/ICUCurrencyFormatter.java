@@ -1,14 +1,14 @@
 package live.dobbie.core.misc.currency;
 
-import com.ibm.icu.text.NumberFormat;
 import live.dobbie.core.config.DobbieLocale;
+import live.dobbie.icu.text.NumberFormat;
 import lombok.NonNull;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 
 @Value
 public class ICUCurrencyFormatter implements CurrencyFormatter {
-    @NonNull com.ibm.icu.util.Currency icuCurrency;
+    @NonNull live.dobbie.icu.util.Currency icuCurrency;
 
     @NotNull
     @Override

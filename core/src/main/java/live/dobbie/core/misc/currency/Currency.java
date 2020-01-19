@@ -38,7 +38,7 @@ public class Currency implements CurrencyFormatter {
     }
 
     private static Currency createFrom(@NonNull String currencyName) {
-        com.ibm.icu.util.Currency icuCurrency = ICUCurrencyCache.get(currencyName);
+        live.dobbie.icu.util.Currency icuCurrency = ICUCurrencyCache.get(currencyName);
         CurrencyFormatter underlyingFormatter;
         if (icuCurrency == null) {
             underlyingFormatter = new ICUDefaultCurrencyFormatter(currencyName);

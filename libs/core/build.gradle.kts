@@ -2,7 +2,7 @@ applyLibrariesConfiguration()
 
 dependencies {
     // https://github.com/turikhay/twitch4j
-    "shade"("com.github.twitch4j:twitch4j:0.99.0")
+    "shade"("com.github.twitch4j:twitch4j:0.99.1")
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
     "shade"("com.fasterxml.jackson.core:jackson-core:2.9.10")
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
@@ -15,6 +15,8 @@ dependencies {
     "shade"("com.opencsv:opencsv:5.0")
     // https://mvnrepository.com/artifact/org.mozilla/rhino
     "shade"("org.mozilla:rhino:1.7.11")
+    // https://mvnrepository.com/artifact/com.ibm.icu/icu4j
+    "shade"("com.ibm.icu:icu4j:65.1")
 
     "shade"("net.kyori:text-api:${Versions.TEXT}")
     "shade"("net.kyori:text-serializer-gson:${Versions.TEXT}")

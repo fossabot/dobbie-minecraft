@@ -1,6 +1,6 @@
 package live.dobbie.core.misc.currency;
 
-import com.ibm.icu.util.Currency;
+import live.dobbie.icu.util.Currency;
 import org.junit.jupiter.api.Test;
 
 import static live.dobbie.core.misc.currency.ICUCurrencyCache.get;

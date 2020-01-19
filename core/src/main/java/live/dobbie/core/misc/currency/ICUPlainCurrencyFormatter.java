@@ -1,7 +1,7 @@
 package live.dobbie.core.misc.currency;
 
-import com.ibm.icu.text.MessageFormat;
 import live.dobbie.core.config.DobbieLocale;
+import live.dobbie.icu.text.MessageFormat;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NonNull;

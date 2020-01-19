@@ -1,9 +1,9 @@
 package live.dobbie.core.loc;
 
-import com.ibm.icu.text.MessageFormat;
-import com.ibm.icu.util.ULocale;
 import live.dobbie.core.config.DobbieLocale;
 import live.dobbie.core.misc.Price;
+import live.dobbie.icu.text.MessageFormat;
+import live.dobbie.icu.util.ULocale;
 import lombok.*;
 
 import java.util.HashMap;
