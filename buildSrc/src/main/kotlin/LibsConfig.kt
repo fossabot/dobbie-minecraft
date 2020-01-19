@@ -25,6 +25,11 @@ fun Project.applyLibrariesConfiguration() {
 
     group = "${rootProject.group}.${ext["projectName"]}-libs"
 
+    val libRelocations = mapOf(
+            "net.kyori.text" to "util.formatting.text",
+            "com.ibm.icu" to "icu"
+    )
+
     tasks.register<ShadowJar>("jar") {
         configurations = listOf(project.configurations["shade"])
         archiveClassifier.set("")
@@ -36,7 +41,10 @@ fun Project.applyLibrariesConfiguration() {
             exclude(dependency("org.slf4j:slf4j-api"))
         }
 
-        relocate("net.kyori.text", (rootProject.group as String) + ".util.formatting.text")
+
+        libRelocations.forEach {
+            relocate(it.key, (rootProject.group as String) + "." + it.value)
+        }
         /*relocate("io", (rootProject.group as String) + ".relocate.io")
         relocate("com", (rootProject.group as String) + ".relocate.com") {
             exclude("com.google.code.**")
@@ -78,13 +86,22 @@ fun Project.applyLibrariesConfiguration() {
         from({
             altConfigFiles("sources")
         })
-        val filePattern = Regex("(.*)net/kyori/text((?:/|$).*)")
-        val textPattern = Regex("net\\.kyori\\.text")
+
         eachFile {
-            filter {
-                it.replaceFirst(textPattern, (rootProject.group as String) + ".util.formatting.text")
+            filter { f ->
+                var rf = f
+                libRelocations.forEach { e ->
+                    val textPattern = Regex(e.key.replace(".", "\\."))
+                    rf = rf.replaceFirst(textPattern, (rootProject.group as String) + "." + e.value)
+                }
+                rf
             }
-            path = path.replaceFirst(filePattern, "$1${(rootProject.group as String).replace(".", "/")}/util/formatting/text$2")
+            var rp = path
+            libRelocations.forEach { e ->
+                val filePattern = Regex("(.*)" + e.key.replace('.', '/') + "((?:/|$).*)")
+                rp = rp.replaceFirst(filePattern, "$1${(rootProject.group as String).replace(".", "/")}/${e.value.replace('.', '/')}$2")
+            }
+            path = rp
         }
         archiveClassifier.set("sources")
     }
