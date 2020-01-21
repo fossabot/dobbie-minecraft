@@ -13,6 +13,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
@@ -87,7 +89,7 @@ public class BukkitPlayer implements User, BukkitEntityBase, MinecraftOnlinePlay
 
     @Override
     public void sendActionBar(@NonNull String message) {
-        TextAdapter.sendActionBar(getNativePlayer(), LegacyComponentSerializer.INSTANCE.deserialize(message));
+        getNativePlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
     }
 
     @Override
