@@ -97,7 +97,6 @@ public interface FabricEntityNbtConvertible extends FabricNbtConvertible {
         }
 
         // TODO potion effects
-        // TODO despawnAfter
 
         if (entityTemplate.getRiding() != null) {
             ListTag passengers = new ListTag();

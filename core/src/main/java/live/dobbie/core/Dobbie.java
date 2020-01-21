@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-// TODO test trigger every dobbie tick (or when settings are updated)
-// TODO merge with fabric
-// TODO implement bukkit, forge, sponge, nukkit
 @RequiredArgsConstructor //(access = AccessLevel.PACKAGE)
 public class Dobbie implements UserRegisterListener {
     private static final ILogger LOGGER = Logging.getLogger(Dobbie.class);
