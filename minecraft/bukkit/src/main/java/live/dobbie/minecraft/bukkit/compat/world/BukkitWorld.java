@@ -3,6 +3,7 @@ package live.dobbie.minecraft.bukkit.compat.world;
 import live.dobbie.core.scheduler.Scheduler;
 import live.dobbie.minecraft.bukkit.compat.BukkitLocation;
 import live.dobbie.minecraft.bukkit.compat.BukkitServer;
+import live.dobbie.minecraft.bukkit.compat.block.BukkitBlockInfo;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitEntity;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitEntityTemplate;
 import live.dobbie.minecraft.compat.MinecraftLocation;
@@ -16,9 +17,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 
 import java.lang.ref.WeakReference;
@@ -53,18 +57,27 @@ public class BukkitWorld implements MinecraftWorld, Scheduler {
 
     @Override
     public MinecraftBlock getBlockAt(@NonNull MinecraftLocation location) {
-        // TODO getBlockAt
-        return null;
+        Location nativeLocation = BukkitLocation.getLocation(location);
+        return scheduleAndWait(() -> {
+            Block block = getNativeWorld().getBlockAt(nativeLocation);
+            return new MinecraftBlock(location, new BukkitBlockInfo(block.getBlockData()));
+        });
     }
 
     @Override
     public void setBlockAt(@NonNull MinecraftBlockInfo blockMeta, @NonNull MinecraftLocation location) {
-        // TODO setBlockAt
+        BlockData blockData = BukkitBlockInfo.getBlockData(blockMeta);
+        Location nativeLocation = BukkitLocation.getLocation(location);
+        scheduleAndWait(() -> {
+            Block block = getNativeWorld().getBlockAt(nativeLocation);
+            block.setBlockData(blockData);
+        });
     }
 
     @Override
     public void placeBlockAt(@NonNull MinecraftBlockInfo blockMeta, @NonNull MinecraftLocation location) {
         // TODO placeBlockAt not implemented
+        setBlockAt(blockMeta, location);
     }
 
     @Override
