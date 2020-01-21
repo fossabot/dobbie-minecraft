@@ -1,7 +1,7 @@
 package live.dobbie.minecraft.bukkit.compat;
 
 import live.dobbie.core.scheduler.Scheduler;
-import live.dobbie.minecraft.bukkit.compat.bukkit.BukkitBlockInfoTable;
+import live.dobbie.minecraft.bukkit.compat.block.BukkitBlockInfoTable;
 import live.dobbie.minecraft.bukkit.compat.converter.BukkitIdConverter;
 import live.dobbie.minecraft.bukkit.compat.entity.BukkitEntityTemplateFactory;
 import live.dobbie.minecraft.bukkit.compat.item.BukkitItemInfoFactory;

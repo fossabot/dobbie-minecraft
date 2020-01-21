@@ -1,4 +1,4 @@
-package live.dobbie.minecraft.bukkit.compat.bukkit;
+package live.dobbie.minecraft.bukkit.compat.block;
 
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfoTable;
 import lombok.NonNull;
