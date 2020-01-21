@@ -23,8 +23,8 @@ class IdSchedulerServiceTest {
                 .thenReturn(mock(ScheduledFuture.class));
         service = new IdSchedulerService(scheduledExecutorService) {
             @Override
-            IdSchedulerService.Task createTask(Consumer<IdScheduledTask> r) {
-                return spy(new Task(r));
+            Task createTask(Object identifier, Consumer<IdScheduledTask> r) {
+                return spy(new Task(identifier, r));
             }
         };
     }
