@@ -53,6 +53,9 @@ import live.dobbie.core.script.js.moduleprovider.URIAwareModuleProvider;
 import live.dobbie.core.service.ServiceRegistry;
 import live.dobbie.core.service.chargeback.ChargebackService;
 import live.dobbie.core.service.chargeback.ChargebackStorage;
+import live.dobbie.core.service.scheduler.IdSchedulerService;
+import live.dobbie.core.service.scheduler.IdTaskScheduledCmd;
+import live.dobbie.core.service.scheduler.IdTaskScheduler;
 import live.dobbie.core.service.twitch.*;
 import live.dobbie.core.settings.Settings;
 import live.dobbie.core.settings.source.jackson.JacksonNode;
@@ -168,16 +171,30 @@ public class DobbieMinecraftBuilder {
                 .varMod("de", VarConverter.DoubleJsonEscaping.INSTANCE)
                 .varMod("raw", VarConverter.Identity.INSTANCE)
                 .build();
+        ServiceRegistry serviceRegistry = ServiceRegistry.builder()
+                .registerFactory(ChargebackService.class, new ChargebackService.RefFactory(userSettingsProvider, new ChargebackStorage.Factory() {
+                    @Override
+                    public @NonNull ChargebackStorage create(@NonNull User user) {
+                        return ChargebackStorage.UsingCSV.excelFriendly(new FileSupplier(new File(configDir, "chargebacks/" + user.getName() + ".csv")));
+                    }
+                }))
+                .registerFactory(PersistenceService.class, new PersistenceService.RefFactory(Arrays.asList(
+                        new SessionObjectStorage.Factory()
+                )))
+                .registerFactory(IdTaskScheduler.class, new IdSchedulerService.RefFactory())
+                .build();
         sequentalCmdParser.registerParser(
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("execute_after"), new IdTaskScheduledCmd.ExecuteAfter.Parser(serviceRegistry, sequentalCmdParser)),
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("repeat_every"), new IdTaskScheduledCmd.RepeatEvery.Parser(serviceRegistry, sequentalCmdParser)),
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("send"), new SendCmd.Parser(plainSubstitutorParser, false)),
-                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("sendraw"), new SendRawCmd.Parser(plainSubstitutorParser)),
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("send_raw"), new SendRawCmd.Parser(plainSubstitutorParser)),
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("error"), new SendCmd.Parser(plainSubstitutorParser, true)),
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("wait"), new WaitCmd.Parser(plainSubstitutorParser, WaitCmd.WaitStrategy.DEFAULT)),
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("player"), new ExecutePlayer.Parser(plainSubstitutorParser)),
-                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("atplayer"), new ExecuteAtPlayer.Parser(plainSubstitutorParser, new ExecuteAtPlayer.ConsoleExecuteAt(() -> compatSupplier.get().getServer()))),
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("at_player"), new ExecuteAtPlayer.Parser(plainSubstitutorParser, new ExecuteAtPlayer.ConsoleExecuteAt(() -> compatSupplier.get().getServer()))),
                 new ReplyChatCmd.Parser(Arrays.asList("twitch_reply", "reply"), plainSubstitutorParser),
                 new ConditionalScriptCmdParser<>(
-                        Arrays.asList("javascriptif", "jsif"),
+                        Arrays.asList("javascript_if", "js_if"),
                         jsScriptExecutor,
                         jsScriptContextFactory,
                         jsScriptCompiler,
@@ -196,17 +213,6 @@ public class DobbieMinecraftBuilder {
                 ),
                 new SubstitutorCmd.Parser(plainSubstitutorParser)//new ElemParser(Collections.singletonList(new AnyVarElem.Factory())))
         );
-        ServiceRegistry serviceRegistry = ServiceRegistry.builder()
-                .registerFactory(ChargebackService.class, new ChargebackService.RefFactory(userSettingsProvider, new ChargebackStorage.Factory() {
-                    @Override
-                    public @NonNull ChargebackStorage create(@NonNull User user) {
-                        return ChargebackStorage.UsingCSV.excelFriendly(new FileSupplier(new File(configDir, "chargebacks/" + user.getName() + ".csv")));
-                    }
-                }))
-                .registerFactory(PersistenceService.class, new PersistenceService.RefFactory(Arrays.asList(
-                        new SessionObjectStorage.Factory()
-                )))
-                .build();
         //ChargebackHandler.Factory chargebackHandlerFactory = user -> new ChargebackHandler(serviceRegistry.createReference(ChargebackService.class, user));
         DobbiePlugin plugin = new DobbiePlugin(
                 new Dobbie(
