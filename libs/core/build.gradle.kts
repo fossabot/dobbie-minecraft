@@ -14,7 +14,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.opencsv/opencsv
     "shade"("com.opencsv:opencsv:5.0")
     // https://mvnrepository.com/artifact/org.mozilla/rhino
-    "shade"("org.mozilla:rhino:1.7.11")
+    "shade"("org.mozilla:rhino:1.7.12")
     // https://mvnrepository.com/artifact/com.ibm.icu/icu4j
     "shade"("com.ibm.icu:icu4j:65.1")
 
