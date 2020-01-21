@@ -7,6 +7,7 @@ import live.dobbie.minecraft.compat.MinecraftLocation;
 import live.dobbie.minecraft.compat.block.MinecraftBlock;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfo;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplate;
+import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplateFactory;
 import live.dobbie.minecraft.compat.world.MinecraftSoundCategory;
 import live.dobbie.minecraft.compat.world.MinecraftWorld;
 import live.dobbie.minecraft.fabric.compat.FabricCompat;
@@ -101,19 +102,25 @@ public class FabricWorld implements MinecraftWorld, Scheduler {
                 return null;
             }
             CompoundTag compoundTag = ((FabricEntityNbtConvertible) entityTemplate).toCompoundTag(instance.getIdConverter());
-            Entity entity = EntityType.loadEntityWithPassengers(compoundTag, nativeWorld, (vehicleEntity) -> {
+            Entity nativeEntity = EntityType.loadEntityWithPassengers(compoundTag, nativeWorld, (vehicleEntity) -> {
                 vehicleEntity.setPositionAndAngles(location.getX(), location.getY(), location.getZ(), vehicleEntity.yaw, vehicleEntity.pitch);
                 return nativeWorld.tryLoadEntity(vehicleEntity) ? vehicleEntity : null;
             });
-            if (entity instanceof MobEntity) {
-                ((MobEntity) entity).initialize(nativeWorld, nativeWorld.getLocalDifficulty(new BlockPos(entity)),
+            if (nativeEntity == null) {
+                throw new RuntimeException("could not load entity from template " + entityTemplate);
+            }
+            if (nativeEntity instanceof MobEntity) {
+                ((MobEntity) nativeEntity).initialize(nativeWorld, nativeWorld.getLocalDifficulty(new BlockPos(nativeEntity)),
                         SpawnType.COMMAND, // we probably spawned by a Dobbie command
                         null,
                         null
                 );
             }
-            // TODO despawnAfter
-            return new FabricEntity(instance, entity);
+            FabricEntity entity = new FabricEntity(instance, nativeEntity);
+            if (entityTemplate.getDespawnAfterTicks() != MinecraftEntityTemplateFactory.DEFAULT_INT_VALUE) {
+                instance.getEntityDespawner().queueDespawn(entity, entityTemplate.getDespawnAfterTicks());
+            }
+            return entity;
         });
     }
 

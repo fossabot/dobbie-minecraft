@@ -10,6 +10,7 @@ import live.dobbie.minecraft.bukkit.compat.world.BukkitWorldTable;
 import live.dobbie.minecraft.compat.MinecraftCompat;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfoTable;
 import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
+import live.dobbie.minecraft.compat.entity.MinecraftEntityDespawner;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventorySlotTable;
 import live.dobbie.minecraft.compat.potion.MinecraftPotionEffectFactory;
 import live.dobbie.minecraft.compat.world.MinecraftSoundCategoryTable;
@@ -30,6 +31,8 @@ public class BukkitCompat implements MinecraftCompat {
     public final BukkitWorldTable worlds;
     public final BukkitIdConverter idConverter;
     public final BukkitSoundCategoryTable soundCats;
+
+    private final MinecraftEntityDespawner entityDespawner = new MinecraftEntityDespawner();
 
     public BukkitCompat(@NonNull Supplier<Server> serverSupplier, @NonNull Scheduler scheduler) {
         this.serverSupplier = serverSupplier;
@@ -87,5 +90,10 @@ public class BukkitCompat implements MinecraftCompat {
     @Override
     public @NonNull MinecraftSoundCategoryTable getSoundCategoryTable() {
         return soundCats;
+    }
+
+    @Override
+    public @NonNull MinecraftEntityDespawner getEntityDespawner() {
+        return entityDespawner;
     }
 }

@@ -2,6 +2,7 @@ package live.dobbie.minecraft.compat;
 
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfoTable;
 import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
+import live.dobbie.minecraft.compat.entity.MinecraftEntityDespawner;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplateFactory;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventorySlotTable;
 import live.dobbie.minecraft.compat.item.MinecraftItemInfoFactory;
@@ -29,6 +30,8 @@ public interface MinecraftCompat {
     @NonNull MinecraftWorldTable getWorldTable();
 
     @NonNull MinecraftSoundCategoryTable getSoundCategoryTable();
+
+    @NonNull MinecraftEntityDespawner getEntityDespawner();
 
     default @NonNull Vector unitVector() {
         return Vector.unit();

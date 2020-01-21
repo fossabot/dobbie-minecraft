@@ -9,6 +9,7 @@ import live.dobbie.minecraft.compat.MinecraftLocation;
 import live.dobbie.minecraft.compat.block.MinecraftBlock;
 import live.dobbie.minecraft.compat.block.MinecraftBlockInfo;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplate;
+import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplateFactory;
 import live.dobbie.minecraft.compat.world.MinecraftSoundCategory;
 import live.dobbie.minecraft.compat.world.MinecraftWorld;
 import lombok.EqualsAndHashCode;
@@ -67,13 +68,17 @@ public class BukkitWorld implements MinecraftWorld, Scheduler {
     @Override
     public BukkitEntity spawnEntity(@NonNull MinecraftEntityTemplate entityInfo, @NonNull MinecraftLocation location) {
         return scheduleAndWait(() -> {
-            Entity entity = BukkitEntityTemplate.spawnAndProcess(
+            Entity nativeEntity = BukkitEntityTemplate.spawnAndProcess(
                     entityInfo,
                     getNativeWorld(),
                     BukkitLocation.getLocation(location),
                     server.getInstance().getIdConverter()
             );
-            return new BukkitEntity(server.getInstance(), new WeakReference<>(entity), entity.getUniqueId());
+            BukkitEntity entity = new BukkitEntity(server.getInstance(), new WeakReference<>(nativeEntity), nativeEntity.getUniqueId());
+            if (entityInfo.getDespawnAfterTicks() != MinecraftEntityTemplateFactory.DEFAULT_INT_VALUE) {
+                server.getInstance().getEntityDespawner().queueDespawn(entity, entityInfo.getDespawnAfterTicks());
+            }
+            return entity;
         });
     }
 

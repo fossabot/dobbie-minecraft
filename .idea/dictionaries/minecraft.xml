@@ -2,6 +2,9 @@
   <dictionary name="minecraft">
     <words>
       <w>bukkit</w>
+      <w>despawn</w>
+      <w>despawner</w>
+      <w>minecraft</w>
       <w>overworld</w>
       <w>spawnable</w>
       <w>spawner</w>

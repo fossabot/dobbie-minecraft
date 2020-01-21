@@ -4,6 +4,7 @@ import live.dobbie.core.scheduler.Scheduler;
 import live.dobbie.minecraft.compat.MinecraftCompat;
 import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
 import live.dobbie.minecraft.compat.converter.TheFlattening;
+import live.dobbie.minecraft.compat.entity.MinecraftEntityDespawner;
 import live.dobbie.minecraft.compat.inventory.MinecraftInventorySlotTable;
 import live.dobbie.minecraft.compat.potion.MinecraftPotionEffectFactory;
 import live.dobbie.minecraft.compat.world.MinecraftSoundCategoryTable;
@@ -34,6 +35,8 @@ public class FabricCompat implements MinecraftCompat, Scheduler {
 
     public final TheFlattening theFlattening = new TheFlattening();
     public final MinecraftIdConverter idConverter = theFlattening.getDefaultNameConverter();
+
+    private final MinecraftEntityDespawner entityDespawner = new MinecraftEntityDespawner();
 
     public FabricCompat(@NonNull Supplier<MinecraftServer> serverSupplier) {
         this.entities = new FabricEntityTemplateFactory(items);
@@ -82,5 +85,10 @@ public class FabricCompat implements MinecraftCompat, Scheduler {
     @Override
     public @NonNull MinecraftSoundCategoryTable getSoundCategoryTable() {
         return soundCats;
+    }
+
+    @Override
+    public @NonNull MinecraftEntityDespawner getEntityDespawner() {
+        return entityDespawner;
     }
 }

@@ -74,9 +74,6 @@ public interface BukkitEntitySpawner {
         if(entityTemplate.isInvulnerable()) {
             entity.setInvulnerable(true);
         }
-
-        // TODO despawnAfter
-
         if(entityTemplate.getRiding() != null) {
             if(entityTemplate.getRiding() instanceof BukkitEntityTemplate.BukkitEntityTemplateBuilder) {
                 BukkitEntityTemplate vehicle = (BukkitEntityTemplate) entityTemplate.getRiding().build();
@@ -87,7 +84,6 @@ public interface BukkitEntitySpawner {
                 throw new RuntimeException(MinecraftEntityTemplate.class + " must be created in " + BukkitEntityTemplateFactory.class);
             }
         }
-
         return entity;
     }
 
