@@ -33,7 +33,7 @@ public interface Donated extends Authored, Priced, Cancellable {
     @Override
     default LocString toLocString(@NonNull Loc loc) {
         return loc.args()
-                .set("donation", getPrice().toString())
+                .set("donation", getPrice())
                 .copy(Authored.super.toLocString(loc))
                 .copy(Priced.super.toLocString(loc))
                 .copy(Cancellable.super.toLocString(loc));
