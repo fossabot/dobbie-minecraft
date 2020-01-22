@@ -1,9 +1,9 @@
 package live.dobbie.core.script.js;
 
 import live.dobbie.core.context.SimpleContext;
+import live.dobbie.core.context.storage.MutablePrimitiveStorage;
+import live.dobbie.core.context.storage.PrimitiveStorage;
 import live.dobbie.core.misc.primitive.Primitive;
-import live.dobbie.core.misc.primitive.storage.MutablePrimitiveStorage;
-import live.dobbie.core.misc.primitive.storage.PrimitiveStorage;
 import live.dobbie.core.path.Path;
 import live.dobbie.core.script.ScriptCompilationException;
 import live.dobbie.core.script.ScriptExecutionException;

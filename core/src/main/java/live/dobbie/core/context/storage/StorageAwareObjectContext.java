@@ -1,4 +1,4 @@
-package live.dobbie.core.misc.primitive.storage;
+package live.dobbie.core.context.storage;
 
 import live.dobbie.core.context.ObjectContext;
 import live.dobbie.core.context.ObjectContextBuilder;
