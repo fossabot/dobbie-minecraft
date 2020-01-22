@@ -31,9 +31,7 @@ dependencies {
 
     listOf(
             "net.fabricmc.fabric-api:fabric-api-base:0.1.2+28f8190f42",
-            "net.fabricmc.fabric-api:fabric-events-interaction-v0:0.2.6+12515ed975",
-            "net.fabricmc.fabric-api:fabric-events-lifecycle-v0:0.1.2+b7f9825de8",
-            "net.fabricmc.fabric-api:fabric-networking-v0:0.1.7+12515ed975"
+            "net.fabricmc.fabric-api:fabric-events-lifecycle-v0:0.1.2+b7f9825de8"
     ).forEach {
         "include"(it)
         "modImplementation"(it)

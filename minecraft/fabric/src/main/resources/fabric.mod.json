@@ -23,11 +23,9 @@
     "dobbie.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.7.2",
+    "fabricloader": ">=0.7.0",
     "fabric-api-base": "*",
     "fabric-events-lifecycle-v0": "*",
-    "fabric-events-interaction-v0": "*",
-    "fabric-networking-v0": "*",
     "minecraft": "1.15.x"
   },
   "suggests": {
