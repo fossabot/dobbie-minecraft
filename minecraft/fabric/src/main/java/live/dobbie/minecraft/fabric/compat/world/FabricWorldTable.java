@@ -1,10 +1,7 @@
 package live.dobbie.minecraft.fabric.compat.world;
 
-import live.dobbie.minecraft.compat.world.MinecraftWorldId;
 import live.dobbie.minecraft.compat.world.MinecraftWorldTable;
-import lombok.Getter;
 import lombok.NonNull;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
@@ -32,7 +29,7 @@ public class FabricWorldTable implements MinecraftWorldTable {
 
     @Override
     public FabricWorldId byName(@NonNull String name) {
-        DimensionType dimensionType = Registry.DIMENSION.get(new Identifier(name));
+        DimensionType dimensionType = Registry.DIMENSION_TYPE.get(new Identifier(name));
         return dimensionType == null? null : new FabricWorldId(dimensionType);
     }
 }
