@@ -7,6 +7,7 @@ import java.time.Instant;
 
 import static live.dobbie.core.misc.primitive.Primitive.of;
 import static live.dobbie.core.misc.primitive.Primitive.parse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PrimitiveTest {

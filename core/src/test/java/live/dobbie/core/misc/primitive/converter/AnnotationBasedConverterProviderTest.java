@@ -5,8 +5,7 @@ import live.dobbie.core.misc.primitive.Primitive;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AnnotationBasedConverterProviderTest {
 
