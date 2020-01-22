@@ -103,7 +103,7 @@ public class FabricWorld implements MinecraftWorld, Scheduler {
             }
             CompoundTag compoundTag = ((FabricEntityNbtConvertible) entityTemplate).toCompoundTag(instance.getIdConverter());
             Entity nativeEntity = EntityType.loadEntityWithPassengers(compoundTag, nativeWorld, (vehicleEntity) -> {
-                vehicleEntity.setPositionAndAngles(location.getX(), location.getY(), location.getZ(), vehicleEntity.yaw, vehicleEntity.pitch);
+                vehicleEntity.setPos(location.getX(), location.getY(), location.getZ());
                 return nativeWorld.tryLoadEntity(vehicleEntity) ? vehicleEntity : null;
             });
             if (nativeEntity == null) {

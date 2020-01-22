@@ -22,7 +22,7 @@ dependencies {
     "implementation"(project(":minecraft:common"))
     "api"(project(":libs:bukkit"))
 
-    "api"("org.spigotmc:spigot-api:1.15.1-R0.1-SNAPSHOT") {
+    "api"("org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
 
@@ -89,6 +89,6 @@ tasks.register<JavaExec>("startServer") {
     maxHeapSize = "1024M"
     classpath = files("${projectDir}/server/bukkit.jar")
     jvmArgs = listOf("-Dcom.mojang.eula.agree=true")
-    args = listOf("--noconsole")
+    args = listOf("--noconsole", "--nogui")
     workingDir = file("${projectDir}/server/run")
 }
