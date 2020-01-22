@@ -34,12 +34,12 @@ import java.util.Objects;
 public class TwitchSource extends Source.UsingQueue {
     private final ILogger LOGGER = Logging.getLogger(TwitchSource.class);
 
-    public static final Currency BITS_CURRENCY = Currency.register("bits",
-            new ICUFormatCurrencyFormatter("{amount} {amount, plural, =1 {bit} other {bits}}", "bits")
+    public static final Currency BITS_CURRENCY = Currency.register("twitch_bits",
+            new ICUFormatCurrencyFormatter("{amount} {amount, plural, =1 {bit} other {bits}}", "twitch_bits")
     );
 
-    public static final Currency CHANNEL_POINTS_CURRENCY = Currency.register("channel_points",
-            new ICUFormatCurrencyFormatter("{amount} {amount, plural, =1 {channel point} other {channel points}}", "channel_points")
+    public static final Currency CHANNEL_POINTS_CURRENCY = Currency.register("twitch_channel_points",
+            new ICUFormatCurrencyFormatter("{amount} {amount, plural, =1 {channel point} other {channel points}}", "twitch_channel_points")
     );
 
     private final @NonNull TwitchClient chatClient;
