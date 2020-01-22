@@ -72,6 +72,37 @@ class ContextualConditionTest {
     }
 
     @Test
+    void varConditionTest() throws ComputationException, IOException {
+        ObjectContext context = SimpleContext.builder()
+                .set(Path.of("foo"), Primitive.of("bar"))
+                .set(Path.of("num"), Primitive.of(5))
+                .build();
+        ObjectMapper o = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(ContextualCondition.class, newParser());
+        o.registerModule(module);
+        ContextualCondition conditionObject;
+
+        conditionObject = o.readValue("{\"num\": \"< 10\"}", ContextualCondition.class);
+        assertNotNull(conditionObject);
+        assertTrue(conditionObject.isTrue(context));
+
+        conditionObject = o.readValue("{\"num\": \"5\"}", ContextualCondition.class);
+        assertNotNull(conditionObject);
+        assertTrue(conditionObject.isTrue(context));
+
+        conditionObject = o.readValue("{\"num\": \"= 5\"}", ContextualCondition.class);
+        assertNotNull(conditionObject);
+        assertTrue(conditionObject.isTrue(context));
+
+        conditionObject = o.readValue("{\"num\": \"> 2\"}", ContextualCondition.class);
+        assertNotNull(conditionObject);
+        assertTrue(conditionObject.isTrue(context));
+
+        assertThrows(IllegalArgumentException.class, () -> o.readValue("{\"foo\": \"> 100\"}", ContextualCondition.class).isTrue(context));
+    }
+
+    @Test
     void combinedParserTest() throws ComputationException, IOException {
         ObjectContext context = SimpleContext.builder()
                 .set(Path.of("foo"), Primitive.of("bar"))

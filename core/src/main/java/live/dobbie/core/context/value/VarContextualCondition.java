@@ -2,7 +2,6 @@ package live.dobbie.core.context.value;
 
 import live.dobbie.core.context.ObjectContext;
 import live.dobbie.core.exception.ComputationException;
-import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -14,15 +13,15 @@ import java.util.Map;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Value
-public class VarCmpContextualCondition implements ContextualCondition {
-    private final @NonNull Map<Path, Primitive> conditions;
+public class VarContextualCondition implements ContextualCondition {
+    private final @NonNull Map<Path, VarCondition> conditions;
 
     @NonNull
     @Override
     public Boolean computeValue(@NonNull ObjectContext context) throws ComputationException {
         return conditions.entrySet().stream()
                 .allMatch(entry ->
-                        context.requireVariable(entry.getKey()).equals(entry.getValue())
+                        entry.getValue().isTrue(context.requireVariable(entry.getKey()))
                 );
     }
 
@@ -32,18 +31,18 @@ public class VarCmpContextualCondition implements ContextualCondition {
 
     @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
     public static class Builder {
-        private final Map<Path, Primitive> conditions = new HashMap<>();
+        private final Map<Path, VarCondition> conditions = new HashMap<>();
 
-        public Builder addCondition(@NonNull Path path, @NonNull Primitive primitive) {
+        public Builder addCondition(@NonNull Path path, @NonNull VarCondition condition) {
             if (conditions.containsKey(path)) {
                 throw new IllegalArgumentException();
             }
-            conditions.put(path, primitive);
+            conditions.put(path, condition);
             return this;
         }
 
-        public VarCmpContextualCondition build() {
-            return new VarCmpContextualCondition(new HashMap<>(conditions));
+        public VarContextualCondition build() {
+            return new VarContextualCondition(new HashMap<>(conditions));
         }
     }
 }

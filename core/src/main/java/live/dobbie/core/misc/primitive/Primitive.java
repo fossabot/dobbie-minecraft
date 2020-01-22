@@ -88,7 +88,7 @@ public interface Primitive {
         }
         throw new IllegalArgumentException(
                 "cannot compare primitives of two different types;" +
-                        " p0: " + p0.getClass().getSimpleName() + ", p1: " + p1.getClass().getSimpleName()
+                        " p0: " + p0 + ", p1: " + p1
         );
     }
 
