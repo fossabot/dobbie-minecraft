@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import live.dobbie.core.service.Service;
 import live.dobbie.core.service.ServiceUnavailableException;
 import live.dobbie.core.service.SettingsBasedServiceRef;
-import live.dobbie.core.service.streamlabs.StreamlabsCredentials;
+import live.dobbie.core.service.streamlabs.StreamLabsSettings;
 import live.dobbie.core.service.streamlabs.api.data.LoyaltyPointsData;
-import live.dobbie.core.service.streamlabs.api.data.StreamlabsData;
+import live.dobbie.core.service.streamlabs.api.data.SocketTokenData;
 import live.dobbie.core.service.streamlabs.api.exception.StreamlabsApiException;
 import live.dobbie.core.user.User;
 import live.dobbie.core.user.UserSettingsProvider;
@@ -27,7 +27,18 @@ public class StreamLabsApi implements Service {
 
     private final @NonNull String accessToken;
 
-    protected LoyaltyPointsData getPoints(@NonNull String username, @NonNull String channel) throws IOException, StreamlabsApiException {
+    @NonNull
+    public String getSocketToken() throws IOException, StreamlabsApiException {
+        HttpUrl.Builder urlBuilder = HttpUrl.get(API + "socket/token").newBuilder();
+        urlBuilder.addQueryParameter("access_token", accessToken);
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .build();
+        return executeAndExtract(request, SocketTokenData.class).getSocketToken();
+    }
+
+    @NonNull
+    public LoyaltyPointsData getPoints(@NonNull String username, @NonNull String channel) throws IOException, StreamlabsApiException {
         HttpUrl.Builder urlBuilder = HttpUrl.get(API + "points").newBuilder();
         urlBuilder.addQueryParameter("access_token", accessToken);
         urlBuilder.addQueryParameter("username", username);
@@ -38,6 +49,7 @@ public class StreamLabsApi implements Service {
         return executeAndExtract(request, LoyaltyPointsData.class);
     }
 
+    @NonNull
     public LoyaltyPointsData subtractPoints(@NonNull String username, @NonNull String channel, long amount) throws IOException, StreamlabsApiException {
         if (amount < 1) {
             throw new IllegalArgumentException();
@@ -60,7 +72,7 @@ public class StreamLabsApi implements Service {
         return client.newCall(request).execute();
     }
 
-    private <T extends StreamlabsData> T extractData(@NonNull Response response, @NonNull Class<T> clazz) throws IOException, StreamlabsApiException {
+    private <T> T extractData(@NonNull Response response, @NonNull Class<T> clazz) throws IOException, StreamlabsApiException {
         JsonNode node = objectMapper.readTree(response.body().charStream());
         if (node.isTextual()) {
             throw new StreamlabsApiException(node.asText());
@@ -71,7 +83,7 @@ public class StreamLabsApi implements Service {
         return objectMapper.treeToValue(node, clazz);
     }
 
-    private <T extends StreamlabsData> T executeAndExtract(@NonNull Request request, @NonNull Class<T> clazz) throws IOException, StreamlabsApiException {
+    private <T> T executeAndExtract(@NonNull Request request, @NonNull Class<T> clazz) throws IOException, StreamlabsApiException {
         return extractData(execute(request), clazz);
     }
 
@@ -79,21 +91,21 @@ public class StreamLabsApi implements Service {
     public void cleanup() {
     }
 
-    public static class Factory extends SettingsBasedServiceRef.ServiceFactory.Requiring<StreamLabsApi, StreamlabsCredentials> {
+    public static class Factory extends SettingsBasedServiceRef.ServiceFactory.Requiring<StreamLabsApi, StreamLabsSettings> {
         public Factory() {
-            super(StreamlabsCredentials.class);
+            super(StreamLabsSettings.class);
         }
 
         @NonNull
         @Override
-        protected StreamLabsApi createServiceSafe(@NonNull User user, @NonNull StreamlabsCredentials value) throws ServiceUnavailableException {
+        protected StreamLabsApi createServiceSafe(@NonNull User user, @NonNull StreamLabsSettings value) throws ServiceUnavailableException {
             return new StreamLabsApi(value.getToken());
         }
     }
 
-    public static class RefFactory extends SettingsBasedServiceRef.Factory<StreamLabsApi, StreamlabsCredentials> {
+    public static class RefFactory extends SettingsBasedServiceRef.Factory<StreamLabsApi, StreamLabsSettings> {
         public RefFactory(@NonNull UserSettingsProvider settingsProvider) {
-            super(StreamlabsCredentials.class, NAME, settingsProvider, new Factory());
+            super(StreamLabsSettings.class, NAME, settingsProvider, new Factory());
         }
     }
 }

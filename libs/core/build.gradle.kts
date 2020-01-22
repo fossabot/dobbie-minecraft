@@ -17,6 +17,8 @@ dependencies {
     "shade"("org.mozilla:rhino:1.7.12")
     // https://mvnrepository.com/artifact/com.ibm.icu/icu4j
     "shade"("com.ibm.icu:icu4j:65.1")
+    // https://mvnrepository.com/artifact/io.socket/socket.io-client
+    "shade"("io.socket:socket.io-client:1.0.0")
 
     "shade"("net.kyori:text-api:${Versions.TEXT}")
     "shade"("net.kyori:text-serializer-gson:${Versions.TEXT}")

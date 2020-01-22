@@ -3,7 +3,6 @@ package live.dobbie.core.loc;
 import live.dobbie.core.config.DobbieLocale;
 import live.dobbie.core.misc.Price;
 import live.dobbie.icu.text.MessageFormat;
-import live.dobbie.icu.util.ULocale;
 import lombok.*;
 
 import java.util.HashMap;
@@ -24,7 +23,7 @@ public class Loc {
     DobbieLocale locale;
 
     public Loc() {
-        this(INTERNAL, new DobbieLocale(ULocale.US, null));
+        this(INTERNAL, DobbieLocale.BY_DEFAULT);
     }
 
     @NonNull

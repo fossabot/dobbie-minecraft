@@ -16,6 +16,8 @@ import lombok.Value;
 @JacksonParseable("locale")
 @Value
 public class DobbieLocale implements ISettingsValue {
+    public static final DobbieLocale BY_DEFAULT = new DobbieLocale(ULocale.US, null);
+
     /**
      * ICU Locale used to format numbers, texts, etc.
      */

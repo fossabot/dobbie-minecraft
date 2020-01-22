@@ -37,6 +37,7 @@ import live.dobbie.core.dest.cmd.script.ConditionalScriptCmdParser;
 import live.dobbie.core.dest.cmd.script.ScriptCmdParser;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.misc.Price;
+import live.dobbie.core.misc.currency.ICUCurrencyFormatter;
 import live.dobbie.core.path.Path;
 import live.dobbie.core.persistence.PersistenceService;
 import live.dobbie.core.persistence.SessionObjectStorage;
@@ -56,7 +57,10 @@ import live.dobbie.core.service.chargeback.ChargebackStorage;
 import live.dobbie.core.service.scheduler.IdSchedulerService;
 import live.dobbie.core.service.scheduler.IdTaskScheduledCmd;
 import live.dobbie.core.service.scheduler.IdTaskScheduler;
+import live.dobbie.core.service.streamlabs.StreamLabsSourceFactory;
+import live.dobbie.core.service.streamlabs.api.StreamLabsApi;
 import live.dobbie.core.service.twitch.*;
+import live.dobbie.core.settings.ISettings;
 import live.dobbie.core.settings.Settings;
 import live.dobbie.core.settings.source.jackson.JacksonNode;
 import live.dobbie.core.settings.source.jackson.JacksonParser;
@@ -104,6 +108,8 @@ public class DobbieMinecraftBuilder {
                                       @NonNull Supplier<MinecraftCompat> compatSupplier,
                                       @NonNull Ticker ticker,
                                       ObjectContextInitializer customContextInitializer) {
+        ICUCurrencyFormatter.setFactory(new MinecraftCurrencyFormatter.Factory(ICUCurrencyFormatter.getFactory()));
+
         File configFile = new File(configDir, "config.yaml");
         ObjectMapper o = new ObjectMapper(new YAMLFactory());
         SimpleModule m = new SimpleModule();
@@ -182,6 +188,7 @@ public class DobbieMinecraftBuilder {
                         new SessionObjectStorage.Factory()
                 )))
                 .registerFactory(IdTaskScheduler.class, new IdSchedulerService.RefFactory())
+                .registerFactory(StreamLabsApi.class, new StreamLabsApi.RefFactory(userSettingsProvider))
                 .build();
         sequentalCmdParser.registerParser(
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("execute_after"), new IdTaskScheduledCmd.ExecuteAfter.Parser(serviceRegistry, sequentalCmdParser)),
@@ -214,17 +221,24 @@ public class DobbieMinecraftBuilder {
                 new SubstitutorCmd.Parser(plainSubstitutorParser)//new ElemParser(Collections.singletonList(new AnyVarElem.Factory())))
         );
         //ChargebackHandler.Factory chargebackHandlerFactory = user -> new ChargebackHandler(serviceRegistry.createReference(ChargebackService.class, user));
+        ListCancellationHandler cancellationHandler = new ListCancellationHandler(Arrays.asList(
+                new UserNotifyingCancellationHandler(loc)
+        ));
         DobbiePlugin plugin = new DobbiePlugin(
                 new Dobbie(
                         new DobbieSettings(config, userSettingsProvider),
                         new Source.Factory.Provider.Immutable(Arrays.asList(
                                 new TwitchSourceFactory(
                                         twitchInstance,
-                                        new ListCancellationHandler(Arrays.asList(
-                                                new UserNotifyingCancellationHandler(loc)
-                                        )),
+                                        cancellationHandler,
                                         userSettingsProvider,
                                         new NameCache(twitchInstance)
+                                ),
+                                new StreamLabsSourceFactory(
+                                        serviceRegistry,
+                                        cancellationHandler,
+                                        userSettingsProvider,
+                                        loc
                                 )
                         )),
                         new SequentalActionFactory(Arrays.asList(
@@ -249,8 +263,16 @@ public class DobbieMinecraftBuilder {
                                                                                     cb.set("player", user);
                                                                                 }
                                                                                 if (trigger instanceof Priced) {
+                                                                                    ISettings userSettings = userSettingsProvider.get(user);
+                                                                                    DobbieLocale locale = userSettings.getValue(DobbieLocale.class);
+                                                                                    if (locale == null) {
+                                                                                        locale = config.getValue(DobbieLocale.class);
+                                                                                        if (locale == null) {
+                                                                                            locale = DobbieLocale.BY_DEFAULT;
+                                                                                        }
+                                                                                    }
                                                                                     Price price = ((Priced) trigger).getPrice();
-                                                                                    StringPrimitive formattedPrice = Primitive.of(PriceFormatting.format(price, config.requireValue(DobbieLocale.class), config.getValue(PriceFormatting.class)));
+                                                                                    StringPrimitive formattedPrice = Primitive.of(PriceFormatting.format(price, locale, userSettings.getValue(PriceFormatting.class)));
                                                                                     cb.set(Path.of("price", "formatted"), formattedPrice);
                                                                                     if (trigger instanceof Donated) {
                                                                                         cb.set(Path.of("donation", "formatted"), formattedPrice);
