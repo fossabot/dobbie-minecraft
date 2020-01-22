@@ -1,6 +1,7 @@
 package live.dobbie.core.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.util.StdConverter;
 import live.dobbie.core.misc.currency.Currency;
@@ -22,6 +23,7 @@ public class DobbieLocale implements ISettingsValue {
      * ICU Locale used to format numbers, texts, etc.
      */
     @JsonDeserialize(converter = ULocaleDeserializer.class)
+    @JsonProperty("name")
     @NonNull ULocale locale;
 
     /**
