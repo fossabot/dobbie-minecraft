@@ -2,6 +2,7 @@ package live.dobbie.core.trigger.messaged;
 
 import lombok.NonNull;
 import lombok.Value;
+import org.apache.commons.lang.StringUtils;
 
 @Value
 public class PlainMessage implements Message {
@@ -13,6 +14,6 @@ public class PlainMessage implements Message {
     }
 
     public static PlainMessage of(String message) {
-        return message == null ? null : new PlainMessage(message);
+        return StringUtils.isEmpty(message) ? null : new PlainMessage(message);
     }
 }
