@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode(of = "name")
+@ToString(of = "name")
 public class Currency implements CurrencyFormatter {
     private final @NonNull
     @Getter
