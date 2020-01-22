@@ -57,6 +57,7 @@ import live.dobbie.core.service.chargeback.ChargebackStorage;
 import live.dobbie.core.service.scheduler.IdSchedulerService;
 import live.dobbie.core.service.scheduler.IdTaskScheduledCmd;
 import live.dobbie.core.service.scheduler.IdTaskScheduler;
+import live.dobbie.core.service.streamelements.StreamElementsSourceFactory;
 import live.dobbie.core.service.streamlabs.StreamLabsSourceFactory;
 import live.dobbie.core.service.streamlabs.api.StreamLabsApi;
 import live.dobbie.core.service.twitch.*;
@@ -239,6 +240,11 @@ public class DobbieMinecraftBuilder {
                                         cancellationHandler,
                                         userSettingsProvider,
                                         loc
+                                ),
+                                new StreamElementsSourceFactory(
+                                        userSettingsProvider,
+                                        loc,
+                                        cancellationHandler
                                 )
                         )),
                         new SequentalActionFactory(Arrays.asList(
