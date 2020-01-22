@@ -100,6 +100,7 @@ public class Loc {
 
         private void put(String arg, Object value) {
             values.put(arg, value);
+            values.put(arg + "_present", value == null ? "none" : "present");
         }
 
         @Override
