@@ -1,6 +1,6 @@
 package live.dobbie.core.context.factory;
 
-import live.dobbie.core.context.primitive.converter.PrimitiveConverter;
+import live.dobbie.core.misc.primitive.converter.PrimitiveConverter;
 import lombok.NonNull;
 
 import java.lang.annotation.ElementType;

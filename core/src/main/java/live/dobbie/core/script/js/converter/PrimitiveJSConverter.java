@@ -1,7 +1,7 @@
 package live.dobbie.core.script.js.converter;
 
-import live.dobbie.core.context.primitive.DateTimePrimitive;
-import live.dobbie.core.context.primitive.Primitive;
+import live.dobbie.core.misc.primitive.DateTimePrimitive;
+import live.dobbie.core.misc.primitive.Primitive;
 import lombok.NonNull;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;

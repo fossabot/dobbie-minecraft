@@ -1,9 +1,9 @@
 package live.dobbie.core.dest.cmd;
 
-import live.dobbie.core.context.primitive.BoolPrimitive;
-import live.dobbie.core.context.primitive.Primitive;
 import live.dobbie.core.exception.ParserException;
 import live.dobbie.core.misc.TextLocation;
+import live.dobbie.core.misc.primitive.BoolPrimitive;
+import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

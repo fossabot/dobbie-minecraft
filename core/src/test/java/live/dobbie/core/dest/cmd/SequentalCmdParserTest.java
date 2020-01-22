@@ -2,11 +2,11 @@ package live.dobbie.core.dest.cmd;
 
 import live.dobbie.core.context.ObjectContext;
 import live.dobbie.core.context.SimpleContext;
-import live.dobbie.core.context.primitive.Primitive;
 import live.dobbie.core.dest.cmd.script.AssertionScriptCmdParser;
 import live.dobbie.core.dest.cmd.script.ConditionalScriptCmdParser;
 import live.dobbie.core.dest.cmd.script.ScriptCmdParser;
 import live.dobbie.core.exception.ParserException;
+import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
 import live.dobbie.core.script.js.JSScriptCompiler;
 import live.dobbie.core.script.js.JSScriptContext;

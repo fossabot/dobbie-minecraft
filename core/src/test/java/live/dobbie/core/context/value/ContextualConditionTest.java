@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import live.dobbie.core.context.ObjectContext;
 import live.dobbie.core.context.SimpleContext;
-import live.dobbie.core.context.primitive.Primitive;
 import live.dobbie.core.exception.ComputationException;
+import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
 import live.dobbie.core.script.js.JSScript;
 import live.dobbie.core.script.js.JSScriptCompiler;
@@ -69,6 +69,37 @@ class ContextualConditionTest {
         ContextualCondition throwingConditionObject = o.readValue("{\"foo\": \"bar\", \"f00\": \"non-existent\"}", ContextualCondition.class);
         assertNotNull(conditionObject);
         assertThrows(IllegalArgumentException.class, () -> throwingConditionObject.isTrue(context));
+    }
+
+    @Test
+    void varConditionTest() throws ComputationException, IOException {
+        ObjectContext context = SimpleContext.builder()
+                .set(Path.of("foo"), Primitive.of("bar"))
+                .set(Path.of("num"), Primitive.of(5))
+                .build();
+        ObjectMapper o = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(ContextualCondition.class, newParser());
+        o.registerModule(module);
+        ContextualCondition conditionObject;
+
+        conditionObject = o.readValue("{\"num\": \"< 10\"}", ContextualCondition.class);
+        assertNotNull(conditionObject);
+        assertTrue(conditionObject.isTrue(context));
+
+        conditionObject = o.readValue("{\"num\": \"5\"}", ContextualCondition.class);
+        assertNotNull(conditionObject);
+        assertTrue(conditionObject.isTrue(context));
+
+        conditionObject = o.readValue("{\"num\": \"= 5\"}", ContextualCondition.class);
+        assertNotNull(conditionObject);
+        assertTrue(conditionObject.isTrue(context));
+
+        conditionObject = o.readValue("{\"num\": \"> 2\"}", ContextualCondition.class);
+        assertNotNull(conditionObject);
+        assertTrue(conditionObject.isTrue(context));
+
+        assertThrows(IllegalArgumentException.class, () -> o.readValue("{\"foo\": \"> 100\"}", ContextualCondition.class).isTrue(context));
     }
 
     @Test

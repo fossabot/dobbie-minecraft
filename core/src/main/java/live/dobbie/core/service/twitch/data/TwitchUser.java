@@ -1,9 +1,9 @@
 package live.dobbie.core.service.twitch.data;
 
 import com.github.twitch4j.common.events.domain.EventUser;
-import live.dobbie.core.context.primitive.StringPrimitive;
-import live.dobbie.core.context.primitive.converter.PrimitiveConverter;
 import live.dobbie.core.loc.Gender;
+import live.dobbie.core.misc.primitive.StringPrimitive;
+import live.dobbie.core.misc.primitive.converter.PrimitiveConverter;
 import live.dobbie.core.service.twitch.NameCache;
 import live.dobbie.core.trigger.authored.Author;
 import lombok.AccessLevel;

@@ -1,6 +1,6 @@
 package live.dobbie.core.context;
 
-import live.dobbie.core.context.primitive.Primitive;
+import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
 import org.junit.jupiter.api.Test;
 

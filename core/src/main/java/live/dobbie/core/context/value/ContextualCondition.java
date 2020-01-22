@@ -10,17 +10,20 @@ import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import live.dobbie.core.context.ObjectContext;
-import live.dobbie.core.context.primitive.Primitive;
 import live.dobbie.core.exception.ComputationException;
 import live.dobbie.core.exception.ParserRuntimeException;
+import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
 import live.dobbie.core.util.Unboxing;
+import live.dobbie.core.util.logging.ILogger;
+import live.dobbie.core.util.logging.Logging;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -43,6 +46,8 @@ public interface ContextualCondition extends ContextualValue<Boolean> {
 
     @RequiredArgsConstructor
     class Parser extends JsonDeserializer<ContextualCondition> {
+        private static final ILogger LOGGER = Logging.getLogger(Parser.class);
+
         static String ANY_CONDITION = "any";
 
         private final @NonNull ScriptContextualValue.Factory<?, ?> scriptFactory;
@@ -76,11 +81,11 @@ public interface ContextualCondition extends ContextualValue<Boolean> {
         }
 
         private ContextualCondition fromObjectNode(ObjectNode node) {
-            VarCmpContextualCondition.Builder builder = VarCmpContextualCondition.builder();
+            VarContextualCondition.Builder builder = VarContextualCondition.builder();
             Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
             while (fields.hasNext()) {
                 Map.Entry<String, JsonNode> entry = fields.next();
-                builder.addCondition(parseKey(entry.getKey()), parseValue(entry.getValue()));
+                builder.addCondition(parseKey(entry.getKey()), parseCondition(entry.getValue()));
             }
             return builder.build();
         }
@@ -89,16 +94,31 @@ public interface ContextualCondition extends ContextualValue<Boolean> {
             return Path.parse(key, pathSeparator);
         }
 
-        private Primitive parseValue(JsonNode value) {
-            Primitive primitiveValue;
+        private VarCondition parseCondition(JsonNode value) {
+            VarCondition condition;
             if (value instanceof TextNode || value.isNull()) {
-                primitiveValue = Primitive.parse(value.textValue());
+                condition = parseStringCondition(value.textValue());
             } else if (value instanceof NumericNode) {
-                primitiveValue = Primitive.of(value.doubleValue());
+                condition = new VarCmpCondition(Primitive.of(value.decimalValue()), VarCmpCondType.EQUAL);
             } else {
                 throw new ParserRuntimeException("unknown primitive condition: " + value);
             }
-            return primitiveValue;
+            return condition;
+        }
+
+        private VarCondition parseStringCondition(String str) {
+            VarCmpCondType condType = VarCmpCondType.extractCondition(str);
+            if (condType == null) {
+                if (StringUtils.startsWithAny(str, "<>=")) {
+                    LOGGER.warning("Condition \"" + str + "\" starts with ambiguous symbols," +
+                            " but was parsed as ordinary equality condition.");
+                }
+                return new VarEqCondition(Primitive.parse(str));
+            } else {
+                String compValue = str.substring(condType.getSymbols().length());
+                compValue = StringUtils.stripStart(compValue, null);
+                return new VarCmpCondition(Primitive.parse(compValue), condType);
+            }
         }
     }
 }

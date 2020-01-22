@@ -2,11 +2,11 @@ package live.dobbie.core.context.factory;
 
 import live.dobbie.core.context.ObjectContextBuilder;
 import live.dobbie.core.context.factory.nametranslator.VarNameTranslator;
-import live.dobbie.core.context.primitive.Primitive;
-import live.dobbie.core.context.primitive.converter.PrimitiveConverter;
-import live.dobbie.core.context.primitive.converter.PrimitiveConverterCache;
-import live.dobbie.core.context.primitive.converter.PrimitiveConverterProvider;
-import live.dobbie.core.context.primitive.converter.StandardConverters;
+import live.dobbie.core.misc.primitive.Primitive;
+import live.dobbie.core.misc.primitive.converter.PrimitiveConverter;
+import live.dobbie.core.misc.primitive.converter.PrimitiveConverterCache;
+import live.dobbie.core.misc.primitive.converter.PrimitiveConverterProvider;
+import live.dobbie.core.misc.primitive.converter.StandardConverters;
 import live.dobbie.core.path.Path;
 import live.dobbie.core.trigger.Trigger;
 import lombok.NonNull;

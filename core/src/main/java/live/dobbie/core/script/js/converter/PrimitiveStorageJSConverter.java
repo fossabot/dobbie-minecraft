@@ -1,7 +1,7 @@
 package live.dobbie.core.script.js.converter;
 
-import live.dobbie.core.context.primitive.storage.MutablePrimitiveStorage;
-import live.dobbie.core.context.primitive.storage.PrimitiveStorage;
+import live.dobbie.core.context.storage.MutablePrimitiveStorage;
+import live.dobbie.core.context.storage.PrimitiveStorage;
 import live.dobbie.core.script.js.primitivestorage.adapter.ImmutablePSAdapter;
 import live.dobbie.core.script.js.primitivestorage.adapter.MutablePSAdapter;
 import live.dobbie.core.script.js.primitivestorage.adapter.PSAdapter;
