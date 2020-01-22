@@ -41,10 +41,10 @@ public class StreamLabsSource extends Source.UsingQueue {
                             @NonNull Loc loc,
                             @NonNull CancellationHandler cancellationHandler) {
         super(user);
-        this.subscription = settings.registerListener(StreamLabsSettings.class, this::settingsUpdated);
         this.streamLabsServiceRef = streamLabsServiceRef;
         this.loc = loc;
         this.cancellationHandler = cancellationHandler;
+        this.subscription = settings.registerListener(StreamLabsSettings.class, this::settingsUpdated);
     }
 
     void settingsUpdated(StreamLabsSettings settings) {
@@ -79,6 +79,8 @@ public class StreamLabsSource extends Source.UsingQueue {
                 onDonationEvent((DonationEvent) event);
             } else if (event instanceof LoyaltyStoreRedemption) {
                 onLoyaltyStoreRedemption((LoyaltyStoreRedemption) event);
+            } else {
+                throw new RuntimeException("Unknown event: " + event);
             }
         } catch (RuntimeException rE) {
             LOGGER.warning("Could not process event: " + event, rE);
