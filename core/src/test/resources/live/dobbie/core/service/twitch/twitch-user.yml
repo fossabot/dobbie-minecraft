@@ -64,6 +64,8 @@ services:
       chat:
         destination: 'twitch_chat'
         enabled: true
+      channel_points:
+        enabled: true
 #      command:
 #        list:
 #          - name: 'chat'

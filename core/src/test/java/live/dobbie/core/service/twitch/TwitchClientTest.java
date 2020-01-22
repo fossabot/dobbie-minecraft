@@ -7,6 +7,7 @@ import com.github.twitch4j.chat.events.channel.RaidEvent;
 import com.github.twitch4j.chat.events.channel.SubscriptionEvent;
 import com.github.twitch4j.common.events.domain.EventChannel;
 import com.github.twitch4j.common.events.domain.EventUser;
+import com.github.twitch4j.pubsub.TwitchPubSub;
 import live.dobbie.core.service.twitch.listener.TwitchListener;
 import live.dobbie.core.service.twitch.listener.TwitchListenerAdapter;
 import live.dobbie.core.settings.ISettings;
@@ -57,9 +58,14 @@ class TwitchClientTest {
             TwitchChat chat = Mockito.mock(TwitchChat.class);
             com.github.twitch4j.TwitchClient client1 = Mockito.mock(com.github.twitch4j.TwitchClient.class);
             when(client1.getChat()).thenReturn(chat);
+            TwitchPubSub pubSub = mock(TwitchPubSub.class);
+            when(client1.getPubSub()).thenReturn(pubSub);
             return client1;
         });
-        TwitchClient client = new TwitchClient(instance, new NameCache(instance)) {
+        NameCache nameCache = mock(NameCache.class);
+        when(nameCache.getId(eq("test"))).thenReturn("0");
+        when(nameCache.requireId(eq("test"))).thenReturn("0");
+        TwitchClient client = new TwitchClient(instance, nameCache) {
             @Override
             void subscribeToClientEvents() {
                 // no-op
@@ -88,7 +94,10 @@ class TwitchClientTest {
             when(client1.getChat()).thenReturn(chat);
             return client1;
         });
-        TwitchClient client = Mockito.spy(new TwitchClient(instance, new NameCache(instance)) {
+        NameCache nameCache = mock(NameCache.class);
+        when(nameCache.getId(eq("test"))).thenReturn("0");
+        when(nameCache.requireId(eq("test"))).thenReturn("0");
+        TwitchClient client = Mockito.spy(new TwitchClient(instance, nameCache) {
             @Override
             void subscribeToClientEvents() {
                 // no-op
