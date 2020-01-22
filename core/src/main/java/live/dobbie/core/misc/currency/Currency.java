@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode(of = "name")
+@ToString(of = "name")
 public class Currency implements CurrencyFormatter {
     private final @NonNull
     @Getter
@@ -43,7 +44,7 @@ public class Currency implements CurrencyFormatter {
         if (icuCurrency == null) {
             underlyingFormatter = new ICUDefaultCurrencyFormatter(currencyName);
         } else {
-            underlyingFormatter = new ICUCurrencyFormatter(icuCurrency);
+            underlyingFormatter = ICUCurrencyFormatter.getFactory().create(icuCurrency);
         }
         return new Currency(currencyName, underlyingFormatter);
     }
