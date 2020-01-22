@@ -1,6 +1,5 @@
-package live.dobbie.core.context.primitive.converter;
+package live.dobbie.core.misc.primitive.converter;
 
-import live.dobbie.core.context.primitive.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

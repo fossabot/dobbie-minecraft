@@ -1,7 +1,4 @@
-package live.dobbie.core.context.primitive.converter;
-
-
-import lombok.NonNull;
+package live.dobbie.core.misc.primitive.converter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Convertable {
-    @NonNull Class<? extends PrimitiveConverter<?, ?>> value();
+public @interface ConvertableToString {
+    String usingMethod() default "toString";
 }

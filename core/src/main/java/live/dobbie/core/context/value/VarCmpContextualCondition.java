@@ -1,8 +1,8 @@
 package live.dobbie.core.context.value;
 
 import live.dobbie.core.context.ObjectContext;
-import live.dobbie.core.context.primitive.Primitive;
 import live.dobbie.core.exception.ComputationException;
+import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
 import lombok.AccessLevel;
 import lombok.NonNull;

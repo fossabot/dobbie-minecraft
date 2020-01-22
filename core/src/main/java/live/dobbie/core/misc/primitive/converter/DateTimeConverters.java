@@ -1,7 +1,7 @@
-package live.dobbie.core.context.primitive.converter;
+package live.dobbie.core.misc.primitive.converter;
 
-import live.dobbie.core.context.primitive.DateTimePrimitive;
-import live.dobbie.core.context.primitive.NumberPrimitive;
+import live.dobbie.core.misc.primitive.DateTimePrimitive;
+import live.dobbie.core.misc.primitive.NumberPrimitive;
 import lombok.NonNull;
 
 import java.time.Instant;

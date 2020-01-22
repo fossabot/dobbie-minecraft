@@ -1,9 +1,9 @@
-package live.dobbie.core.context.primitive.storage;
+package live.dobbie.core.misc.primitive.storage;
 
 import live.dobbie.core.context.ObjectContext;
 import live.dobbie.core.context.ObjectContextBuilder;
 import live.dobbie.core.context.factory.ObjectContextFactory;
-import live.dobbie.core.context.primitive.Primitive;
+import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
 import live.dobbie.core.trigger.Trigger;
 import lombok.NonNull;

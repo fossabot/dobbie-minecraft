@@ -1,6 +1,6 @@
-package live.dobbie.core.context.primitive.storage;
+package live.dobbie.core.misc.primitive.storage;
 
-import live.dobbie.core.context.primitive.Primitive;
+import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package live.dobbie.core.service.streamlabs.socket.data;
 
-import live.dobbie.core.context.primitive.converter.ConvertableToString;
 import live.dobbie.core.loc.Gender;
+import live.dobbie.core.misc.primitive.converter.ConvertableToString;
 import live.dobbie.core.trigger.authored.Author;
 import lombok.NonNull;
 import lombok.Value;

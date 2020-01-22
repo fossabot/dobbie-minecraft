@@ -1,8 +1,8 @@
 package live.dobbie.core.trigger.authored;
 
-import live.dobbie.core.context.primitive.StringPrimitive;
-import live.dobbie.core.context.primitive.converter.PrimitiveConverter;
 import live.dobbie.core.loc.Subject;
+import live.dobbie.core.misc.primitive.StringPrimitive;
+import live.dobbie.core.misc.primitive.converter.PrimitiveConverter;
 import lombok.NonNull;
 
 

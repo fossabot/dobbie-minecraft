@@ -1,11 +1,12 @@
-package live.dobbie.core.context.primitive.converter;
+package live.dobbie.core.misc.primitive.converter;
 
-import live.dobbie.core.context.primitive.BoolPrimitive;
-import live.dobbie.core.context.primitive.Primitive;
+import live.dobbie.core.misc.primitive.BoolPrimitive;
+import live.dobbie.core.misc.primitive.Primitive;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class AnnotationBasedConverterProviderTest {
 

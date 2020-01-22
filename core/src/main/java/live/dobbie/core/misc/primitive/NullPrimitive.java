@@ -1,4 +1,4 @@
-package live.dobbie.core.context.primitive;
+package live.dobbie.core.misc.primitive;
 
 public class NullPrimitive implements Primitive {
     public static final NullPrimitive INSTANCE = new NullPrimitive();

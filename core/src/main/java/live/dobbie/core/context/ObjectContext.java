@@ -1,6 +1,6 @@
 package live.dobbie.core.context;
 
-import live.dobbie.core.context.primitive.storage.PrimitiveStorage;
+import live.dobbie.core.misc.primitive.storage.PrimitiveStorage;
 import lombok.NonNull;
 
 import java.util.Map;

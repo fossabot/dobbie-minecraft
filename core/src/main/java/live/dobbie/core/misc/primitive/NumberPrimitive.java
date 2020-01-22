@@ -1,4 +1,4 @@
-package live.dobbie.core.context.primitive;
+package live.dobbie.core.misc.primitive;
 
 import lombok.NonNull;
 import lombok.Value;

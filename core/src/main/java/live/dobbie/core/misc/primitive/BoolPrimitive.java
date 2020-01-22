@@ -1,4 +1,4 @@
-package live.dobbie.core.context.primitive;
+package live.dobbie.core.misc.primitive;
 
 import live.dobbie.core.util.Unboxing;
 import lombok.NonNull;

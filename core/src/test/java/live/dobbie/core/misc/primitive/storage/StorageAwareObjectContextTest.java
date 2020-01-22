@@ -1,15 +1,15 @@
-package live.dobbie.core.context.primitive.storage;
+package live.dobbie.core.misc.primitive.storage;
 
 import com.google.common.collect.ImmutableMap;
 import live.dobbie.core.context.ObjectContext;
-import live.dobbie.core.context.primitive.Primitive;
+import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static live.dobbie.core.context.primitive.Primitive.of;
+import static live.dobbie.core.misc.primitive.Primitive.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;

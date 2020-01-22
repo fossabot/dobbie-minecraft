@@ -1,13 +1,12 @@
-package live.dobbie.core.context.primitive;
+package live.dobbie.core.misc.primitive;
 
 import live.dobbie.core.exception.ParserRuntimeException;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-import static live.dobbie.core.context.primitive.Primitive.of;
-import static live.dobbie.core.context.primitive.Primitive.parse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static live.dobbie.core.misc.primitive.Primitive.of;
+import static live.dobbie.core.misc.primitive.Primitive.parse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PrimitiveTest {

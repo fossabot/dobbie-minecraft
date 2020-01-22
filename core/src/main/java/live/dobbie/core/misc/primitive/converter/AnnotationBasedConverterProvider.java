@@ -1,8 +1,8 @@
-package live.dobbie.core.context.primitive.converter;
+package live.dobbie.core.misc.primitive.converter;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import live.dobbie.core.context.primitive.Primitive;
+import live.dobbie.core.misc.primitive.Primitive;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 

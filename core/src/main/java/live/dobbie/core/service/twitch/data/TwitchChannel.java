@@ -1,6 +1,6 @@
 package live.dobbie.core.service.twitch.data;
 
-import live.dobbie.core.context.primitive.converter.ConvertableToString;
+import live.dobbie.core.misc.primitive.converter.ConvertableToString;
 import live.dobbie.core.service.twitch.NameCache;
 import lombok.NonNull;
 
