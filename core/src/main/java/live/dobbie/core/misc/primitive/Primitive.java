@@ -79,6 +79,18 @@ public interface Primitive {
         return of(val);
     }
 
+    static int compare(@NonNull Primitive p0, @NonNull Primitive p1) {
+        if (p0 instanceof NumberPrimitive && p1 instanceof NumberPrimitive) {
+            return ((NumberPrimitive) p0).compareTo((NumberPrimitive) p1);
+        }
+        if (p0 instanceof DateTimePrimitive && p1 instanceof DateTimePrimitive) {
+            return ((DateTimePrimitive) p0).compareTo((DateTimePrimitive) p1);
+        }
+        throw new IllegalArgumentException(
+                "cannot compare primitives of two different types;" +
+                        " p0: " + p0.getClass().getSimpleName() + ", p1: " + p1.getClass().getSimpleName()
+        );
+    }
 
     static Object toObject(Primitive primitive) {
         if (primitive == null || primitive instanceof NullPrimitive) {
