@@ -8,7 +8,6 @@ import live.dobbie.core.service.SettingsBasedServiceRef;
 import live.dobbie.core.service.streamlabs.StreamlabsCredentials;
 import live.dobbie.core.service.streamlabs.api.data.LoyaltyPointsData;
 import live.dobbie.core.service.streamlabs.api.data.StreamlabsData;
-import live.dobbie.core.service.streamlabs.api.exception.NotEnoughPointsException;
 import live.dobbie.core.service.streamlabs.api.exception.StreamlabsApiException;
 import live.dobbie.core.user.User;
 import live.dobbie.core.user.UserSettingsProvider;
@@ -39,40 +38,35 @@ public class StreamLabsApi implements Service {
         return executeAndExtract(request, LoyaltyPointsData.class);
     }
 
-    // TODO issue with API fixed, subtract using special method
-    public LoyaltyPointsData subtractPoints(@NonNull String username, @NonNull String channel, int amount) throws IOException, StreamlabsApiException {
+    public LoyaltyPointsData subtractPoints(@NonNull String username, @NonNull String channel, long amount) throws IOException, StreamlabsApiException {
         if (amount < 1) {
             throw new IllegalArgumentException();
-        }
-        LoyaltyPointsData pointsData = getPoints(username, channel);
-        int finalPoints = pointsData.getPoints() - amount;
-        if (finalPoints < 0) {
-            throw new NotEnoughPointsException();
         }
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("access_token", accessToken)
                 .addFormDataPart("username", username)
-                .addFormDataPart("points", String.valueOf(finalPoints))
+                .addFormDataPart("channel", channel)
+                .addFormDataPart("points", String.valueOf(amount))
                 .build();
         Request request = new Request.Builder()
-                .url(HttpUrl.get(API + "points/user_point_edit"))
+                .url(HttpUrl.get(API + "points/subtract"))
                 .post(requestBody)
                 .build();
         return executeAndExtract(request, LoyaltyPointsData.class);
     }
 
-    private ResponseBody execute(@NonNull Request request) throws IOException {
-        return client.newCall(request).execute().body();
+    private Response execute(@NonNull Request request) throws IOException {
+        return client.newCall(request).execute();
     }
 
-    private <T extends StreamlabsData> T extractData(@NonNull ResponseBody body, @NonNull Class<T> clazz) throws IOException, StreamlabsApiException {
-        JsonNode node = objectMapper.readTree(body.charStream());
+    private <T extends StreamlabsData> T extractData(@NonNull Response response, @NonNull Class<T> clazz) throws IOException, StreamlabsApiException {
+        JsonNode node = objectMapper.readTree(response.body().charStream());
         if (node.isTextual()) {
             throw new StreamlabsApiException(node.asText());
         }
-        if (node.has("error") && node.get("error").asBoolean()) {
-            throw new StreamlabsApiException(node.get("message").asText());
+        if (!response.isSuccessful() || node.has("error")) {
+            throw new StreamlabsApiException(String.valueOf(node));
         }
         return objectMapper.treeToValue(node, clazz);
     }
