@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.event.server.ServerStopCallback;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import java.util.Collections;
 import java.util.function.Supplier;
 
 public class DobbieFabric implements ModInitializer, ServerStartCallback, ServerStopCallback {
@@ -66,6 +67,7 @@ public class DobbieFabric implements ModInitializer, ServerStartCallback, Server
                 minecraftServer.getFile("config/Dobbie"),
                 () -> fabricCompat,
                 ticker,
+                Collections.emptyMap(),
                 (cb, trigger) -> cb.set("fabric", minecraftServer)
         );
         plugin.start();

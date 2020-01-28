@@ -51,6 +51,8 @@ import live.dobbie.core.script.js.JSScriptExecutor;
 import live.dobbie.core.script.js.converter.*;
 import live.dobbie.core.script.js.moduleprovider.DirectoryModuleProvider;
 import live.dobbie.core.script.js.moduleprovider.URIAwareModuleProvider;
+import live.dobbie.core.service.Service;
+import live.dobbie.core.service.ServiceRef;
 import live.dobbie.core.service.ServiceRegistry;
 import live.dobbie.core.service.chargeback.ChargebackService;
 import live.dobbie.core.service.chargeback.ChargebackStorage;
@@ -93,6 +95,7 @@ import org.mozilla.javascript.ContextFactory;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class DobbieMinecraftBuilder {
@@ -100,14 +103,16 @@ public class DobbieMinecraftBuilder {
     public static DobbiePlugin create(@NonNull String brand,
                                       @NonNull File configDir,
                                       @NonNull Supplier<MinecraftCompat> compatSupplier,
+                                      @NonNull Map<Class<? extends Service>, ServiceRef.Factory> serviceFactories,
                                       ObjectContextInitializer customContextInitializer) {
-        return create(brand, configDir, compatSupplier, new ScheduledThreadPoolTicker(), customContextInitializer);
+        return create(brand, configDir, compatSupplier, new ScheduledThreadPoolTicker(), serviceFactories, customContextInitializer);
     }
 
     public static DobbiePlugin create(@NonNull String brand,
                                       @NonNull File configDir,
                                       @NonNull Supplier<MinecraftCompat> compatSupplier,
                                       @NonNull Ticker ticker,
+                                      @NonNull Map<Class<? extends Service>, ServiceRef.Factory> serviceFactories,
                                       ObjectContextInitializer customContextInitializer) {
         ICUCurrencyFormatter.setFactory(new MinecraftCurrencyFormatter.Factory(ICUCurrencyFormatter.getFactory()));
 
@@ -178,7 +183,7 @@ public class DobbieMinecraftBuilder {
                 .varMod("de", VarConverter.DoubleJsonEscaping.INSTANCE)
                 .varMod("raw", VarConverter.Identity.INSTANCE)
                 .build();
-        ServiceRegistry serviceRegistry = ServiceRegistry.builder()
+        ServiceRegistry.Builder serviceRegistryBuilder = ServiceRegistry.builder()
                 .registerFactory(ChargebackService.class, new ChargebackService.RefFactory(userSettingsProvider, new ChargebackStorage.Factory() {
                     @Override
                     public @NonNull ChargebackStorage create(@NonNull User user) {
@@ -189,8 +194,9 @@ public class DobbieMinecraftBuilder {
                         new SessionObjectStorage.Factory()
                 )))
                 .registerFactory(IdTaskScheduler.class, new IdSchedulerService.RefFactory())
-                .registerFactory(StreamLabsApi.class, new StreamLabsApi.RefFactory(userSettingsProvider))
-                .build();
+                .registerFactory(StreamLabsApi.class, new StreamLabsApi.RefFactory(userSettingsProvider));
+        serviceFactories.forEach(serviceRegistryBuilder::registerFactory);
+        ServiceRegistry serviceRegistry = serviceRegistryBuilder.build();
         sequentalCmdParser.registerParser(
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("execute_after"), new IdTaskScheduledCmd.ExecuteAfter.Parser(serviceRegistry, sequentalCmdParser)),
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("repeat_every"), new IdTaskScheduledCmd.RepeatEvery.Parser(serviceRegistry, sequentalCmdParser)),
