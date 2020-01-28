@@ -1,9 +1,2 @@
-# Place bukkit.jar in this directory.
-# You can build one using BuildTools: https://www.spigotmc.org/wiki/buildtools/
-# Just move here the built jar (something named "spigot-blah-blah.jar") and rename it ("bukkit.jar")
-#
-# To start a server run:
-# ./gradlew :minecraft:bukkit:startServer
-
 bukkit.jar
 run/
