@@ -132,6 +132,7 @@ public class TwitchClient implements Cleanable {
     public void cleanup() {
         listeners.forEach(ListenerRef::cleanup);
         instance.unregisterListener(instanceListener);
+        client = null;
     }
 
     @ToString(callSuper = true)

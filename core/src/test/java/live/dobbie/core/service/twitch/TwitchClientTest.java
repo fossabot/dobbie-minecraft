@@ -7,6 +7,7 @@ import com.github.twitch4j.chat.events.channel.RaidEvent;
 import com.github.twitch4j.chat.events.channel.SubscriptionEvent;
 import com.github.twitch4j.common.events.domain.EventChannel;
 import com.github.twitch4j.common.events.domain.EventUser;
+import com.github.twitch4j.pubsub.PubSubSubscription;
 import com.github.twitch4j.pubsub.TwitchPubSub;
 import live.dobbie.core.service.twitch.listener.TwitchListener;
 import live.dobbie.core.service.twitch.listener.TwitchListenerAdapter;
@@ -92,6 +93,9 @@ class TwitchClientTest {
             TwitchChat chat = Mockito.mock(TwitchChat.class);
             com.github.twitch4j.TwitchClient client1 = Mockito.mock(com.github.twitch4j.TwitchClient.class);
             when(client1.getChat()).thenReturn(chat);
+            TwitchPubSub pubSub = mock(TwitchPubSub.class);
+            when(client1.getPubSub()).thenReturn(pubSub);
+            when(pubSub.listenForChannelPointsRedemptionEvents(notNull(), eq(0L))).thenReturn(mock(PubSubSubscription.class));
             return client1;
         });
         NameCache nameCache = mock(NameCache.class);
@@ -107,7 +111,7 @@ class TwitchClientTest {
         TwitchListener listener = Mockito.mock(TwitchListener.class);
         TwitchClient.ListenerRef listenerRef = client.registerListener("test", "token", listener);
         listenerRef.cleanup();
-        verify(client).leaveChannel(eq("test"), notNull());
+        verify(client).leaveChannel(eq("test"), any());
     }
 
 }
