@@ -60,7 +60,7 @@ class StorageAwareObjectContextTest {
         MutablePrimitiveStorage storage = mock(MutablePrimitiveStorage.class);
         StorageAwareObjectContext context = new StorageAwareObjectContext(delegate, storage, "storage");
         Map<String, Object> objs = context.getObjects();
-        assertEquals(storage, objs.get("storage"));
+        assertEquals(context, objs.get("storage"));
     }
 
 }

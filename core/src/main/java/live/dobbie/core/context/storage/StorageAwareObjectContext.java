@@ -24,15 +24,19 @@ public class StorageAwareObjectContext implements ObjectContext, MutablePrimitiv
         this(delegate, storage, STORAGE_VAR_NAME);
     }
 
+    public StorageAwareObjectContext(@NonNull ObjectContext delegate) {
+        this(delegate, new PrimitiveMap());
+    }
+
     @Override
     public @NonNull Map<String, Object> getObjects() {
-        return copyAndAdd(delegate.getObjects(), storageVarName, storage);
+        return copyAndAdd(delegate.getObjects(), storageVarName, this);
     }
 
     @Override
     public <T> T getObject(@NonNull String key) {
         if (storageVarName.equals(key)) {
-            return (T) storage;
+            return (T) this;
         }
         return delegate.getObject(key);
     }

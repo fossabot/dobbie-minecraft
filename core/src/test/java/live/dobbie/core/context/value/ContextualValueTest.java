@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import live.dobbie.core.context.ObjectContext;
 import live.dobbie.core.context.SimpleContext;
+import live.dobbie.core.context.storage.StorageAwareObjectContext;
 import live.dobbie.core.exception.ComputationException;
 import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
@@ -13,6 +14,7 @@ import live.dobbie.core.script.js.JSScriptContext;
 import live.dobbie.core.script.js.JSScriptExecutor;
 import live.dobbie.core.script.js.converter.DefaultValueConverter;
 import live.dobbie.core.script.js.converter.PrimitiveJSConverter;
+import live.dobbie.core.script.js.converter.PrimitiveStorageJSConverter;
 import live.dobbie.core.script.js.converter.TypedValueConverter;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -41,14 +43,19 @@ class ContextualValueTest {
 
     @Test
     void varExtractTest() throws IOException, ComputationException {
-        ObjectContext context = SimpleContext.builder().set(Path.of("foo0"), Primitive.of("hello")).set("foo1", ", world!").build();
+        ObjectContext context = new StorageAwareObjectContext(
+                SimpleContext.builder()
+                        .set(Path.of("foo0"), Primitive.of("hello"))
+                        .set("foo1", ", world!")
+                        .build()
+        );
         ObjectMapper o = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addDeserializer(ContextualValue.class, newParser());
         o.registerModule(module);
         ContextualValue value;
 
-        value = o.readValue("\"foo0 + foo1\"", ContextualValue.class);
+        value = o.readValue("\"storage.get('foo0') + foo1\"", ContextualValue.class);
         assertNotNull(value);
         assertEquals("hello, world!", value.computeValue(context));
     }
@@ -58,6 +65,7 @@ class ContextualValueTest {
         ScriptContextualValue.Factory<JSScript, JSScriptContext> scCtxFactory = new ScriptContextualValue.Factory<>(
                 new JSScriptContext.Factory(jsCtxFactory, TypedValueConverter.builder()
                         .registerConverter(new PrimitiveJSConverter(DefaultValueConverter.INSTANCE))
+                        .registerConverter(new PrimitiveStorageJSConverter(DefaultValueConverter.INSTANCE))
                         .setFallbackConverter(DefaultValueConverter.INSTANCE)
                         .build()),
                 new JSScriptExecutor(),

@@ -7,7 +7,7 @@
       commands:
         - 'summon creeper'
     - name: zombie
-      condition: "donation.amount === 'RUB43'"
+      condition: "storage.get('donation.amount') == 'RUB43'"
       commands:
         - 'summon zombie'
     - name: skeleton

@@ -128,7 +128,6 @@ public class DobbieMinecraftBuilder {
                         .registerFromConverter(Object.class, new AccessorJSConverter(DefaultValueConverter.INSTANCE))
                         .setFallbackConverter(DefaultValueConverter.INSTANCE)
                         .build(),
-                Path.of("vars"),
                 new JSModuleScriptProvider(
                         new URIAwareModuleProvider(
                                 new DirectoryModuleProvider(new File(configDir, "js_modules"))

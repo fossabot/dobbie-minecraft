@@ -2,7 +2,7 @@ package live.dobbie.core.dest.cmd;
 
 import live.dobbie.core.context.ObjectContext;
 import live.dobbie.core.context.SimpleContext;
-import live.dobbie.core.dest.cmd.script.AssertionScriptCmdParser;
+import live.dobbie.core.context.storage.StorageAwareObjectContext;
 import live.dobbie.core.dest.cmd.script.ConditionalScriptCmdParser;
 import live.dobbie.core.dest.cmd.script.ScriptCmdParser;
 import live.dobbie.core.exception.ParserException;
@@ -13,6 +13,7 @@ import live.dobbie.core.script.js.JSScriptContext;
 import live.dobbie.core.script.js.JSScriptExecutor;
 import live.dobbie.core.script.js.converter.DefaultValueConverter;
 import live.dobbie.core.script.js.converter.PrimitiveJSConverter;
+import live.dobbie.core.script.js.converter.PrimitiveStorageJSConverter;
 import live.dobbie.core.script.js.converter.TypedValueConverter;
 import live.dobbie.core.substitutor.VarProvider;
 import live.dobbie.core.substitutor.environment.Env;
@@ -75,7 +76,7 @@ class SequentalCmdParserTest {
 
     @Test
     void jsIfTrueTest() throws ParserException, CmdExecutionException {
-        Cmd cmd = parser.parse("#!jsif (verification.shouldBeTrue) it is true!");
+        Cmd cmd = parser.parse("#!jsif (storage.get('verification.shouldBeTrue')) it is true!");
         assertNotNull(cmd);
         cmd.execute(context);
         verify(executor).execute(notNull(), eq("it is true!"));
@@ -83,7 +84,7 @@ class SequentalCmdParserTest {
 
     @Test
     void jsIfFalseTest() throws ParserException, CmdExecutionException {
-        Cmd cmd = parser.parse("#!jsif (verification.shouldBeFalse) it is true!");
+        Cmd cmd = parser.parse("#!jsif (storage.get('verification.shouldBeFalse')) it is true!");
         assertNotNull(cmd);
         cmd.execute(context);
         verify(executor, times(0)).execute(notNull(), eq("it is true!"));
@@ -96,13 +97,14 @@ class SequentalCmdParserTest {
         JSScriptExecutor executor = new JSScriptExecutor();
         JSScriptContext.Factory contextFactory = new JSScriptContext.Factory(cf, TypedValueConverter.builder()
                 .registerConverter(new PrimitiveJSConverter(DefaultValueConverter.INSTANCE))
+                .registerConverter(new PrimitiveStorageJSConverter(DefaultValueConverter.INSTANCE))
                 .setFallbackConverter(DefaultValueConverter.INSTANCE)
                 .build());
         JSScriptCompiler compiler = new JSScriptCompiler(cf);
         SequentalCmdParser cmdParser = new SequentalCmdParser();
         cmdParser.registerParser(
                 new AssertionCmd.Parser(Collections.singletonList("verify")),
-                new AssertionScriptCmdParser<>(Collections.singletonList("assert"), executor, contextFactory, compiler),
+                new AssertionCmd.Parser(Collections.singletonList("assert")),
                 new ConditionalScriptCmdParser<>(Collections.singletonList("jsif"), executor, contextFactory, compiler, cmdParser),
                 new ScriptCmdParser<>(Collections.singletonList("js"), executor, contextFactory, compiler),
                 new SubstitutorCmd.Parser(new PlainSubstitutorParser())
@@ -116,7 +118,7 @@ class SequentalCmdParserTest {
         when(varProvider.getVar(eq("foo"))).thenReturn("world");
         when(varProvider.requireVar(notNull())).thenCallRealMethod();
         Env env = new Environment(Collections.singletonMap(VarProvider.class, varProvider));
-        CmdContext context = new CmdContext(oCtx, cmdExecutor, env);
+        CmdContext context = new CmdContext(new StorageAwareObjectContext(oCtx), cmdExecutor, env);
         this.executor = cmdExecutor;
         this.parser = cmdParser;
         this.context = context;

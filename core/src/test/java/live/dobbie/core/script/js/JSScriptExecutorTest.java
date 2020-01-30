@@ -12,6 +12,7 @@ import live.dobbie.core.script.ScriptResult;
 import live.dobbie.core.script.ScriptSource;
 import live.dobbie.core.script.js.converter.DefaultValueConverter;
 import live.dobbie.core.script.js.converter.PrimitiveJSConverter;
+import live.dobbie.core.script.js.converter.PrimitiveStorageJSConverter;
 import live.dobbie.core.script.js.converter.TypedValueConverter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -85,34 +86,35 @@ class JSScriptExecutorTest {
         JSScriptCompiler compiler = new JSScriptCompiler(cxf);
         JSScriptExecutor executor = new JSScriptExecutor();
         JSScriptContext context = new JSScriptContext(cxf, null,
-                SimpleContext.builder()
+                new StorageAwareObjectContext(SimpleContext.builder()
                         .set(Path.of("foo", "bar"), Primitive.of("hello"))
                         .set(Path.of("foo", "tar"), Primitive.of("yello"))
                         .set(Path.of("foo", "bool"), Primitive.of(true))
-                        .build(),
+                        .build()),
                 TypedValueConverter.builder()
                         .registerConverter(new PrimitiveJSConverter(DefaultValueConverter.INSTANCE))
+                        .registerConverter(new PrimitiveStorageJSConverter(DefaultValueConverter.INSTANCE))
                         .setFallbackConverter(DefaultValueConverter.INSTANCE)
                         .build());
         JSScript script;
         ScriptResult result;
 
-        script = compiler.compile(ScriptSource.fromString("foo.bar", "test"));
+        script = compiler.compile(ScriptSource.fromString("storage.get('foo.bar')", "test"));
         result = executor.execute(script, context);
         assertFalse(result.isNull());
         assertEquals("hello", result.getObject());
 
-        script = compiler.compile(ScriptSource.fromString("foo.tar", "test"));
+        script = compiler.compile(ScriptSource.fromString("storage.get('foo.tar')", "test"));
         result = executor.execute(script, context);
         assertFalse(result.isNull());
         assertEquals("yello", result.getObject());
 
-        script = compiler.compile(ScriptSource.fromString("foo.bar + foo.tar", "test"));
+        script = compiler.compile(ScriptSource.fromString("storage.get('foo.bar') + storage.get('foo.tar')", "test"));
         result = executor.execute(script, context);
         assertFalse(result.isNull());
         assertEquals("helloyello", result.getObject());
 
-        script = compiler.compile(ScriptSource.fromString("foo.bool", "test"));
+        script = compiler.compile(ScriptSource.fromString("storage.get('foo.bool')", "test"));
         result = executor.execute(script, context);
         assertFalse(result.isNull());
         assertTrue((Boolean) result.getObject());
@@ -196,15 +198,15 @@ class JSScriptExecutorTest {
                         storage,
                         "varStorage"
                 ),
-                Path.of("vars"),
                 TypedValueConverter.builder()
                         .registerConverter(new PrimitiveJSConverter(DefaultValueConverter.INSTANCE))
+                        .registerConverter(new PrimitiveStorageJSConverter(DefaultValueConverter.INSTANCE))
                         .setFallbackConverter(DefaultValueConverter.INSTANCE)
                         .build()
         );
         JSScript script;
 
-        script = compiler.compile(ScriptSource.fromString("vars.foo = 'hello!'", "test"));
+        script = compiler.compile(ScriptSource.fromString("varStorage.set('foo', 'hello!')", "test"));
         executor.execute(script, context);
         assertEquals(Primitive.of("hello!"), storage.getVariable(Path.of("foo")));
     }

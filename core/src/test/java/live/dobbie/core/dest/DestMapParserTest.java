@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import live.dobbie.core.context.SimpleContext;
+import live.dobbie.core.context.storage.StorageAwareObjectContext;
 import live.dobbie.core.context.value.ContextualCondition;
 import live.dobbie.core.context.value.ScriptContextualValue;
 import live.dobbie.core.dest.cmd.*;
@@ -15,6 +16,7 @@ import live.dobbie.core.script.js.JSScriptContext;
 import live.dobbie.core.script.js.JSScriptExecutor;
 import live.dobbie.core.script.js.converter.DefaultValueConverter;
 import live.dobbie.core.script.js.converter.PrimitiveJSConverter;
+import live.dobbie.core.script.js.converter.PrimitiveStorageJSConverter;
 import live.dobbie.core.script.js.converter.TypedValueConverter;
 import live.dobbie.core.substitutor.environment.Env;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,7 @@ class DestMapParserTest {
                 new ScriptContextualValue.Factory<>(
                         new JSScriptContext.Factory(cf, TypedValueConverter.builder()
                                 .registerConverter(new PrimitiveJSConverter(DefaultValueConverter.INSTANCE))
+                                .registerConverter(new PrimitiveStorageJSConverter(DefaultValueConverter.INSTANCE))
                                 .setFallbackConverter(DefaultValueConverter.INSTANCE)
                                 .build()),
                         new JSScriptExecutor(),
@@ -46,9 +49,11 @@ class DestMapParserTest {
         ));
         PlainCmd.Executor executor = Mockito.mock(PlainCmd.Executor.class);
         CmdContext cmdContext = new CmdContext(
-                SimpleContext.builder()
-                        .set(Path.of("donation", "amount"), Primitive.of("RUB43"))
-                        .build(),
+                new StorageAwareObjectContext(
+                        SimpleContext.builder()
+                                .set(Path.of("donation", "amount"), Primitive.of("RUB43"))
+                                .build()
+                ),
                 executor,
                 Mockito.mock(Env.class)
         );

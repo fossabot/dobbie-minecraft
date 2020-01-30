@@ -1,12 +1,9 @@
 package live.dobbie.core.script.js;
 
 import live.dobbie.core.context.ObjectContext;
-import live.dobbie.core.path.Path;
 import live.dobbie.core.script.ScriptContext;
 import live.dobbie.core.script.js.converter.DefaultValueConverter;
 import live.dobbie.core.script.js.converter.JSValueConverter;
-import live.dobbie.core.script.js.primitivestorage.accessor.AccessorAwareObject;
-import live.dobbie.core.script.js.primitivestorage.accessor.PSAccessor;
 import live.dobbie.core.script.js.primitivestorage.accessor.PSAccessorFactory;
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
@@ -27,15 +24,7 @@ public class JSScriptContext implements ScriptContext {
     private final @NonNull ContextFactory factory;
     private final JSModuleScriptProvider moduleProvider;
     private final @NonNull ObjectContext objectContext;
-    private final @NonNull Path varPathPrefix;
     private final @NonNull JSValueConverter valueConverter;
-
-    public JSScriptContext(@NonNull ContextFactory factory,
-                           JSModuleScriptProvider moduleProvider,
-                           @NonNull ObjectContext objectContext,
-                           @NonNull JSValueConverter valueConverter) {
-        this(factory, moduleProvider, objectContext, Path.EMPTY, valueConverter);
-    }
 
     public JSScriptContext(@NonNull ContextFactory factory,
                            JSModuleScriptProvider moduleProvider,
@@ -114,54 +103,6 @@ public class JSScriptContext implements ScriptContext {
         objectContext.getObjects().forEach((key, value) -> {
             ScriptableObject.putProperty(scope, key, valueConverter.toJs(value, scope, context));
         });
-        if (!varPathPrefix.isEmpty()) {
-            traverseCreatingAccessorAwareObjects(psAccessorFactory, scope, varPathPrefix);
-        }
-        objectContext.getVariables().forEach((path, value) -> {
-            PSAccessor accessor = psAccessorFactory.createAccessor(path);
-            path = varPathPrefix.merge(path);
-            ScriptableObject object = (ScriptableObject) traverseCreatingAccessorAwareObjects(
-                    psAccessorFactory,
-                    scope,
-                    path.subset(0, path.length() - 1)
-            );
-            object.defineProperty(
-                    path.at(path.length() - 1),
-                    accessor,
-                    accessor.getGetter(),
-                    accessor.getSetter(),
-                    0
-            );
-        });
-    }
-
-    private Scriptable traverseCreatingAccessorAwareObjects(final PSAccessorFactory psAccessorFactory,
-                                                            final Scriptable root,
-                                                            final Path path) {
-        Scriptable obj = root;
-        for (int i = 0; i < path.length(); i++) {
-            String key = path.at(i);
-            if (obj instanceof AccessorAwareObject) {
-                // AccessorAwareObject will take it from here
-                break;
-            }
-            if (obj.has(key, obj)) {
-                Object object = obj.get(key, obj);
-                if (object instanceof AccessorAwareObject) {
-                    obj = (Scriptable) object;
-                } else {
-                    throw new IllegalArgumentException("cannot set variable " + Path.toString(path) + " when setting " + key + ": it is not AccessorAwareObject: " + obj);
-                }
-            } else {
-                obj.put(key, obj, obj = new AccessorAwareObject(
-                        psAccessorFactory,
-                        objectContext,
-                        valueConverter,
-                        path.subset(varPathPrefix.length(), i)
-                ));
-            }
-        }
-        return obj;
     }
 
     private static String describeSource(String sourceName, int line, String lineSource, int lineOffset) {
@@ -172,11 +113,10 @@ public class JSScriptContext implements ScriptContext {
     public static class Factory implements ScriptContext.Factory<JSScriptContext> {
         private final @NonNull ContextFactory contextFactory;
         private final @NonNull JSValueConverter valueConverter;
-        private final @NonNull Path varPathPrefix;
         private final JSModuleScriptProvider moduleProvider;
 
         public Factory(@NonNull ContextFactory contextFactory, @NonNull JSValueConverter valueConverter) {
-            this(contextFactory, valueConverter, Path.EMPTY, null);
+            this(contextFactory, valueConverter, null);
         }
 
         public Factory(@NonNull ContextFactory contextFactory) {
@@ -186,7 +126,7 @@ public class JSScriptContext implements ScriptContext {
         @NonNull
         @Override
         public JSScriptContext create(@NonNull ObjectContext context) {
-            return new JSScriptContext(contextFactory, moduleProvider, context, varPathPrefix, valueConverter);
+            return new JSScriptContext(contextFactory, moduleProvider, context, valueConverter);
         }
     }
 }

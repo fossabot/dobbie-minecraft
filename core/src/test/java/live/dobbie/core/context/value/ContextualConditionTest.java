@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import live.dobbie.core.context.ObjectContext;
 import live.dobbie.core.context.SimpleContext;
+import live.dobbie.core.context.storage.StorageAwareObjectContext;
 import live.dobbie.core.exception.ComputationException;
 import live.dobbie.core.misc.primitive.Primitive;
 import live.dobbie.core.path.Path;
@@ -14,6 +15,7 @@ import live.dobbie.core.script.js.JSScriptContext;
 import live.dobbie.core.script.js.JSScriptExecutor;
 import live.dobbie.core.script.js.converter.DefaultValueConverter;
 import live.dobbie.core.script.js.converter.PrimitiveJSConverter;
+import live.dobbie.core.script.js.converter.PrimitiveStorageJSConverter;
 import live.dobbie.core.script.js.converter.TypedValueConverter;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -104,22 +106,24 @@ class ContextualConditionTest {
 
     @Test
     void combinedParserTest() throws ComputationException, IOException {
-        ObjectContext context = SimpleContext.builder()
-                .set(Path.of("foo"), Primitive.of("bar"))
-                .set(Path.of("num"), Primitive.of(5.0))
-                .build();
+        ObjectContext context = new StorageAwareObjectContext(
+                SimpleContext.builder()
+                        .set(Path.of("foo"), Primitive.of("bar"))
+                        .set(Path.of("num"), Primitive.of(5.0))
+                        .build()
+        );
         ObjectMapper o = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addDeserializer(ContextualCondition.class, newParser());
         o.registerModule(module);
         ConditionTest test;
 
-        test = o.readValue("{\"c0\": \"foo == 'bar'\", \"c1\": {\"foo\": \"bar\"}}", ConditionTest.class);
+        test = o.readValue("{\"c0\": \"storage.get('foo') == 'bar'\", \"c1\": {\"foo\": \"bar\"}}", ConditionTest.class);
         assertNotNull(test);
         assertTrue(test.c0.isTrue(context));
         assertTrue(test.c1.isTrue(context));
 
-        test = o.readValue("{\"c0\": \"num == 5.0\", \"c1\": {\"num\": 5.0}}", ConditionTest.class);
+        test = o.readValue("{\"c0\": \"storage.get('num') == 5.0\", \"c1\": {\"num\": 5.0}}", ConditionTest.class);
         assertNotNull(test);
         assertTrue(test.c0.isTrue(context));
         assertTrue(test.c1.isTrue(context));
@@ -143,6 +147,7 @@ class ContextualConditionTest {
         ScriptContextualValue.Factory<JSScript, JSScriptContext> scCtxFactory = new ScriptContextualValue.Factory<>(
                 new JSScriptContext.Factory(jsCtxFactory, TypedValueConverter.builder()
                         .registerConverter(new PrimitiveJSConverter(DefaultValueConverter.INSTANCE))
+                        .registerConverter(new PrimitiveStorageJSConverter(DefaultValueConverter.INSTANCE))
                         .setFallbackConverter(DefaultValueConverter.INSTANCE)
                         .build()
                 ),
