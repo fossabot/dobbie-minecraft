@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class MinecraftEntityDespawner {
     private static final ILogger LOGGER = Logging.getLogger(MinecraftEntityDespawner.class);
 
-    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor(newThreadFactory());
 
     public void queueDespawn(@NonNull MinecraftEntity entity, long ticks) {
         service.schedule(entity::despawn, ticksToMillis(ticks), TimeUnit.MILLISECONDS);
