@@ -97,4 +97,12 @@ class PathTest {
         assertEquals(subset, path);
         assertEquals(path, subset);
     }
+
+    @Test
+    void subsetToString() {
+        assertEquals("tar", Path.toString(Path.of("foo", "bar", "tar").subset(2, 1)));
+        assertEquals("tar", Path.toString(Path.of("foo", "bar", "tar", "jar").subset(2, 2), 1));
+        assertEquals("", Path.toString(Path.of("foo", "bar", "tar", "jar").subset(2, 2), 2));
+        assertThrows(IndexOutOfBoundsException.class, () -> Path.toString(Path.of("foo", "bar", "tar", "jar").subset(2, 2), 3));
+    }
 }
