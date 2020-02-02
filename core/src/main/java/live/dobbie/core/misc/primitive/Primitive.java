@@ -4,9 +4,10 @@ import live.dobbie.core.exception.ParserRuntimeException;
 import lombok.NonNull;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.io.Serializable;
 import java.time.Instant;
 
-public interface Primitive {
+public interface Primitive extends Serializable {
     Object getValue();
 
     @NonNull
