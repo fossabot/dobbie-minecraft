@@ -21,6 +21,8 @@ dependencies {
     "shade"("io.socket:socket.io-client:1.0.0")
     // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
     "shade"("com.zaxxer:HikariCP:3.4.2")
+    // https://mvnrepository.com/artifact/com.h2database/h2
+    "shade"("com.h2database:h2:1.4.200")
 
     "shade"("net.kyori:text-api:${Versions.TEXT}")
     "shade"("net.kyori:text-serializer-gson:${Versions.TEXT}")
