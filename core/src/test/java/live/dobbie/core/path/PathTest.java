@@ -1,6 +1,5 @@
-package live.dobbie.core.settings.source.jackson;
+package live.dobbie.core.path;
 
-import live.dobbie.core.path.Path;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
