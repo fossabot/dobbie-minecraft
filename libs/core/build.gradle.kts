@@ -19,6 +19,8 @@ dependencies {
     "shade"("com.ibm.icu:icu4j:65.1")
     // https://mvnrepository.com/artifact/io.socket/socket.io-client
     "shade"("io.socket:socket.io-client:1.0.0")
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    "shade"("com.zaxxer:HikariCP:3.4.2")
 
     "shade"("net.kyori:text-api:${Versions.TEXT}")
     "shade"("net.kyori:text-serializer-gson:${Versions.TEXT}")
