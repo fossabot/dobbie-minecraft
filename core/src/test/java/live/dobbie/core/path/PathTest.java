@@ -46,6 +46,7 @@ class PathTest {
         assertEquals(Path.of("foo"), Path.of("foo", "bar").subset(0, 1));
         assertEquals(Path.of("bar", "tar"), Path.of("foo", "bar", "tar").subset(1, 2));
         assertEquals(Path.of("bar"), Path.of("foo", "bar", "tar").subset(1, 2).subset(0, 1));
+        assertEquals(Path.of("tar", "jar"), Path.of("foo", "bar", "tar", "jar").subset(2, 2));
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> Path.of("foo").subset(1, 1));
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> Path.of("foo", "bar").subset(0, 3));
     }
@@ -87,5 +88,13 @@ class PathTest {
         assertTrue(i.hasNext());
         assertEquals("bar", i.next());
         assertFalse(i.hasNext());
+    }
+
+    @Test
+    void equalsTest() {
+        Path subset = Path.of("foo", "bar", "tar", "jar").subset(2, 2);
+        Path path = Path.of("tar", "jar");
+        assertEquals(subset, path);
+        assertEquals(path, subset);
     }
 }
