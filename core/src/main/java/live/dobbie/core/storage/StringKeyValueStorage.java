@@ -4,7 +4,7 @@ import live.dobbie.core.exception.StorageException;
 import live.dobbie.core.util.Cleanable;
 import lombok.NonNull;
 
-public interface KeyValueStorage extends Cleanable {
+public interface StringKeyValueStorage extends Cleanable {
 
     String get(@NonNull String key) throws StorageException;
 

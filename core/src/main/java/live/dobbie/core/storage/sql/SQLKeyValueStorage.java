@@ -1,9 +1,9 @@
 package live.dobbie.core.storage.sql;
 
-import live.dobbie.core.storage.KeyValueStorage;
+import live.dobbie.core.storage.StringKeyValueStorage;
 import lombok.NonNull;
 
-public interface SQLKeyValueStorage extends KeyValueStorage {
+public interface SQLKeyValueStorage extends StringKeyValueStorage {
     String
             TABLE_NAME = "primitives",
             KEY_COLUMN = "key",
