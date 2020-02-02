@@ -29,7 +29,7 @@ public class SingleConnectionPool implements SQLConnectionPool {
     }
 
     public static SingleConnectionPool open(@NonNull String jdbcUrl, String username, String password) throws SQLException {
-        return new SingleConnectionPool(new DelegateConnection(DriverManager.getConnection(jdbcUrl, username, password)));
+        return new SingleConnectionPool(DriverManager.getConnection(jdbcUrl, username, password));
     }
 
     public static SingleConnectionPool open(@NonNull String jdbcUrl) throws SQLException {
