@@ -150,7 +150,7 @@ public final class Path implements Iterable<String> {
         if (excludeLast > path.length) {
             throw new IndexOutOfBoundsException("excludeLast >= path.length");
         }
-        return StringUtils.join(path.breadcrumbs, separator, 0, path.length - excludeLast);
+        return StringUtils.join(path.breadcrumbs, separator, path.start, path.start + path.length - excludeLast);
     }
 
     public static String toString(@NonNull Path path, int excludeLast) {

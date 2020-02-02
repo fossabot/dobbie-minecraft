@@ -1,6 +1,5 @@
-package live.dobbie.core.settings.source.jackson;
+package live.dobbie.core.path;
 
-import live.dobbie.core.path.Path;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -47,6 +46,7 @@ class PathTest {
         assertEquals(Path.of("foo"), Path.of("foo", "bar").subset(0, 1));
         assertEquals(Path.of("bar", "tar"), Path.of("foo", "bar", "tar").subset(1, 2));
         assertEquals(Path.of("bar"), Path.of("foo", "bar", "tar").subset(1, 2).subset(0, 1));
+        assertEquals(Path.of("tar", "jar"), Path.of("foo", "bar", "tar", "jar").subset(2, 2));
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> Path.of("foo").subset(1, 1));
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> Path.of("foo", "bar").subset(0, 3));
     }
@@ -88,5 +88,21 @@ class PathTest {
         assertTrue(i.hasNext());
         assertEquals("bar", i.next());
         assertFalse(i.hasNext());
+    }
+
+    @Test
+    void equalsTest() {
+        Path subset = Path.of("foo", "bar", "tar", "jar").subset(2, 2);
+        Path path = Path.of("tar", "jar");
+        assertEquals(subset, path);
+        assertEquals(path, subset);
+    }
+
+    @Test
+    void subsetToString() {
+        assertEquals("tar", Path.toString(Path.of("foo", "bar", "tar").subset(2, 1)));
+        assertEquals("tar", Path.toString(Path.of("foo", "bar", "tar", "jar").subset(2, 2), 1));
+        assertEquals("", Path.toString(Path.of("foo", "bar", "tar", "jar").subset(2, 2), 2));
+        assertThrows(IndexOutOfBoundsException.class, () -> Path.toString(Path.of("foo", "bar", "tar", "jar").subset(2, 2), 3));
     }
 }
