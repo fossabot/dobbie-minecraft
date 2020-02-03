@@ -1,4 +1,4 @@
-package live.dobbie.core.storage.sql;
+package live.dobbie.core.dictionary.sql;
 
 import live.dobbie.core.exception.StorageException;
 

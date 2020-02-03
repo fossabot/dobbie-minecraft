@@ -1,4 +1,4 @@
-package live.dobbie.core.storage.sql.pool;
+package live.dobbie.core.dictionary.sql.pool;
 
 import live.dobbie.core.util.Cleanable;
 

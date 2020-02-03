@@ -1,7 +1,8 @@
-package live.dobbie.core.storage.sql.pool;
+package live.dobbie.core.dictionary.sql.pool.hikari;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import live.dobbie.core.dictionary.sql.pool.SQLConnectionPool;
 import lombok.NonNull;
 
 import java.sql.Connection;
