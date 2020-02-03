@@ -1,6 +1,8 @@
 package live.dobbie.core.service.twitch.data.trigger;
 
 import live.dobbie.core.context.factory.ContextClass;
+import live.dobbie.core.context.factory.ContextComplexVar;
+import live.dobbie.core.context.factory.ContextVar;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.loc.LocString;
 import live.dobbie.core.service.twitch.TwitchClient;
@@ -26,10 +28,22 @@ public class TwitchChannelGoLive implements TwitchTrigger {
     @NonNull TwitchClient client;
     @NonNull TwitchChannel channel;
     @NonNull Instant timestamp;
+
+    @ContextVar(path = {"twitch_stream", "start_time"})
     @NonNull Instant startTime;
+
+    @ContextVar(path = {"twitch_stream", "is_recent"})
     boolean wentRecently;
+
+    @ContextVar(path = {"twitch_stream", "title"})
     String title;
+
+    @ContextComplexVar({
+            @ContextVar(path = {"twitch_stream", "game", "id"}, parser = TwitchGame.Id.class),
+            @ContextVar(path = {"twitch_stream", "game", "name"}, parser = TwitchGame.Name.class),
+    })
     TwitchGame game;
+
     String preferredDestination;
 
     @Override
