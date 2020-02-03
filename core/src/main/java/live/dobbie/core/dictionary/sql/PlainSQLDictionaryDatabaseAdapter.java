@@ -1,14 +1,12 @@
 package live.dobbie.core.dictionary.sql;
 
+import live.dobbie.core.exception.ParserRuntimeException;
 import live.dobbie.core.misc.primitive.NullPrimitive;
 import live.dobbie.core.misc.primitive.Primitive;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Objects;
 
 import static live.dobbie.core.dictionary.sql.SQL.*;
@@ -23,13 +21,11 @@ public class PlainSQLDictionaryDatabaseAdapter implements SQLDictionaryDatabaseA
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 Object object = resultSet.getObject(1);
-                if (object instanceof Primitive) {
-                    return (Primitive) object;
+                try {
+                    return Primitive.of(object);
+                } catch (ParserRuntimeException prE) {
+                    throw new SQLException("could not parse primitive value of key " + key, prE);
                 }
-                if (object == null) {
-                    return NullPrimitive.INSTANCE;
-                }
-                throw new SQLException("unknown object returned on key " + key);
             }
             return NullPrimitive.INSTANCE;
         }
@@ -79,7 +75,7 @@ public class PlainSQLDictionaryDatabaseAdapter implements SQLDictionaryDatabaseA
     private void insertOrUpdate(Connection connection, String key, Primitive value, int keyIndex, int valueIndex, String sql) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(keyIndex, key);
-            stmt.setObject(valueIndex, value);
+            stmt.setObject(valueIndex, value.getValue(), Types.JAVA_OBJECT);
             executeUpdate(stmt);
         }
     }
