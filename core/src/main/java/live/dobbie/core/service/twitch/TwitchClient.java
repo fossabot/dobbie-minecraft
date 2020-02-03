@@ -3,7 +3,6 @@ package live.dobbie.core.service.twitch;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.EventManager;
 import com.github.philippheuer.events4j.domain.Event;
-import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.pubsub.PubSubSubscription;
 import live.dobbie.core.service.twitch.listener.DelegateTwitchListener;
 import live.dobbie.core.service.twitch.listener.FilterTwitchListener;
@@ -21,7 +20,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Function;
 
 public class TwitchClient implements Cleanable {
     private static final ILogger LOGGER = Logging.getLogger(TwitchClient.class);
@@ -189,16 +187,5 @@ public class TwitchClient implements Cleanable {
         }
         LOGGER.tracing("METHOD_MAP.size(): " + map.size());
         METHOD_MAP = Collections.unmodifiableMap(map);
-    }
-
-    static class Creator implements Function<TwitchSettings.Global, com.github.twitch4j.TwitchClient> {
-        @Override
-        public com.github.twitch4j.TwitchClient apply(@NonNull TwitchSettings.Global global) {
-            return TwitchClientBuilder.builder()
-                    .withEnableHelix(true)
-                    .withEnableChat(true)
-                    .withChatAccount(new OAuth2Credential("oauth", global.getClient().getToken()))
-                    .build();
-        }
     }
 }
