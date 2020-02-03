@@ -61,6 +61,6 @@ public class TwitchChannelGoLive implements TwitchTrigger {
     private static final long RECENT_THRESHOLD_SECONDS = 60 * 5;
 
     public static boolean isRecent(@NonNull Instant timestamp) {
-        return Duration.between(Instant.now(), timestamp).getSeconds() < RECENT_THRESHOLD_SECONDS;
+        return Duration.between(Instant.now(), timestamp).abs().getSeconds() < RECENT_THRESHOLD_SECONDS;
     }
 }
