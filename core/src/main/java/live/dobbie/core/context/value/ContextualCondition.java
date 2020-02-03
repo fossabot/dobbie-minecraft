@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -100,6 +101,8 @@ public interface ContextualCondition extends ContextualValue<Boolean> {
                 condition = parseStringCondition(value.textValue());
             } else if (value instanceof NumericNode) {
                 condition = new VarCmpCondition(Primitive.of(value.decimalValue()), VarCmpCondType.EQUAL);
+            } else if (value instanceof BooleanNode) {
+                condition = new VarEqCondition(Primitive.of(value.asBoolean()));
             } else {
                 throw new ParserRuntimeException("unknown primitive condition: " + value);
             }
