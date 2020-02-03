@@ -44,6 +44,7 @@ import live.dobbie.core.misc.primitive.converter.PrimitiveConverterCache;
 import live.dobbie.core.misc.primitive.converter.PrimitiveConverterProvider;
 import live.dobbie.core.misc.primitive.converter.SequentalConverterProvider;
 import live.dobbie.core.path.Path;
+import live.dobbie.core.persistence.OnDemandPersistence;
 import live.dobbie.core.persistence.PersistenceService;
 import live.dobbie.core.persistence.PrimitiveDictionaryPersistence;
 import live.dobbie.core.persistence.SessionObjectStorage;
@@ -197,7 +198,7 @@ public class DobbieMinecraftBuilder {
                 }))
                 .registerFactory(PersistenceService.class, new PersistenceService.RefFactory(Arrays.asList(
                         new SessionObjectStorage.Factory(),
-                        new PrimitiveDictionaryPersistence.FactoryDelegated(
+                        new OnDemandPersistence.Factory("sql", new PrimitiveDictionaryPersistence.FactoryDelegated(
                                 new SQLDictionaryDatabaseFactory(
                                         user -> H2.file(new File(configDir, "db/" + user.getName())).build(),
                                         new H2DictionaryDatabaseInitializer(),
@@ -205,7 +206,7 @@ public class DobbieMinecraftBuilder {
                                         new HikariConnectionPoolFactory()
                                 ),
                                 "sql"
-                        )
+                        ))
                 )))
                 .registerFactory(IdTaskScheduler.class, new IdSchedulerService.RefFactory())
                 .registerFactory(StreamLabsApi.class, new StreamLabsApi.RefFactory(userSettingsProvider));
