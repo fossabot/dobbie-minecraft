@@ -111,30 +111,21 @@ public class AnnotationBasedObjectContextFactory implements ObjectContextFactory
     }
 
     private void processMember(Trigger trigger, AccessibleObject member, Map<String[], Primitive> vars, Map<String, Object> objects) {
-        boolean varProceed = processVarMember(trigger, member, vars);
-        boolean objectProceed = processObjectMember(trigger, member, objects);
-        if (varProceed && objectProceed) {
-            throw new Error("no member must not be annotated by both " + ContextVar.class + " and " +
-                    ContextObject.class + "; having issue with: " + member);
-        }
+        processVarMember(trigger, member, vars);
+        processObjectMember(trigger, member, objects);
     }
 
-    private boolean processVarMember(Trigger trigger, AccessibleObject member, Map<String[], Primitive> vars) {
+    private void processVarMember(Trigger trigger, AccessibleObject member, Map<String[], Primitive> vars) {
         ContextComplexVar contextComplexVar = member.getAnnotation(ContextComplexVar.class);
         if (contextComplexVar == null) {
             ContextVar contextVar = member.getAnnotation(ContextVar.class);
             if (contextVar != null) {
                 processVarMember(trigger, member, contextVar, vars);
-                return true;
             }
-            return false;
         }
-        boolean visited = false;
         for (ContextVar contextVar : contextComplexVar.value()) {
             processVarMember(trigger, member, contextVar, vars);
-            visited = true;
         }
-        return visited;
     }
 
     private void validateMember(AccessibleObject member) {
@@ -200,10 +191,10 @@ public class AnnotationBasedObjectContextFactory implements ObjectContextFactory
         throw new Error("unknown member passed: " + member);
     }
 
-    private boolean processObjectMember(Trigger trigger, AccessibleObject member, Map<String, Object> objects) {
+    private void processObjectMember(Trigger trigger, AccessibleObject member, Map<String, Object> objects) {
         ContextObject contextObject = member.getAnnotation(ContextObject.class);
         if (contextObject == null) {
-            return false;
+            return;
         }
         validateMember(member);
         Object object = getValue(member, trigger);
@@ -214,7 +205,6 @@ public class AnnotationBasedObjectContextFactory implements ObjectContextFactory
             name = contextObject.name();
         }
         objects.put(name, object);
-        return true;
     }
 
     private boolean processVarMember(Trigger trigger, AccessibleObject member, ContextVar contextVar, Map<String[], Primitive> vars) {
