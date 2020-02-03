@@ -4,6 +4,9 @@ import com.github.philippheuer.events4j.domain.Event;
 import com.github.twitch4j.chat.events.AbstractChannelEvent;
 import com.github.twitch4j.chat.events.channel.*;
 import com.github.twitch4j.pubsub.events.ChannelPointsRedemptionEvent;
+import live.dobbie.core.service.twitch.event.ChannelGoLiveEvent;
+import live.dobbie.core.service.twitch.event.ChannelGoOfflineEvent;
+import live.dobbie.core.service.twitch.event.CustomTwitchChannelEvent;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -73,6 +76,20 @@ public class FilterTwitchListener implements TwitchListener {
     }
 
     @Override
+    public void onChannelGoLive(@NonNull ChannelGoLiveEvent event) {
+        if (filter.test(event)) {
+            delegate.onChannelGoLive(event);
+        }
+    }
+
+    @Override
+    public void onChannelGoOffline(@NonNull ChannelGoOfflineEvent event) {
+        if (filter.test(event)) {
+            delegate.onChannelGoOffline(event);
+        }
+    }
+
+    @Override
     public void cleanup() {
         delegate.cleanup();
     }
@@ -84,6 +101,9 @@ public class FilterTwitchListener implements TwitchListener {
 
         @Override
         public boolean test(Event event) {
+            if (event instanceof CustomTwitchChannelEvent) {
+                return channelId.equals(((CustomTwitchChannelEvent) event).getChannel().getId());
+            }
             if (event instanceof ChannelPointsRedemptionEvent) {
                 return channelId.equals(((ChannelPointsRedemptionEvent) event).getChannel().getId());
             }

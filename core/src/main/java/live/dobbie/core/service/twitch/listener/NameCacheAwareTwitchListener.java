@@ -5,6 +5,8 @@ import com.github.twitch4j.common.events.domain.EventChannel;
 import com.github.twitch4j.common.events.domain.EventUser;
 import com.github.twitch4j.pubsub.events.ChannelPointsRedemptionEvent;
 import live.dobbie.core.service.twitch.NameCache;
+import live.dobbie.core.service.twitch.event.ChannelGoLiveEvent;
+import live.dobbie.core.service.twitch.event.ChannelGoOfflineEvent;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +55,16 @@ public class NameCacheAwareTwitchListener implements TwitchListener {
     @Override
     public void onChannelPointsRedemption(@NonNull ChannelPointsRedemptionEvent event) {
         delegate.onChannelPointsRedemption(new ChannelPointsRedemptionEvent(convertUser(event.getUser()), convertChannel(event.getChannel()), event.getRedemption()));
+    }
+
+    @Override
+    public void onChannelGoLive(@NonNull ChannelGoLiveEvent event) {
+        delegate.onChannelGoLive(event); // we control this event's creation
+    }
+
+    @Override
+    public void onChannelGoOffline(@NonNull ChannelGoOfflineEvent event) {
+        delegate.onChannelGoOffline(event);
     }
 
     @Override

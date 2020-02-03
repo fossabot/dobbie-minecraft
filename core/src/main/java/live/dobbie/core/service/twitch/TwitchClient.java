@@ -29,13 +29,15 @@ public class TwitchClient implements Cleanable {
     private final @Getter
     @NonNull TwitchInstance instance;
     private final @NonNull NameCache nameCache;
+    private final @NonNull ChannelOnlineObserver onlineObserver;
     private final TwitchInstanceListener instanceListener;
 
     private com.github.twitch4j.TwitchClient client;
 
-    public TwitchClient(@NonNull TwitchInstance instance, @NonNull NameCache nameCache) {
+    public TwitchClient(@NonNull TwitchInstance instance, @NonNull NameCache nameCache, @NonNull ChannelOnlineObserver onlineObserver) {
         this.instance = instance;
         this.nameCache = nameCache;
+        this.onlineObserver = onlineObserver;
         instance.registerListener(instanceListener = this::updateClient, true);
     }
 
@@ -76,6 +78,7 @@ public class TwitchClient implements Cleanable {
         LOGGER.tracing("Joining channel " + channelName);
         if (this.client != null && !isConnectedTo(channelName)) {
             this.client.getChat().joinChannel(channelName);
+            this.onlineObserver.startObserving(nameCache.requireId(channelName));
             LOGGER.tracing("Joined channel " + channelName);
             return subscribeToPubSub(channelName, accessToken);
         }
@@ -93,6 +96,7 @@ public class TwitchClient implements Cleanable {
         LOGGER.tracing("Leaving channel " + channelName);
         if (this.client != null && isConnectedTo(channelName)) {
             this.client.getChat().leaveChannel(channelName);
+            this.onlineObserver.stopObserving(nameCache.requireId(channelName));
             LOGGER.tracing("Left channel " + channelName);
             unsubscribeFromPubSub(subscription);
         }

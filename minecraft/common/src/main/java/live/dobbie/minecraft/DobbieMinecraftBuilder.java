@@ -230,6 +230,7 @@ public class DobbieMinecraftBuilder {
         ListCancellationHandler cancellationHandler = new ListCancellationHandler(Arrays.asList(
                 new UserNotifyingCancellationHandler(loc)
         ));
+        NameCache nameCache = new NameCache(twitchInstance);
         DobbiePlugin plugin = new DobbiePlugin(
                 new Dobbie(
                         new DobbieSettings(config, userSettingsProvider),
@@ -238,7 +239,8 @@ public class DobbieMinecraftBuilder {
                                         twitchInstance,
                                         cancellationHandler,
                                         userSettingsProvider,
-                                        new NameCache(twitchInstance)
+                                        nameCache,
+                                        new ChannelOnlineObserver(twitchInstance, nameCache, new GameCache(twitchInstance), 5000, 30000)
                                 ),
                                 new StreamLabsSourceFactory(
                                         serviceRegistry,

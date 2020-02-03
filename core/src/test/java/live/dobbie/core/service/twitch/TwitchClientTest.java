@@ -1,5 +1,6 @@
 package live.dobbie.core.service.twitch;
 
+import com.github.twitch4j.TwitchClientHelper;
 import com.github.twitch4j.chat.TwitchChat;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.chat.events.channel.GiftSubscriptionsEvent;
@@ -28,9 +29,20 @@ class TwitchClientTest {
     @EnabledIfEnvironmentVariable(named = "twitch-test", matches = "true")
     void realTest() throws InterruptedException {
         ISettings settings = Mockito.mock(ISettings.class);
-        when(settings.registerListener(eq(TwitchSettings.Global.class), notNull())).thenReturn(Mockito.mock(SettingsSubscription.class));
+        SettingsSubscription subscription = mock(SettingsSubscription.class);
+        TwitchSettings.Global global = new TwitchSettings.Global(
+                new TwitchSettings.Global.Client(
+                        System.getenv("twitch-test-login"),
+                        System.getenv("twitch-test-token")
+                )
+        );
+        when(subscription.getValue()).thenReturn(global);
+        when(settings.registerListener(eq(TwitchSettings.Global.class), notNull())).thenReturn(subscription);
         TwitchInstance instance = new TwitchInstance(settings);
-        TwitchClient client = new TwitchClient(instance, new NameCache(instance));
+        NameCache nameCache = new NameCache(instance);
+        GameCache gameCache = new GameCache(instance);
+        ChannelOnlineObserver onlineObserver = new ChannelOnlineObserver(instance, nameCache, gameCache, 10000, 1000);
+        TwitchClient client = new TwitchClient(instance, nameCache, onlineObserver);
         instance.onSettingsUpdated(new TwitchSettings.Global(new TwitchSettings.Global.Client(System.getenv("twitch-test-login"), System.getenv("twitch-test-token"))));
         client.registerListener(System.getenv("twitch-test-channel"), System.getenv("twitch-test-token"), new TwitchListenerAdapter() {
             @Override
@@ -61,12 +73,15 @@ class TwitchClientTest {
             when(client1.getChat()).thenReturn(chat);
             TwitchPubSub pubSub = mock(TwitchPubSub.class);
             when(client1.getPubSub()).thenReturn(pubSub);
+            TwitchClientHelper clientHelper = mock(TwitchClientHelper.class);
+            when(client1.getClientHelper()).thenReturn(clientHelper);
             return client1;
         });
         NameCache nameCache = mock(NameCache.class);
         when(nameCache.getId(eq("test"))).thenReturn("0");
         when(nameCache.requireId(eq("test"))).thenReturn("0");
-        TwitchClient client = new TwitchClient(instance, nameCache) {
+        ChannelOnlineObserver onlineObserver = mock(ChannelOnlineObserver.class);
+        TwitchClient client = new TwitchClient(instance, nameCache, onlineObserver) {
             @Override
             void subscribeToClientEvents() {
                 // no-op
@@ -101,7 +116,8 @@ class TwitchClientTest {
         NameCache nameCache = mock(NameCache.class);
         when(nameCache.getId(eq("test"))).thenReturn("0");
         when(nameCache.requireId(eq("test"))).thenReturn("0");
-        TwitchClient client = Mockito.spy(new TwitchClient(instance, nameCache) {
+        ChannelOnlineObserver onlineObserver = mock(ChannelOnlineObserver.class);
+        TwitchClient client = Mockito.spy(new TwitchClient(instance, nameCache, onlineObserver) {
             @Override
             void subscribeToClientEvents() {
                 // no-op

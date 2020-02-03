@@ -34,12 +34,6 @@ services:
             enabled: true
           tier3:
             enabled: true
-      #      stream_started:
-      #        destination: 'twitch_stream_started'
-      #        enabled: true
-      #      stream_stopped:
-      #        destination: 'twitch_stream_stopped'
-      #        enabled: true
       #      viewer_joined:
       #        destination: 'twitch_viewer_joined'
       #        enabled: false
@@ -65,6 +59,10 @@ services:
         destination: 'twitch_chat'
         enabled: true
       channel_points:
+        enabled: true
+      go_live:
+        enabled: true
+      go_offline:
         enabled: true
 #      command:
 #        list:
