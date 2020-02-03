@@ -1,6 +1,6 @@
 package live.dobbie.core.service.chargeback;
 
-import live.dobbie.core.persistence.StorageException;
+import live.dobbie.core.exception.StorageException;
 import live.dobbie.core.service.Service;
 import live.dobbie.core.service.ServiceUnavailableException;
 import live.dobbie.core.service.SettingsBasedServiceRef;

@@ -1,4 +1,4 @@
-package live.dobbie.core.persistence;
+package live.dobbie.core.exception;
 
 public class StorageException extends Exception {
     public StorageException(String message) {

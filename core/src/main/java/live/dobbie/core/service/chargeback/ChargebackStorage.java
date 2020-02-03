@@ -1,11 +1,11 @@
 package live.dobbie.core.service.chargeback;
 
 import com.opencsv.*;
+import live.dobbie.core.exception.StorageException;
 import live.dobbie.core.misc.Price;
 import live.dobbie.core.misc.currency.Currency;
-import live.dobbie.core.persistence.Persistence;
-import live.dobbie.core.persistence.StorageException;
 import live.dobbie.core.user.User;
+import live.dobbie.core.util.Cleanable;
 import live.dobbie.core.util.io.IOSupplier;
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
@@ -28,14 +28,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public interface ChargebackStorage extends Persistence {
-    String NAME = "chargeback";
-
-    @Override
-    default @NonNull String getName() {
-        return NAME;
-    }
-
+public interface ChargebackStorage extends Cleanable {
     void add(@NonNull ChargebackEntry entry) throws StorageException;
 
     boolean exists(@NonNull ChargebackEntry entry) throws StorageException;
