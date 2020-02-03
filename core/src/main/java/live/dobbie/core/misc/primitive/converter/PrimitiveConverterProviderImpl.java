@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,14 +41,15 @@ public class PrimitiveConverterProviderImpl implements PrimitiveConverterProvide
 
         public Builder registerStandardConverters() {
             return registerConverter(Boolean.class, StandardConverters.BOOL_CONVERTER)
-                    .registerConverter(boolean.class, StandardConverters.BOOL_CONVERTER)
                     .registerConverter(Number.class, StandardConverters.NUMBER_CONVERTER)
+                    .registerConverter(String.class, StandardConverters.StringConverter.instance())
+                    .registerConverter(Instant.class, StandardConverters.DATE_TIME_CONVERTER)
+                    .registerConverter(boolean.class, StandardConverters.BOOL_CONVERTER)
                     .registerConverter(int.class, StandardConverters.NumberConverter.instance())
                     .registerConverter(double.class, StandardConverters.NumberConverter.instance())
                     .registerConverter(long.class, StandardConverters.NumberConverter.instance())
                     .registerConverter(short.class, StandardConverters.NumberConverter.instance())
-                    .registerConverter(byte.class, StandardConverters.NumberConverter.instance())
-                    .registerConverter(String.class, StandardConverters.StringConverter.instance());
+                    .registerConverter(byte.class, StandardConverters.NumberConverter.instance());
         }
 
         public PrimitiveConverterProvider build() {

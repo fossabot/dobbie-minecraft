@@ -4,11 +4,14 @@ import live.dobbie.core.misc.primitive.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
+
 
 public class StandardConverters {
     public static final BoolConverter BOOL_CONVERTER = new BoolConverter();
     public static final NumberConverter NUMBER_CONVERTER = new NumberConverter();
     public static final StringConverter<?> STRING_CONVERTER = new StringConverter<>();
+    public static final DateTimeConverter DATE_TIME_CONVERTER = new DateTimeConverter();
 
     public static class BoolConverter implements PrimitiveConverter<Boolean, BoolPrimitive> {
         @NonNull
@@ -46,6 +49,14 @@ public class StandardConverters {
         }
     }
 
+    public static class DateTimeConverter implements PrimitiveConverter<Instant, DateTimePrimitive> {
+        @NonNull
+        @Override
+        public DateTimePrimitive parse(@NonNull Instant value) {
+            return new DateTimePrimitive(value);
+        }
+    }
+
     @RequiredArgsConstructor
     public static class NullAwareConverter<IN> implements PrimitiveConverter<IN, Primitive> {
         private final PrimitiveConverter<IN, ?> converter;
@@ -56,4 +67,5 @@ public class StandardConverters {
             return value == null ? NullPrimitive.INSTANCE : converter.parse(value);
         }
     }
+
 }
