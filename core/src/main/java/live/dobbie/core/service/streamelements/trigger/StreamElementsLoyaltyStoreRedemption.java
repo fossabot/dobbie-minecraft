@@ -16,7 +16,6 @@ import live.dobbie.core.trigger.priced.Priced;
 import live.dobbie.core.user.User;
 import lombok.NonNull;
 import lombok.Value;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 
@@ -27,16 +26,13 @@ public class StreamElementsLoyaltyStoreRedemption implements StreamElementsTrigg
     @NonNull User user;
     @NonNull Instant timestamp;
     @NonNull StreamElementsUser author;
+
+    @ContextVar(path = "item_name")
     @NonNull String itemName;
+
     @NonNull Price price;
     Message message;
     String preferredDestination;
-
-    @NotNull
-    @ContextVar(path = "item_name")
-    public String getItemName() {
-        return itemName;
-    }
 
     @NonNull
     @Override
