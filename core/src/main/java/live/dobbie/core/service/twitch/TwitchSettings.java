@@ -98,6 +98,10 @@ public class TwitchSettings {
         final EventConfig channelPoints;
         //@NonNull final EventConfig channelPoints;
         //@NonNull final CommandEventConfig command;
+        @NonNull
+        final EventConfig goLive;
+        @NonNull
+        final EventConfig goOffline;
 
         @Data
         @Setter(AccessLevel.PRIVATE)

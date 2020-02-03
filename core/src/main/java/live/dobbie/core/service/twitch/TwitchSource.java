@@ -15,6 +15,8 @@ import live.dobbie.core.service.twitch.data.TwitchChannelPointsReward;
 import live.dobbie.core.service.twitch.data.TwitchSubscriptionPlan;
 import live.dobbie.core.service.twitch.data.TwitchUser;
 import live.dobbie.core.service.twitch.data.trigger.*;
+import live.dobbie.core.service.twitch.event.ChannelGoLiveEvent;
+import live.dobbie.core.service.twitch.event.ChannelGoOfflineEvent;
 import live.dobbie.core.service.twitch.listener.TwitchListener;
 import live.dobbie.core.settings.ISettings;
 import live.dobbie.core.settings.listener.SettingsSubscription;
@@ -26,6 +28,7 @@ import live.dobbie.core.user.UserLogger;
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -44,7 +47,7 @@ public class TwitchSource extends Source.UsingQueue {
 
     private final @NonNull TwitchClient chatClient;
     private final @NonNull CancellationHandler cancellationHandler;
-    private final NameCache nameCache;
+    private final @NonNull NameCache nameCache;
 
     private final SettingsSubscription<TwitchSettings.Player> subscription;
     private final Listener listener = new Listener();
@@ -58,7 +61,7 @@ public class TwitchSource extends Source.UsingQueue {
             @NonNull CancellationHandler cancellationHandler,
             @NonNull User user,
             @NonNull ISettings settings,
-            NameCache nameCache) {
+            @NotNull NameCache nameCache) {
         super(user);
         this.chatClient = chatClient;
         this.nameCache = nameCache;
@@ -229,7 +232,7 @@ public class TwitchSource extends Source.UsingQueue {
             logger.debug("onChannelPoints: " + event);
             if (playerSettings != null && playerSettings.getEvents().getChannelPoints().isEnabled()) {
                 push(new TwitchChannelPointsRedemption(
-                        user, chatClient, channel(event), timestamp(event), user(event.getUser()),
+                        user, chatClient, channel(event.getChannel()), timestamp(event), user(event.getUser()),
                         TwitchChannelPointsReward.fromTwitch4j(event.getRedemption().getReward()),
                         PlainMessage.of(event.getRedemption().getUserInput()),
                         prefDest(playerSettings.getEvents().getChannelPoints()),
@@ -237,6 +240,36 @@ public class TwitchSource extends Source.UsingQueue {
                 ));
             } else {
                 logger.debug("onChannelPoints [skipped]");
+            }
+        }
+
+        @Override
+        public void onChannelGoLive(@NonNull ChannelGoLiveEvent event) {
+            logger.debug("onGoLive: " + event);
+            if (playerSettings != null && playerSettings.getEvents().getGoLive().isEnabled()) {
+                push(new TwitchChannelGoLive(
+                        user, chatClient, event.getChannel(), timestamp(event),
+                        event.getStartTime(), TwitchChannelGoLive.isRecent(event.getStartTime()),
+                        event.getTitle(), event.getGame(),
+                        prefDest(playerSettings.getEvents().getChannelPoints()),
+                        cancellationHandler
+                ));
+            } else {
+                logger.debug("onGoLive [skipped]");
+            }
+        }
+
+        @Override
+        public void onChannelGoOffline(@NonNull ChannelGoOfflineEvent event) {
+            logger.debug("onGoOffline: " + event);
+            if (playerSettings != null && playerSettings.getEvents().getGoOffline().isEnabled()) {
+                push(new TwitchChannelGoOffline(
+                        user, chatClient, event.getChannel(), timestamp(event),
+                        prefDest(playerSettings.getEvents().getChannelPoints()),
+                        cancellationHandler
+                ));
+            } else {
+                logger.debug("onGoOffline [skipped]");
             }
         }
 
@@ -278,14 +311,12 @@ public class TwitchSource extends Source.UsingQueue {
         return TwitchUser.fromTwitch4J(eventUser, nameCache);
     }
 
-    private TwitchChannel channel(@NonNull AbstractChannelEvent event) {
-        EventChannel eventChannel = Objects.requireNonNull(event.getChannel(), "event channel");
-        return TwitchChannel.fromTwitch4J(eventChannel, nameCache);
+    private TwitchChannel channel(@NonNull EventChannel channel) {
+        return TwitchChannel.fromTwitch4J(Objects.requireNonNull(channel, "event channel"), nameCache);
     }
 
-    private TwitchChannel channel(@NonNull ChannelPointsRedemptionEvent event) {
-        EventChannel eventChannel = Objects.requireNonNull(event.getChannel(), "event channel");
-        return TwitchChannel.fromTwitch4J(eventChannel, nameCache);
+    private TwitchChannel channel(@NonNull AbstractChannelEvent event) {
+        return channel(event.getChannel());
     }
 
     @NonNull

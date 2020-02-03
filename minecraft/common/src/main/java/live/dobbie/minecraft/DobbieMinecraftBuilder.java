@@ -29,6 +29,11 @@ import live.dobbie.core.dest.cmd.*;
 import live.dobbie.core.dest.cmd.script.AssertionScriptCmdParser;
 import live.dobbie.core.dest.cmd.script.ConditionalScriptCmdParser;
 import live.dobbie.core.dest.cmd.script.ScriptCmdParser;
+import live.dobbie.core.dictionary.sql.PlainSQLDictionaryDatabaseAdapter;
+import live.dobbie.core.dictionary.sql.SQLDictionaryDatabaseFactory;
+import live.dobbie.core.dictionary.sql.h2.H2;
+import live.dobbie.core.dictionary.sql.h2.H2DictionaryDatabaseInitializer;
+import live.dobbie.core.dictionary.sql.pool.hikari.HikariConnectionPoolFactory;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.misc.Price;
 import live.dobbie.core.misc.currency.ICUCurrencyFormatter;
@@ -40,6 +45,7 @@ import live.dobbie.core.misc.primitive.converter.PrimitiveConverterProvider;
 import live.dobbie.core.misc.primitive.converter.SequentalConverterProvider;
 import live.dobbie.core.path.Path;
 import live.dobbie.core.persistence.PersistenceService;
+import live.dobbie.core.persistence.PrimitiveDictionaryPersistence;
 import live.dobbie.core.persistence.SessionObjectStorage;
 import live.dobbie.core.plugin.DobbiePlugin;
 import live.dobbie.core.plugin.ticker.ScheduledThreadPoolTicker;
@@ -190,7 +196,16 @@ public class DobbieMinecraftBuilder {
                     }
                 }))
                 .registerFactory(PersistenceService.class, new PersistenceService.RefFactory(Arrays.asList(
-                        new SessionObjectStorage.Factory()
+                        new SessionObjectStorage.Factory(),
+                        new PrimitiveDictionaryPersistence.FactoryDelegated(
+                                new SQLDictionaryDatabaseFactory(
+                                        user -> H2.file(new File(configDir, "db/" + user.getName())).build(),
+                                        new H2DictionaryDatabaseInitializer(),
+                                        new PlainSQLDictionaryDatabaseAdapter(),
+                                        new HikariConnectionPoolFactory()
+                                ),
+                                "sql"
+                        )
                 )))
                 .registerFactory(IdTaskScheduler.class, new IdSchedulerService.RefFactory())
                 .registerFactory(StreamLabsApi.class, new StreamLabsApi.RefFactory(userSettingsProvider));
@@ -230,6 +245,7 @@ public class DobbieMinecraftBuilder {
         ListCancellationHandler cancellationHandler = new ListCancellationHandler(Arrays.asList(
                 new UserNotifyingCancellationHandler(loc)
         ));
+        NameCache nameCache = new NameCache(twitchInstance);
         DobbiePlugin plugin = new DobbiePlugin(
                 new Dobbie(
                         new DobbieSettings(config, userSettingsProvider),
@@ -238,7 +254,8 @@ public class DobbieMinecraftBuilder {
                                         twitchInstance,
                                         cancellationHandler,
                                         userSettingsProvider,
-                                        new NameCache(twitchInstance)
+                                        nameCache,
+                                        new ChannelOnlineObserver(twitchInstance, nameCache, new GameCache(twitchInstance), 5000, 30000)
                                 ),
                                 new StreamLabsSourceFactory(
                                         serviceRegistry,

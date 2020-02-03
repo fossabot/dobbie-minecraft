@@ -29,11 +29,22 @@ class TwitchSourceTest {
     @EnabledIfEnvironmentVariable(named = "twitch-test", matches = "true")
     void realTest() throws InterruptedException {
         ISettings settings = Mockito.mock(ISettings.class);
-        when(settings.registerListener(eq(TwitchSettings.Global.class), notNull())).thenReturn(Mockito.mock(SettingsSubscription.class));
+        SettingsSubscription subscription = mock(SettingsSubscription.class);
+        TwitchSettings.Global global = new TwitchSettings.Global(
+                new TwitchSettings.Global.Client(
+                        System.getenv("twitch-test-login"),
+                        System.getenv("twitch-test-token")
+                )
+        );
+        when(subscription.getValue()).thenReturn(global);
+        when(settings.registerListener(eq(TwitchSettings.Global.class), notNull())).thenReturn(subscription);
         TwitchInstance instance = new TwitchInstance(settings);
-        TwitchClient client = new TwitchClient(instance, new NameCache(instance));
-        instance.onSettingsUpdated(new TwitchSettings.Global(new TwitchSettings.Global.Client(System.getenv("twitch-test-login"), System.getenv("twitch-test-token"))));
-        TwitchSource source = new TwitchSource(client, Mockito.mock(CancellationHandler.class), Mockito.mock(User.class), settings, new NameCache(instance));
+        NameCache nameCache = new NameCache(instance);
+        GameCache gameCache = new GameCache(instance);
+        ChannelOnlineObserver onlineObserver = new ChannelOnlineObserver(instance, nameCache, gameCache, 10000, 1000);
+        TwitchClient client = new TwitchClient(instance, nameCache, onlineObserver);
+        instance.onSettingsUpdated(global);
+        TwitchSource source = new TwitchSource(client, Mockito.mock(CancellationHandler.class), Mockito.mock(User.class), settings, nameCache);
         source.updateSettings(new TwitchSettings.Player(
                 true, System.getenv("twitch-test-channel"), System.getenv("twitch-test-token"),
                 new LoggingConfig(new LoggingConfig.User(false), new LoggingConfig.Console(false)),
@@ -54,6 +65,8 @@ class TwitchSourceTest {
                                 new TwitchSettings.Events.SubscriptionEventConfig.TierConfig(null, true)
                         )
                         ),
+                        new TwitchSettings.Events.EventConfig(null, true),
+                        new TwitchSettings.Events.EventConfig(null, true),
                         new TwitchSettings.Events.EventConfig(null, true),
                         new TwitchSettings.Events.EventConfig(null, true),
                         new TwitchSettings.Events.EventConfig(null, true),
@@ -85,7 +98,7 @@ class TwitchSourceTest {
                     if (trigger instanceof TwitchMessage) {
                         return;
                     }
-                    System.out.println(trigger.toLocString(loc));
+                    System.out.println(trigger.toLocString(loc).build());
                 });
             }
         });

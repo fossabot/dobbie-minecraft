@@ -14,10 +14,16 @@ public class TwitchSourceFactory implements Source.Factory<TwitchSource> {
     private final @NonNull CancellationHandler cancellationHandler;
     private final @NonNull UserSettingsProvider userSettingsProvider;
     private final @NonNull NameCache nameCache;
+    private final @NonNull ChannelOnlineObserver onlineObserver;
 
     @NonNull
     @Override
     public TwitchSource createSource(@NonNull User user) {
-        return new TwitchSource(new TwitchClient(twitchInstance, nameCache), cancellationHandler, user, userSettingsProvider.get(user), nameCache);
+        return new TwitchSource(
+                new TwitchClient(twitchInstance, nameCache, onlineObserver),
+                cancellationHandler, user,
+                userSettingsProvider.get(user),
+                nameCache
+        );
     }
 }
