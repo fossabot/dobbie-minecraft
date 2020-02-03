@@ -122,9 +122,10 @@ public class AnnotationBasedObjectContextFactory implements ObjectContextFactory
             if (contextVar != null) {
                 processVarMember(trigger, member, contextVar, vars);
             }
-        }
-        for (ContextVar contextVar : contextComplexVar.value()) {
-            processVarMember(trigger, member, contextVar, vars);
+        } else {
+            for (ContextVar contextVar : contextComplexVar.value()) {
+                processVarMember(trigger, member, contextVar, vars);
+            }
         }
     }
 
