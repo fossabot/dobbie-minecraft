@@ -61,13 +61,12 @@ class AnnotationBasedObjectContextFactoryTest {
         assertNotNull(objectContext);
         Map<Path, Primitive> variables = objectContext.getVariables();
         Map<String, Object> objects = objectContext.getObjects();
-        assertEquals(7, variables.size());
+        assertEquals(6, variables.size());
         assertEquals(Primitive.of(now), variables.get(Path.of("timestamp")));
         assertEquals(Primitive.of(now.toEpochMilli()), variables.get(Path.of("timestamp_utc_millis")));
         assertEquals(Primitive.of("test_source"), variables.get(Path.of("source")));
         assertEquals(Primitive.of("var_test"), variables.get(Path.of("name")));
         assertEquals(Primitive.of("test author"), variables.get(Path.of("author_name")));
-        assertEquals(Primitive.of("test author"), variables.get(Path.of("author_display_name")));
         assertEquals(Primitive.of("test message"), variables.get(Path.of("message")));
         assertEquals(1, objects.size());
         assertEquals(o, objects.get("object"));
