@@ -10,8 +10,7 @@ import live.dobbie.core.trigger.Trigger;
 import live.dobbie.core.user.User;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class IdTaskScheduledCmdTest {
@@ -83,6 +82,25 @@ class IdTaskScheduledCmdTest {
         assertEquals(3000L, cmd.initialWait);
         assertEquals(5000L, cmd.waitBetween);
         verify(enclosedCmdParser).parse((String) argThat(s -> s.equals("hello, world!")));
+    }
+
+    @Test
+    void parseCancelTest() throws ParserException {
+        User user = mock(User.class);
+        IdTaskScheduler scheduler = mock(IdTaskScheduler.class);
+        ServiceRef<IdTaskScheduler> serviceRef = mock(ServiceRef.class);
+        when(serviceRef.getService()).thenReturn(scheduler);
+        ServiceRefProvider serviceRefProvider = mock(ServiceRefProvider.class);
+        when(serviceRefProvider.createReference(eq(IdTaskScheduler.class), eq(user))).thenReturn(serviceRef);
+        IdTaskScheduledCmd.CancelTask.Parser parser = new IdTaskScheduledCmd.CancelTask.Parser(serviceRefProvider);
+        IdTaskScheduledCmd.CancelTask cmd;
+
+        cmd = (IdTaskScheduledCmd.CancelTask) parser.parse("test");
+        assertNotNull(cmd);
+        assertEquals(IdTask.name("test"), cmd.id);
+
+        assertThrows(ParserException.class, () -> parser.parse(""));
+        assertThrows(ParserException.class, () -> parser.parse(" "));
     }
 
 }

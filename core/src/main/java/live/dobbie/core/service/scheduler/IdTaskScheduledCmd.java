@@ -5,6 +5,8 @@ import live.dobbie.core.exception.ParserException;
 import live.dobbie.core.misc.Text;
 import live.dobbie.core.service.ServiceRef;
 import live.dobbie.core.service.ServiceRefProvider;
+import live.dobbie.core.substitutor.Substitutable;
+import live.dobbie.core.substitutor.SubstitutableParser;
 import live.dobbie.core.user.User;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -22,14 +24,19 @@ public abstract class IdTaskScheduledCmd implements Cmd {
 
     @Override
     public @NonNull CmdResult execute(@NonNull CmdContext context) throws CmdExecutionException {
+        schedule(extractScheduler(serviceRefProvider, context), new CmdRunnable(enclosedCmd, context));
+        return CmdResult.SHOULD_CONTINUE;
+    }
+
+    @NonNull
+    private static IdTaskScheduler extractScheduler(@NonNull ServiceRefProvider serviceRefProvider,
+                                                    @NonNull CmdContext context) throws CmdExecutionException {
         User user = context.getUser();
         if (user == null) {
             throw new CmdExecutionException("context did not contain any user");
         }
         ServiceRef<IdTaskScheduler> serviceRef = serviceRefProvider.createReference(IdTaskScheduler.class, user);
-        IdTaskScheduler scheduler = serviceRef.getService();
-        schedule(scheduler, new CmdRunnable(enclosedCmd, context));
-        return CmdResult.SHOULD_CONTINUE;
+        return serviceRef.getService();
     }
 
     protected abstract void schedule(@NonNull IdTaskScheduler scheduler, @NonNull CmdRunnable runnable)
@@ -92,6 +99,35 @@ public abstract class IdTaskScheduledCmd implements Cmd {
                 long initialWaitTime = parseLong(scanner, "initial wait time");
                 long waitTime = parseLong(scanner, "wait time");
                 return new RepeatEvery(serviceRefProvider, parseEnclosedCmd(scanner), name, initialWaitTime, waitTime);
+            }
+        }
+    }
+
+    @EqualsAndHashCode(of = "substitutableId")
+    public static class CancelTask implements Cmd {
+        final @NonNull ServiceRefProvider serviceRefProvider;
+        final @NonNull Substitutable substitutableId;
+
+        public CancelTask(@NonNull ServiceRefProvider serviceRefProvider, @NonNull Substitutable substitutableId) {
+            this.serviceRefProvider = serviceRefProvider;
+            this.substitutableId = substitutableId;
+        }
+
+        @Override
+        public @NonNull CmdResult execute(@NonNull CmdContext context) throws CmdExecutionException {
+            String id = substitutableId.substitute(context.getEnvironment());
+            extractScheduler(serviceRefProvider, context).cancel(IdTask.name(id));
+            return CmdResult.SHOULD_CONTINUE;
+        }
+
+        @RequiredArgsConstructor
+        public static class Parser implements CmdParser {
+            private final @NonNull ServiceRefProvider serviceRefProvider;
+            private final @NonNull SubstitutableParser nameParser;
+
+            @Override
+            public Cmd parse(@NonNull Text text) throws ParserException {
+                return new CancelTask(serviceRefProvider, nameParser.parse(text.getString()));
             }
         }
     }
