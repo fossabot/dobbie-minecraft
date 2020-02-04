@@ -17,12 +17,17 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TwitchUser implements Author {
     @NonNull String id;
-    @NonNull String name;
+    @NonNull String login;
     @NonNull String displayName;
     @NonNull Gender gender;
 
-    public TwitchUser(@NonNull String id, @NonNull String name, @NonNull String displayName) {
-        this(id, name, displayName, Gender.UNKNOWN);
+    public TwitchUser(@NonNull String id, @NonNull String login, @NonNull String displayName) {
+        this(id, login, displayName, Gender.UNKNOWN);
+    }
+
+    @Override
+    public @NonNull String getName() {
+        return getDisplayName();
     }
 
     public static TwitchUser fromTwitch4J(@NonNull EventUser user,
@@ -43,11 +48,11 @@ public class TwitchUser implements Author {
         }
     }
 
-    public static class NameConverter implements PrimitiveConverter<TwitchUser, StringPrimitive> {
+    public static class LoginConverter implements PrimitiveConverter<TwitchUser, StringPrimitive> {
         @NonNull
         @Override
         public StringPrimitive parse(@NonNull TwitchUser value) {
-            return new StringPrimitive(value.getName());
+            return new StringPrimitive(value.getLogin());
         }
     }
 

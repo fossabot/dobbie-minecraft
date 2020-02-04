@@ -6,8 +6,8 @@ import lombok.NonNull;
 
 @ConvertableToString(usingMethod = "getName")
 public class TwitchChannel extends TwitchUser {
-    public TwitchChannel(@NonNull String id, @NonNull String name, @NonNull String displayName) {
-        super(id, name, displayName);
+    public TwitchChannel(@NonNull String id, @NonNull String login, @NonNull String displayName) {
+        super(id, login, displayName);
     }
 
     public static TwitchChannel fromTwitch4J(@NonNull com.github.twitch4j.common.events.domain.EventChannel channel,

@@ -40,7 +40,7 @@ public class TwitchInstance implements Cleanable {
 
     public void sendMessage(@NonNull TwitchChannel channel, @NonNull String message) {
         LOGGER.debug("Sending message into channel " + channel + ": " + message);
-        client.getChat().sendMessage(channel.getName(), message);
+        client.getChat().sendMessage(channel.getLogin(), message);
     }
 
     void registerListener(@NonNull TwitchInstanceListener listener, boolean fireImmediately) {
