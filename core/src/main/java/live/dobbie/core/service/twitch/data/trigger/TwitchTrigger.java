@@ -24,8 +24,9 @@ public interface TwitchTrigger extends UserRelatedTrigger, DestAwareTrigger, Aut
     @NonNull TwitchChannel getChannel();
 
     @ContextComplexVar({
-            @ContextVar(path = "twitch_author_id", parser = TwitchUser.IdConverter.class),
-            @ContextVar(path = "twitch_author_display_name", parser = TwitchUser.DisplayNameConverter.class)
+            @ContextVar(path = {"twitch_author", "id"}, parser = TwitchUser.IdConverter.class),
+            @ContextVar(path = {"twitch_author", "login"}, parser = TwitchUser.LoginConverter.class),
+            @ContextVar(path = {"twitch_author", "display_name"}, parser = TwitchUser.DisplayNameConverter.class)
     })
     @NonNull TwitchUser getTwitchAuthor();
 
@@ -45,8 +46,8 @@ public interface TwitchTrigger extends UserRelatedTrigger, DestAwareTrigger, Aut
     @Override
     default LocString toLocString(@NonNull Loc loc) {
         return loc.args()
-                .set("twitch_channel", getChannel().getName())
-                .set("twitch_channel_display_name", getChannel().getDisplayName())
+                .set("twitch_channel_login", getChannel().getLogin())
+                .set("twitch_channel", getChannel().getDisplayName())
                 .copy(UserRelatedTrigger.super.toLocString(loc))
                 .copy(DestAwareTrigger.super.toLocString(loc))
                 .copy(Authored.super.toLocString(loc))
