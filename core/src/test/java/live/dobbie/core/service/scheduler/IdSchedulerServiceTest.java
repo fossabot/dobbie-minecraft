@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class IdSchedulerServiceTest {
@@ -19,6 +19,8 @@ class IdSchedulerServiceTest {
     @BeforeEach
     void setUp() {
         scheduledExecutorService = mock(ScheduledExecutorService.class);
+        when(scheduledExecutorService.schedule((Runnable) notNull(), anyLong(), notNull()))
+                .thenReturn(mock(ScheduledFuture.class));
         when(scheduledExecutorService.scheduleWithFixedDelay(notNull(), anyLong(), anyLong(), notNull()))
                 .thenReturn(mock(ScheduledFuture.class));
         service = new IdSchedulerService(scheduledExecutorService) {
@@ -64,6 +66,18 @@ class IdSchedulerServiceTest {
         verify(test0).cancel();
         verify(test0.future).cancel(eq(true));
         verify(test1, times(0)).cancel();
+    }
+
+    @Test
+    void cancelTest() {
+        IdTask id = IdTask.name("test");
+        IdSchedulerService.Task task = (IdSchedulerService.Task) service.scheduleAfter(id, () -> {
+        }, 1L);
+        boolean cancelResult = service.cancel(id);
+        assertTrue(cancelResult);
+        assertTrue(task.isCancelled());
+        assertNull(service.getTask(id));
+        verify(task.future).cancel(eq(true));
     }
 
 }

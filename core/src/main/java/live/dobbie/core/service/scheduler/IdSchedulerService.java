@@ -63,6 +63,19 @@ public class IdSchedulerService implements IdTaskScheduler {
     }
 
     @Override
+    public boolean cancel(@NonNull Object identifier) {
+        synchronized (tasks) {
+            Task task = tasks.get(identifier);
+            if (task != null) {
+                task.cancel();
+                tasks.remove(identifier);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void cancelAll() {
         synchronized (tasks) {
             for (Map.Entry<Object, Task> objectTaskEntry : tasks.entrySet()) {
@@ -84,6 +97,10 @@ public class IdSchedulerService implements IdTaskScheduler {
         tasks.put(identifier, task);
         schedulerAction.accept(task);
         return task;
+    }
+
+    Task getTask(Object identifier) {
+        return tasks.get(identifier);
     }
 
     Task createTask(Object identifier, Consumer<IdScheduledTask> r) {
@@ -129,10 +146,16 @@ public class IdSchedulerService implements IdTaskScheduler {
         }
 
         @Override
+        public boolean isCancelled() {
+            return cancelled.get();
+        }
+
+        @Override
         public void cancel() {
-            cancelled.set(true);
-            if (future != null) {
-                future.cancel(true);
+            if (cancelled.compareAndSet(false, true)) {
+                if (future != null) {
+                    future.cancel(true);
+                }
             }
         }
     }

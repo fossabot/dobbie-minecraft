@@ -10,6 +10,8 @@ public interface IdTaskScheduler extends Service {
 
     @NonNull IdScheduledTask scheduleRepeating(@NonNull Object identifier, @NonNull Consumer<IdScheduledTask> task, long initialMillis, long waitMillis);
 
+    boolean cancel(@NonNull Object identifier);
+
     void cancelAll();
 
     default @NonNull IdScheduledTask scheduleAfter(@NonNull Runnable task, long waitMillis) {

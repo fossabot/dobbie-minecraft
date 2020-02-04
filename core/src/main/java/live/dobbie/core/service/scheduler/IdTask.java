@@ -2,6 +2,7 @@ package live.dobbie.core.service.scheduler;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
@@ -33,6 +34,9 @@ public class IdTask {
     }
 
     public static IdTask name(@NonNull String name) {
+        if (StringUtils.isBlank(name)) {
+            throw new IllegalArgumentException("task name must not be blank!");
+        }
         return new IdTask(name);
     }
 }

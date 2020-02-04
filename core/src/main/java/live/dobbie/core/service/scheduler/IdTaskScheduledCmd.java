@@ -5,10 +5,13 @@ import live.dobbie.core.exception.ParserException;
 import live.dobbie.core.misc.Text;
 import live.dobbie.core.service.ServiceRef;
 import live.dobbie.core.service.ServiceRefProvider;
+import live.dobbie.core.substitutor.Substitutable;
+import live.dobbie.core.substitutor.SubstitutableParser;
 import live.dobbie.core.user.User;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.Validate;
 
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -22,17 +25,22 @@ public abstract class IdTaskScheduledCmd implements Cmd {
 
     @Override
     public @NonNull CmdResult execute(@NonNull CmdContext context) throws CmdExecutionException {
+        schedule(extractScheduler(serviceRefProvider, context), new CmdRunnable(enclosedCmd, context), context);
+        return CmdResult.SHOULD_CONTINUE;
+    }
+
+    @NonNull
+    private static IdTaskScheduler extractScheduler(@NonNull ServiceRefProvider serviceRefProvider,
+                                                    @NonNull CmdContext context) throws CmdExecutionException {
         User user = context.getUser();
         if (user == null) {
             throw new CmdExecutionException("context did not contain any user");
         }
         ServiceRef<IdTaskScheduler> serviceRef = serviceRefProvider.createReference(IdTaskScheduler.class, user);
-        IdTaskScheduler scheduler = serviceRef.getService();
-        schedule(scheduler, new CmdRunnable(enclosedCmd, context));
-        return CmdResult.SHOULD_CONTINUE;
+        return serviceRef.getService();
     }
 
-    protected abstract void schedule(@NonNull IdTaskScheduler scheduler, @NonNull CmdRunnable runnable)
+    protected abstract void schedule(@NonNull IdTaskScheduler scheduler, @NonNull CmdRunnable runnable, @NonNull CmdContext context)
             throws CmdExecutionException;
 
     @EqualsAndHashCode(of = "waitTime", callSuper = true)
@@ -45,13 +53,14 @@ public abstract class IdTaskScheduledCmd implements Cmd {
         }
 
         @Override
-        protected void schedule(@NonNull IdTaskScheduler scheduler, @NonNull CmdRunnable runnable) {
+        protected void schedule(@NonNull IdTaskScheduler scheduler, @NonNull CmdRunnable runnable, @NonNull CmdContext context) {
             scheduler.scheduleAfter(runnable, waitTime);
         }
 
         public static class Parser extends AbstractParser {
-            public Parser(@NonNull ServiceRefProvider serviceRefProvider, @NonNull CmdParser enclosedCmdParser) {
-                super(serviceRefProvider, enclosedCmdParser);
+            public Parser(@NonNull ServiceRefProvider serviceRefProvider,
+                          @NonNull CmdParser enclosedCmdParser) {
+                super(serviceRefProvider, null, enclosedCmdParser);
             }
 
             @Override
@@ -62,36 +71,68 @@ public abstract class IdTaskScheduledCmd implements Cmd {
         }
     }
 
-    @EqualsAndHashCode(of = {"id", "initialWait", "waitBetween"}, callSuper = true)
+    @EqualsAndHashCode(of = {"substitutableId", "initialWait", "waitBetween"}, callSuper = true)
     public static class RepeatEvery extends IdTaskScheduledCmd {
-        final @NonNull IdTask id;
+        final Substitutable substitutableId;
         final long initialWait;
         final long waitBetween;
 
         public RepeatEvery(@NonNull ServiceRefProvider serviceRefProvider, @NonNull Cmd enclosedCmd,
-                           @NonNull String name, long initialWait, long waitBetween) {
+                           @NonNull Substitutable name, long initialWait, long waitBetween) {
             super(serviceRefProvider, enclosedCmd);
-            this.id = IdTask.name(name);
+            this.substitutableId = name;
             this.initialWait = initialWait;
             this.waitBetween = waitBetween;
         }
 
         @Override
-        protected void schedule(@NonNull IdTaskScheduler scheduler, @NonNull CmdRunnable runnable) {
+        protected void schedule(@NonNull IdTaskScheduler scheduler, @NonNull CmdRunnable runnable, @NonNull CmdContext context) {
+            IdTask id = IdTask.name(substitutableId.substitute(context.getEnvironment()));
             scheduler.scheduleRepeating(id, t -> runnable.run(), initialWait, waitBetween);
         }
 
         public static class Parser extends AbstractParser {
-            public Parser(@NonNull ServiceRefProvider serviceRefProvider, @NonNull CmdParser enclosedCmdParser) {
-                super(serviceRefProvider, enclosedCmdParser);
+            public Parser(@NonNull ServiceRefProvider serviceRefProvider,
+                          @NonNull SubstitutableParser nameParser,
+                          @NonNull CmdParser enclosedCmdParser) {
+                super(serviceRefProvider, nameParser, enclosedCmdParser);
             }
 
             @Override
             protected RepeatEvery parse(@NonNull Text text, @NonNull Scanner scanner) throws ParserException {
-                String name = parseString(scanner, "scheduled task name");
+                Substitutable name = parseName(scanner);
                 long initialWaitTime = parseLong(scanner, "initial wait time");
                 long waitTime = parseLong(scanner, "wait time");
                 return new RepeatEvery(serviceRefProvider, parseEnclosedCmd(scanner), name, initialWaitTime, waitTime);
+            }
+        }
+    }
+
+    @EqualsAndHashCode(of = "substitutableId")
+    public static class CancelTask implements Cmd {
+        final @NonNull ServiceRefProvider serviceRefProvider;
+        final @NonNull Substitutable substitutableId;
+
+        public CancelTask(@NonNull ServiceRefProvider serviceRefProvider, @NonNull Substitutable substitutableId) {
+            this.serviceRefProvider = serviceRefProvider;
+            this.substitutableId = substitutableId;
+        }
+
+        @Override
+        public @NonNull CmdResult execute(@NonNull CmdContext context) throws CmdExecutionException {
+            IdTask id = IdTask.name(substitutableId.substitute(context.getEnvironment()));
+            extractScheduler(serviceRefProvider, context).cancel(id);
+            return CmdResult.SHOULD_CONTINUE;
+        }
+
+        @RequiredArgsConstructor
+        public static class Parser implements CmdParser {
+            private final @NonNull ServiceRefProvider serviceRefProvider;
+            private final @NonNull SubstitutableParser nameParser;
+
+            @Override
+            public Cmd parse(@NonNull Text text) throws ParserException {
+                return new CancelTask(serviceRefProvider, nameParser.parse(text.getString()));
             }
         }
     }
@@ -100,6 +141,7 @@ public abstract class IdTaskScheduledCmd implements Cmd {
     private abstract static class AbstractParser implements CmdParser {
         private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[\\s]+");
         protected final @NonNull ServiceRefProvider serviceRefProvider;
+        private final SubstitutableParser nameParser;
         private final @NonNull CmdParser enclosedCmdParser;
 
         @Override
@@ -111,15 +153,16 @@ public abstract class IdTaskScheduledCmd implements Cmd {
             return cmd;
         }
 
-        protected static String parseString(Scanner scanner, String name) throws ParserException {
+        protected Substitutable parseName(Scanner scanner) throws ParserException {
+            Validate.notNull(nameParser, "nameParser");
             String arg;
             try {
                 arg = scanner.next();
                 skipWhitespace(scanner);
             } catch (RuntimeException rE) {
-                throw new ParserException("could not find " + name, rE);
+                throw new ParserException("could not find task name", rE);
             }
-            return arg;
+            return nameParser.parse(arg);
         }
 
         protected static long parseLong(Scanner scanner, String name) throws ParserException {

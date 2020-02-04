@@ -214,7 +214,8 @@ public class DobbieMinecraftBuilder {
         ServiceRegistry serviceRegistry = serviceRegistryBuilder.build();
         sequentalCmdParser.registerParser(
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("execute_after"), new IdTaskScheduledCmd.ExecuteAfter.Parser(serviceRegistry, sequentalCmdParser)),
-                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("repeat_every"), new IdTaskScheduledCmd.RepeatEvery.Parser(serviceRegistry, sequentalCmdParser)),
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("repeat_every"), new IdTaskScheduledCmd.RepeatEvery.Parser(serviceRegistry, plainSubstitutorParser, sequentalCmdParser)),
+                AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("cancel"), new IdTaskScheduledCmd.CancelTask.Parser(serviceRegistry, plainSubstitutorParser)),
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("send"), new SendCmd.Parser(plainSubstitutorParser, false)),
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("send_raw"), new SendRawCmd.Parser(plainSubstitutorParser)),
                 AbstractPatternCmdParser.NameAware.wrap(Arrays.asList("error"), new SendCmd.Parser(plainSubstitutorParser, true)),
