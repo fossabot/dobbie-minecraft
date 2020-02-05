@@ -88,7 +88,7 @@ public interface Primitive extends Serializable {
             return ((DateTimePrimitive) p0).compareTo((DateTimePrimitive) p1);
         }
         throw new IllegalArgumentException(
-                "cannot compare primitives of two different types;" +
+                "cannot compare primitives of two different or incomparable types;" +
                         " p0: " + p0 + ", p1: " + p1
         );
     }
