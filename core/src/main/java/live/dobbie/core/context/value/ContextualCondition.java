@@ -18,10 +18,7 @@ import live.dobbie.core.path.Path;
 import live.dobbie.core.util.Unboxing;
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.Logging;
-import lombok.AccessLevel;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +34,7 @@ public interface ContextualCondition extends ContextualValue<Boolean> {
     }
 
     @RequiredArgsConstructor
+    @EqualsAndHashCode
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @ToString
     class Delegator implements ContextualCondition {
