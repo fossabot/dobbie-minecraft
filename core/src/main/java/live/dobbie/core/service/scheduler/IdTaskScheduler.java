@@ -14,6 +14,14 @@ public interface IdTaskScheduler extends Service {
 
     void cancelAll();
 
+    default @NonNull IdScheduledTask schedule(@NonNull Object identifier, @NonNull Runnable task) {
+        return scheduleAfter(identifier, task, 0L);
+    }
+
+    default @NonNull IdScheduledTask schedule(@NonNull Runnable task) {
+        return schedule(IdTask.unique(), task);
+    }
+
     default @NonNull IdScheduledTask scheduleAfter(@NonNull Runnable task, long waitMillis) {
         return scheduleAfter(IdTask.unique(), task, waitMillis);
     }
