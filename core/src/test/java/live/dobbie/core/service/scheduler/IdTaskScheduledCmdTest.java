@@ -103,4 +103,23 @@ class IdTaskScheduledCmdTest {
         assertEquals("test", cmd.substitutableId.substitute(mock(Env.class)));
     }
 
+    @Test
+    void parseRunLaterTest() throws ParserException {
+        User user = mock(User.class);
+        IdTaskScheduler scheduler = mock(IdTaskScheduler.class);
+        ServiceRef<IdTaskScheduler> serviceRef = mock(ServiceRef.class);
+        when(serviceRef.getService()).thenReturn(scheduler);
+        ServiceRefProvider serviceRefProvider = mock(ServiceRefProvider.class);
+        when(serviceRefProvider.createReference(eq(IdTaskScheduler.class), eq(user))).thenReturn(serviceRef);
+        Cmd enclosedCmd = mock(Cmd.class);
+        CmdParser enclosedCmdParser = mock(CmdParser.class);
+        when(enclosedCmdParser.parse(anyString())).thenReturn(enclosedCmd);
+        IdTaskScheduledCmd.RunLater.Parser parser = new IdTaskScheduledCmd.RunLater.Parser(serviceRefProvider, enclosedCmdParser);
+        IdTaskScheduledCmd.RunLater cmd;
+
+        cmd = (IdTaskScheduledCmd.RunLater) parser.parse("test");
+        assertNotNull(cmd);
+        verify(enclosedCmdParser).parse(eq("test"));
+    }
+
 }
