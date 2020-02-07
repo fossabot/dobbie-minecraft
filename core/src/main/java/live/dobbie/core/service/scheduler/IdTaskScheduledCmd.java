@@ -71,6 +71,31 @@ public abstract class IdTaskScheduledCmd implements Cmd {
         }
     }
 
+    @EqualsAndHashCode(callSuper = true)
+    public static class RunLater extends IdTaskScheduledCmd {
+
+        public RunLater(@NonNull ServiceRefProvider serviceRefProvider, @NonNull Cmd enclosedCmd) {
+            super(serviceRefProvider, enclosedCmd);
+        }
+
+        @Override
+        protected void schedule(@NonNull IdTaskScheduler scheduler, @NonNull CmdRunnable runnable, @NonNull CmdContext context) {
+            scheduler.schedule(runnable);
+        }
+
+        public static class Parser extends AbstractParser {
+            public Parser(@NonNull ServiceRefProvider serviceRefProvider,
+                          @NonNull CmdParser enclosedCmdParser) {
+                super(serviceRefProvider, null, enclosedCmdParser);
+            }
+
+            @Override
+            protected RunLater parse(@NonNull Text text, @NonNull Scanner scanner) throws ParserException {
+                return new RunLater(serviceRefProvider, parseEnclosedCmd(scanner));
+            }
+        }
+    }
+
     @EqualsAndHashCode(of = {"substitutableId", "initialWait", "waitBetween"}, callSuper = true)
     public static class RepeatEvery extends IdTaskScheduledCmd {
         final Substitutable substitutableId;
