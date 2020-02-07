@@ -37,7 +37,15 @@ public interface MinecraftCompat {
         return Vector.unit();
     }
 
+    default @NonNull Vector vector(double x, double y, double z) {
+        return new Vector(x, y, z);
+    }
+
     default @NonNull MinecraftLocation zeroLocation() {
         return MinecraftLocation.zero();
+    }
+
+    default @NonNull MinecraftLocation location(double x, double y, double z) {
+        return new MinecraftLocation(x, y, z);
     }
 }
