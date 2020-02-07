@@ -1,6 +1,8 @@
 package live.dobbie.core.user;
 
 import live.dobbie.core.loc.LocString;
+import live.dobbie.core.misc.primitive.StringPrimitive;
+import live.dobbie.core.misc.primitive.converter.PrimitiveConverter;
 import lombok.NonNull;
 
 
@@ -27,5 +29,13 @@ public interface User {
 
     interface Factory<N> {
         @NonNull User create(@NonNull N nativeUser);
+    }
+
+    class Name implements PrimitiveConverter<User, StringPrimitive> {
+        @NonNull
+        @Override
+        public StringPrimitive parse(@NonNull User value) {
+            return new StringPrimitive(value.getName());
+        }
     }
 }

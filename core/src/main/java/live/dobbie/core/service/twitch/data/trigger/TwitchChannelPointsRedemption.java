@@ -1,6 +1,8 @@
 package live.dobbie.core.service.twitch.data.trigger;
 
 import live.dobbie.core.context.factory.ContextClass;
+import live.dobbie.core.context.factory.ContextComplexVar;
+import live.dobbie.core.context.factory.ContextVar;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.loc.LocString;
 import live.dobbie.core.misc.Price;
@@ -30,7 +32,13 @@ public class TwitchChannelPointsRedemption implements TwitchTrigger, Messaged, P
     @NonNull TwitchChannel channel;
     @NonNull Instant timestamp;
     @NonNull TwitchUser twitchAuthor;
+
+    @ContextComplexVar({
+            @ContextVar(path = {"channel_points", "reward", "title"}, parser = TwitchChannelPointsReward.Title.class),
+            @ContextVar(path = {"channel_points", "reward", "prompt"}, parser = TwitchChannelPointsReward.Prompt.class)
+    })
     @NonNull TwitchChannelPointsReward reward;
+
     Message message;
     String preferredDestination;
 

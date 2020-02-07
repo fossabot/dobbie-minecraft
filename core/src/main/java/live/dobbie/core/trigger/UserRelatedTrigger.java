@@ -1,6 +1,7 @@
 package live.dobbie.core.trigger;
 
 import live.dobbie.core.context.factory.ContextObject;
+import live.dobbie.core.context.factory.ContextVar;
 import live.dobbie.core.loc.Loc;
 import live.dobbie.core.loc.LocString;
 import live.dobbie.core.user.User;
@@ -9,6 +10,7 @@ import lombok.NonNull;
 
 public interface UserRelatedTrigger extends Trigger {
     @ContextObject
+    @ContextVar(path = "user_name", parser = User.Name.class)
     @NonNull User getUser();
 
     @NonNull

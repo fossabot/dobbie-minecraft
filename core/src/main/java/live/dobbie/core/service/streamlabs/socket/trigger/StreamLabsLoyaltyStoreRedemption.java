@@ -12,7 +12,6 @@ import live.dobbie.core.trigger.cancellable.CancellationHandler;
 import live.dobbie.core.user.User;
 import lombok.NonNull;
 import lombok.Value;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 
@@ -23,14 +22,11 @@ public class StreamLabsLoyaltyStoreRedemption implements StreamLabsTrigger {
     @NonNull User user;
     @NonNull Instant timestamp;
     @NonNull StreamLabsAuthor author;
-    @NonNull String productName;
-    String preferredDestination;
 
-    @NotNull
-    @ContextVar(path = "product_name")
-    public String getProductName() {
-        return productName;
-    }
+    @ContextVar
+    @NonNull String productName;
+
+    String preferredDestination;
 
     @NonNull
     @Override

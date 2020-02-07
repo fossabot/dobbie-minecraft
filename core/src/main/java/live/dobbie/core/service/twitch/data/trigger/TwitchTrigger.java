@@ -20,13 +20,17 @@ import lombok.NonNull;
 public interface TwitchTrigger extends UserRelatedTrigger, DestAwareTrigger, Authored, Cancellable {
     @NonNull TwitchClient getClient();
 
-    @ContextVar
+    @ContextComplexVar({
+            @ContextVar(path = {"twitch_channel", "id"}, parser = TwitchUser.IdConverter.class),
+            @ContextVar(path = {"twitch_channel", "login"}, parser = TwitchUser.LoginConverter.class),
+            @ContextVar(path = {"twitch_channel", "name"}, parser = TwitchUser.DisplayNameConverter.class)
+    })
     @NonNull TwitchChannel getChannel();
 
     @ContextComplexVar({
             @ContextVar(path = {"twitch_author", "id"}, parser = TwitchUser.IdConverter.class),
             @ContextVar(path = {"twitch_author", "login"}, parser = TwitchUser.LoginConverter.class),
-            @ContextVar(path = {"twitch_author", "display_name"}, parser = TwitchUser.DisplayNameConverter.class)
+            @ContextVar(path = {"twitch_author", "name"}, parser = TwitchUser.DisplayNameConverter.class)
     })
     @NonNull TwitchUser getTwitchAuthor();
 
