@@ -10,11 +10,6 @@ public class FabricLocation extends MinecraftLocation {
     private final @Getter
     BlockPos blockPos;
 
-    public FabricLocation(double x, double y, double z) {
-        super(x, y, z);
-        this.blockPos = new BlockPos(x, y, z);
-    }
-
     public FabricLocation(@NonNull BlockPos blockPos) {
         super(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         this.blockPos = blockPos;
