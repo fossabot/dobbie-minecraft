@@ -36,4 +36,8 @@ public interface MinecraftCompat {
     default @NonNull Vector unitVector() {
         return Vector.unit();
     }
+
+    default @NonNull MinecraftLocation zeroLocation() {
+        return MinecraftLocation.zero();
+    }
 }
