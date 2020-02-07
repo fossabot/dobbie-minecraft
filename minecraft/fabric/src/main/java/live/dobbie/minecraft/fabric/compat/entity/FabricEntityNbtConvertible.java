@@ -3,10 +3,10 @@ package live.dobbie.minecraft.fabric.compat.entity;
 import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
 import live.dobbie.minecraft.compat.entity.MinecraftEntityTemplate;
 import live.dobbie.minecraft.compat.item.MinecraftItemInfo;
-import live.dobbie.minecraft.fabric.FabricUtil;
 import live.dobbie.minecraft.fabric.compat.item.FabricItemInfo;
 import live.dobbie.minecraft.fabric.compat.item.FabricItemInfoFactory;
 import live.dobbie.minecraft.fabric.compat.nbt.FabricNbtConvertible;
+import live.dobbie.minecraft.util.TextUtil;
 import lombok.NonNull;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -23,7 +23,7 @@ public interface FabricEntityNbtConvertible extends FabricNbtConvertible {
         c.putString("id", converter.convertEntityName(entityTemplate.getEntityName()));
 
         if (entityTemplate.getCustomName() != null) {
-            c.putString("CustomName", FabricUtil.toJsonText(entityTemplate.getCustomName()));
+            c.putString("CustomName", TextUtil.toJsonText(entityTemplate.getCustomName()));
             if (entityTemplate.isCustomNameVisible()) {
                 c.putInt("CustomNameVisible", 1);
             }

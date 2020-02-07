@@ -8,6 +8,7 @@ import live.dobbie.minecraft.compat.MinecraftOnlinePlayer;
 import live.dobbie.minecraft.compat.world.MinecraftSoundCategory;
 import live.dobbie.minecraft.fabric.compat.entity.FabricEntityBase;
 import live.dobbie.minecraft.fabric.compat.entity.FabricPlayerInventory;
+import live.dobbie.minecraft.fabric.compat.util.FabricTextUtil;
 import live.dobbie.minecraft.fabric.compat.world.FabricSoundCategory;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,13 +18,10 @@ import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 import java.util.function.Supplier;
-
-import static live.dobbie.minecraft.fabric.FabricUtil.toNativeText;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = "uuid")
@@ -73,12 +71,12 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
 
     @Override
     public void sendMessage(@NonNull String message) {
-        scheduleAndWait(() -> getNativePlayer().sendMessage(toNativeText(message)));
+        scheduleAndWait(() -> getNativePlayer().sendMessage(FabricTextUtil.legacyToNative(message)));
     }
 
     @Override
     public void sendRawMessage(@NonNull String rawMessage) {
-        scheduleAndWait(() -> getNativePlayer().sendMessage(Text.Serializer.fromJson(rawMessage)));
+        scheduleAndWait(() -> getNativePlayer().sendMessage(FabricTextUtil.jsonToNative(rawMessage)));
     }
 
     @Override
@@ -86,7 +84,7 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
         scheduleAndWait(() -> {
             ServerPlayNetworkHandler nh = getNativePlayer().networkHandler;
             nh.sendPacket(new TitleS2CPacket(ticksFadeIn, ticksStay, ticksFadeOut));
-            nh.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, toNativeText(message)));
+            nh.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, FabricTextUtil.legacyToNative(message)));
         });
     }
 
@@ -94,7 +92,7 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
     public void sendActionBar(@NonNull String message) {
         scheduleAndWait(() -> {
             ServerPlayNetworkHandler nh = getNativePlayer().networkHandler;
-            nh.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, toNativeText(message)));
+            nh.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.ACTIONBAR, FabricTextUtil.legacyToNative(message)));
         });
     }
 
@@ -111,7 +109,7 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
 
     @Override
     public void disconnect(@NonNull String message) {
-        scheduleAndWait(() -> getNativePlayer().networkHandler.disconnect(toNativeText(message)));
+        scheduleAndWait(() -> getNativePlayer().networkHandler.disconnect(FabricTextUtil.legacyToNative(message)));
     }
 
     @Override

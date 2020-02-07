@@ -7,6 +7,7 @@ import live.dobbie.minecraft.compat.MinecraftServer;
 import live.dobbie.minecraft.compat.world.MinecraftWorld;
 import live.dobbie.minecraft.compat.world.MinecraftWorldId;
 import live.dobbie.minecraft.fabric.FabricScheduler;
+import live.dobbie.minecraft.fabric.compat.util.FabricTextUtil;
 import live.dobbie.minecraft.fabric.compat.world.FabricWorld;
 import live.dobbie.minecraft.fabric.compat.world.FabricWorldId;
 import lombok.Getter;
@@ -20,8 +21,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import static live.dobbie.minecraft.fabric.FabricUtil.toNativeText;
 
 public class FabricServer implements MinecraftServer<FabricPlayer>, Scheduler {
     private static final ILogger LOGGER = Logging.getLogger(FabricServer.class);
@@ -86,7 +85,7 @@ public class FabricServer implements MinecraftServer<FabricPlayer>, Scheduler {
     @Override
     public void broadcastMessage(@NonNull String message) {
         schedule(() -> {
-            getNativeServer().getPlayerManager().broadcastChatMessage(toNativeText(message), false);
+            getNativeServer().getPlayerManager().broadcastChatMessage(FabricTextUtil.legacyToNative(message), false);
         });
     }
 
