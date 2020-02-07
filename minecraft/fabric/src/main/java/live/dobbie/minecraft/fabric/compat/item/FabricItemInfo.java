@@ -3,8 +3,8 @@ package live.dobbie.minecraft.fabric.compat.item;
 import live.dobbie.minecraft.compat.converter.MinecraftIdConverter;
 import live.dobbie.minecraft.compat.item.MinecraftItemEnchantment;
 import live.dobbie.minecraft.compat.item.MinecraftItemInfo;
-import live.dobbie.minecraft.fabric.FabricUtil;
 import live.dobbie.minecraft.fabric.compat.nbt.FabricNbtConvertible;
+import live.dobbie.minecraft.util.TextUtil;
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import net.minecraft.item.ItemStack;
@@ -56,7 +56,7 @@ public class FabricItemInfo extends MinecraftItemInfo implements FabricNbtConver
     }
 
     private static String convertDisplayName(String name) {
-        return FabricUtil.toJsonText(name);
+        return TextUtil.toJsonText(name);
     }
 
     public static ItemStack toItemStack(@NonNull MinecraftItemInfo item, @NonNull MinecraftIdConverter converter) {

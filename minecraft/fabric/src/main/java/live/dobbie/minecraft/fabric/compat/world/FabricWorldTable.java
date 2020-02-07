@@ -29,7 +29,8 @@ public class FabricWorldTable implements MinecraftWorldTable {
 
     @Override
     public FabricWorldId byName(@NonNull String name) {
-        DimensionType dimensionType = Registry.DIMENSION_TYPE.get(new Identifier(name));
-        return dimensionType == null? null : new FabricWorldId(dimensionType);
+        return Registry.DIMENSION_TYPE.getOrEmpty(new Identifier(name))
+                .map(FabricWorldId::new)
+                .orElse(null);
     }
 }

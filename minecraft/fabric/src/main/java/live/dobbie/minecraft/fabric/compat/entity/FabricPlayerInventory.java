@@ -78,6 +78,9 @@ public class FabricPlayerInventory implements MinecraftPlayerInventory {
     }
 
     private ItemStack toItemStack(@Nullable MinecraftItemInfo item) {
+        if (item == null) {
+            return ItemStack.EMPTY;
+        }
         return FabricItemInfo.toItemStack(item, getOwner().getInstance().getIdConverter());
     }
 
