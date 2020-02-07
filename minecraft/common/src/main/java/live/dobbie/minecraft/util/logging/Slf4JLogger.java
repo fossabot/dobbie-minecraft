@@ -1,4 +1,4 @@
-package live.dobbie.minecraft.fabric;
+package live.dobbie.minecraft.util.logging;
 
 import live.dobbie.core.util.logging.ILogger;
 import live.dobbie.core.util.logging.ILoggerFactory;

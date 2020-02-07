@@ -8,6 +8,7 @@ import live.dobbie.core.util.logging.Logging;
 import live.dobbie.minecraft.DobbieMinecraftBuilder;
 import live.dobbie.minecraft.fabric.compat.FabricCompat;
 import live.dobbie.minecraft.fabric.compat.FabricPlayer;
+import live.dobbie.minecraft.util.logging.Slf4JLogger;
 import lombok.NonNull;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.server.ServerStartCallback;
