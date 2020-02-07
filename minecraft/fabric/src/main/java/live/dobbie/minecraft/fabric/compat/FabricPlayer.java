@@ -80,11 +80,12 @@ public class FabricPlayer implements User, MinecraftOnlinePlayer, FabricEntityBa
     }
 
     @Override
-    public void sendTitle(@NonNull String message, int ticksFadeIn, int ticksStay, int ticksFadeOut) {
+    public void sendTitle(String title, String subtitle, int ticksFadeIn, int ticksStay, int ticksFadeOut) {
         scheduleAndWait(() -> {
             ServerPlayNetworkHandler nh = getNativePlayer().networkHandler;
             nh.sendPacket(new TitleS2CPacket(ticksFadeIn, ticksStay, ticksFadeOut));
-            nh.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, FabricTextUtil.legacyToNative(message)));
+            nh.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.TITLE, FabricTextUtil.legacyToNative(title)));
+            nh.sendPacket(new TitleS2CPacket(TitleS2CPacket.Action.SUBTITLE, FabricTextUtil.legacyToNative(subtitle)));
         });
     }
 

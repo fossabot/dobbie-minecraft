@@ -83,8 +83,8 @@ public class BukkitPlayer implements User, BukkitEntityBase, MinecraftOnlinePlay
     }
 
     @Override
-    public void sendTitle(@NonNull String message, int ticksFadeIn, int ticksStay, int ticksFadeOut) {
-        getNativePlayer().sendTitle(message, null, ticksFadeIn, ticksStay, ticksFadeOut);
+    public void sendTitle(String title, String subtitle, int ticksFadeIn, int ticksStay, int ticksFadeOut) {
+        getNativePlayer().sendTitle(title, subtitle, ticksFadeIn, ticksStay, ticksFadeOut);
     }
 
     @Override

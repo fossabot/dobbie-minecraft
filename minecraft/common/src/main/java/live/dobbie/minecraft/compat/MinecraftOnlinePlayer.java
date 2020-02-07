@@ -9,7 +9,7 @@ public interface MinecraftOnlinePlayer extends MinecraftPlayer {
 
     void sendRawMessage(@NonNull String rawMessage);
 
-    void sendTitle(@NonNull String message, int ticksFadeIn, int ticksStay, int ticksFadeOut);
+    void sendTitle(String title, String subtitle, int ticksFadeIn, int ticksStay, int ticksFadeOut);
 
     void sendActionBar(@NonNull String message);
 
