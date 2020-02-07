@@ -22,7 +22,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class FabricServer implements MinecraftServer<FabricPlayer>, Scheduler {
+public class FabricServer implements MinecraftServer, Scheduler {
     private static final ILogger LOGGER = Logging.getLogger(FabricServer.class);
 
     private final @NonNull
