@@ -23,6 +23,9 @@ configurations.all {
 
 dependencies {
     "compile"(project(":core"))
+    "compile"(project(":minecraft:common"))
+    "compile"(project(":libs:forge"))
+
     "compile"("org.apache.logging.log4j:log4j-slf4j-impl:2.11.2")
 
     "minecraft"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
