@@ -55,11 +55,12 @@ public class ForgePlayer implements MinecraftOnlinePlayer, ForgeEntityBase, Sche
     }
 
     @Override
-    public void sendTitle(@NonNull String message, int ticksFadeIn, int ticksStay, int ticksFadeOut) {
+    public void sendTitle(String message, String subtitle, int ticksFadeIn, int ticksStay, int ticksFadeOut) {
         scheduleAndWait(() -> {
             ServerPlayNetHandler connection = getNativePlayer().connection;
             connection.sendPacket(new STitlePacket(ticksFadeIn, ticksStay, ticksFadeOut));
             connection.sendPacket(new STitlePacket(STitlePacket.Type.TITLE, legacyToNative(message)));
+            connection.sendPacket(new STitlePacket(STitlePacket.Type.SUBTITLE, legacyToNative(message)));
         });
     }
 

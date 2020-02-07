@@ -22,7 +22,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class ForgeServer implements MinecraftServer<ForgePlayer>, Scheduler {
+public class ForgeServer implements MinecraftServer, Scheduler {
     private static final ILogger LOGGER = Logging.getLogger(ForgeServer.class);
 
     private final @NonNull
