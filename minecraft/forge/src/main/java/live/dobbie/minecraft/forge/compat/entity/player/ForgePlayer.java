@@ -37,11 +37,14 @@ public class ForgePlayer implements MinecraftOnlinePlayer, ForgeEntityBase, Sche
     ForgeCompat instance;
     private final @NonNull UUID uuid;
     private final @NonNull
+    @Getter
+    String name;
+    private final @NonNull
     @Getter(lazy = true)
     ForgePlayerInventory inventory = new ForgePlayerInventory(this);
 
     public ForgePlayer(@NonNull ForgeCompat instance, @NonNull PlayerEntity entity) {
-        this(instance, entity.getUniqueID());
+        this(instance, entity.getUniqueID(), entity.getName().getFormattedText());
     }
 
     @Override
