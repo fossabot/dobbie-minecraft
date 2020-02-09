@@ -7,14 +7,14 @@ import lombok.NonNull;
 import java.util.List;
 import java.util.UUID;
 
-public interface MinecraftServer<P extends MinecraftOnlinePlayer> extends UnreliableResource {
+public interface MinecraftServer extends UnreliableResource {
     @NonNull Object getNativeServer();
 
-    P getPlayer(@NonNull String name);
+    MinecraftOnlinePlayer getPlayer(@NonNull String name);
 
-    P getPlayerByUUID(@NonNull UUID uuid);
+    MinecraftOnlinePlayer getPlayerByUUID(@NonNull UUID uuid);
 
-    @NonNull List<P> getOnlinePlayers();
+    @NonNull List<? extends MinecraftOnlinePlayer> getOnlinePlayers();
 
     MinecraftWorld getWorld(@NonNull MinecraftWorldId worldId);
 
@@ -22,20 +22,20 @@ public interface MinecraftServer<P extends MinecraftOnlinePlayer> extends Unreli
 
     void executeCommand(@NonNull String command);
 
-    default P getPlayerByUUID(@NonNull String uuid) {
+    default MinecraftOnlinePlayer getPlayerByUUID(@NonNull String uuid) {
         return getPlayerByUUID(UUID.fromString(uuid));
     }
 
-    default P player(@NonNull String name) {
+    default MinecraftOnlinePlayer player(@NonNull String name) {
         return getPlayer(name);
     }
 
-    default P playerUUID(@NonNull UUID uuid) {
+    default MinecraftOnlinePlayer playerUUID(@NonNull UUID uuid) {
         return getPlayerByUUID(uuid);
     }
 
     @NonNull
-    default List<P> onlinePlayers() {
+    default List<? extends MinecraftOnlinePlayer> onlinePlayers() {
         return getOnlinePlayers();
     }
 

@@ -10,6 +10,9 @@ include("core")
 include("libs:minecraft-common")
 include("minecraft:common")
 
+include("libs:forge")
+include("minecraft:forge")
+
 include("libs:fabric")
 include("minecraft:fabric")
 

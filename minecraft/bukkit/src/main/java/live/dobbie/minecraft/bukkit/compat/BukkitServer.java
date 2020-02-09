@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class BukkitServer implements MinecraftServer<BukkitPlayer>, Scheduler {
+public class BukkitServer implements MinecraftServer, Scheduler {
     private static final ILogger LOGGER = Logging.getLogger(BukkitServer.class);
 
     private final @NonNull

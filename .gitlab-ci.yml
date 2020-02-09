@@ -21,6 +21,7 @@ build:
     paths:
       - 'minecraft/bukkit/build/libs/*-dist.jar'
       - 'minecraft/fabric/build/libs/*-dist.jar'
+      - 'minecraft/forge/build/libs/*-dist.jar'
     expire_in: 1 week
 #  only:
 #    - master
