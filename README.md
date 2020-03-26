@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdobbie-live%2Fdobbie-minecraft.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdobbie-live%2Fdobbie-minecraft?ref=badge_shield)
+
 Dobbie.live for Minecraft
 ====================
 
@@ -32,3 +34,6 @@ Actually, for now you should probably
 to make everything work.
 [Documentation](https://docs.dobbie.live/?ref=github)
 is not yet ready :(
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdobbie-live%2Fdobbie-minecraft.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdobbie-live%2Fdobbie-minecraft?ref=badge_large)
